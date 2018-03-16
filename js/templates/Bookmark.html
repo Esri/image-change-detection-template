@@ -1,0 +1,14 @@
+
+<div class="titleBar"><span class="titleBarTextSpan">${config.i18n.bookmark.title}</span><button class="closeContainerButton"><img src="images/cancel.png" alt="X"/></button></div>
+<div style="margin: 5px;overflow: auto;">
+    <label for="bookmarkOptions">${config.i18n.bookmark.title}: </label><select data-dojo-type="dijit/form/Select" id="bookmarkOptions"></select>
+   <!-- <button data-dojo-type="dijit/form/Button" id="addBookmark"><img alt="${config.i18n.bookmark.add}" src="images/add.png" class="iconHeight"/></button>
+    <br /><br />-->
+    <div id="addBookmark" data-dojo-type="dijit/form/DropDownButton">
+                <span><img alt="${config.i18n.bookmark.add}" src="images/add.png" class="iconHeight"/></span>
+                <div id="addBookmarkTooltipDialog" data-dojo-type="dijit/TooltipDialog">
+    <input data-dojo-type="dijit/form/TextBox" placeholder="${config.i18n.bookmark.addTitle}" id="bookmarkTitle"/><button data-dojo-type="dijit/form/Button" id="addBtn">${config.i18n.bookmark.addBtn}</button>
+                </div></div>
+    <br />    
+</div>
+

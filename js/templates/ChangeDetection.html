@@ -1,0 +1,120 @@
+<div class="titleBar"><span class="titleBarTextSpan">${config.i18n.changeDetection.title}</span><button class="closeContainerButton"><img src="images/cancel.png" alt="X"/></button></div>
+<div style="margin: 5px;overflow: auto;">
+    <div style="font-weight: bolder;margin-bottom: 5px;">${config.i18n.changeDetection.layerText}</div>
+    <label for="layerSelector">${config.i18n.changeDetection.layer}: </label><select id="layerSelector" data-dojo-type="dijit/form/Select"></select>
+
+
+    <div id="selectorDiv" style="display:none;">
+        <hr>
+        <div style="font-weight: bolder;margin-bottom: 10px;">${config.i18n.changeDetection.imageSelectorText}</div>
+        <input type="radio" data-dojo-type="dijit/form/RadioButton" name="images" checked id="primaryImage"  value="primary"/> <label for="primaryImage">${config.i18n.changeDetection.primary}</label> 
+        <input id="comparisonImage" data-dojo-type="dijit/form/RadioButton" name="images" value="comparison" type="radio" style="margin-left: 10%;" />
+        <label for="comparisonImage">${config.i18n.changeDetection.comparison}</label>
+        
+        <div id="imageRange" style="margin-top: 10px;margin-bottom: 10px;"></div>
+        <div>
+            <div  id="imageSelectContainer" style="display:none;">
+                <button  data-dojo-type="dijit/form/Button" type="button" id="dropDownImageList"><img alt="${config.i18n.changeDetection.dropDown}" src="images/dropdownlist.png" id="switchDisplayImage" class="iconHeight"/></button>
+            </div>
+            <div id="dropDownOption" style="display: none;">
+                <select  id="imageSelectorDropDown" data-dojo-type="dijit/form/Select"></select>
+            </div>
+            <div  id='imageSliderDiv' style="display: inline-block;">
+            </div> 
+
+        </div>
+    </div>
+    <div id="errorDiv" style="color: #ee0000;"></div>
+    <div id="changeSettingsDiv" style="display: none;">
+        <hr>
+        <div style="font-weight: bolder;margin-bottom: 10px;">${config.i18n.changeDetection.changeText}</div> 
+
+        <div style="display: inline-block;width: 16%;">${config.i18n.changeDetection.method}: </div><select autofocus="autofocus"  id="method" data-dojo-type="dijit/form/Select">
+        </select>
+        <div id="changeMode" style="display:none;margin-top: 5px;">
+            <div style="display: inline-block;width: 16%;">${config.i18n.changeDetection.mode}: </div><select  id="changeModeList" data-dojo-type="dijit/form/Select">
+                <option value="image">${config.i18n.changeDetection.mode1}</option>
+                <option value="mask">${config.i18n.changeDetection.mode2}</option>
+                <option value="threshold">${config.i18n.changeDetection.mode3}</option>
+            </select>
+        </div>
+        <div id="bandInputs" style="display: none;margin-top: 5px;">
+            <table style="border: 0 solid transparent;"><tr><td><div id="bandName1" style="display: inline-block;"></div></td>
+                    <td><select  data-dojo-type="dijit/form/Select" id="band1">
+                        </select>
+                    </td></tr>
+                <tr><td><div id="bandName2" style="display: inline-block;"></div></td>
+                    <td><select data-dojo-type="dijit/form/Select" id="band2">
+                        </select></td></tr></table>
+        </div>
+        <div id="maskRangeSpinners" style="display: none;margin-top: 5px;">
+            
+            <div style="vertical-align: top;display: inline-block;width: 20%;">${config.i18n.changeDetection.positive}: </div>
+            <div id="positiveRange"   style="width:78%;display: inline-block;" data-dojo-type="dijit/form/HorizontalSlider" data-dojo-props="value:0.15,minimum: 0,maximum:1,intermediateChanges:true,showButtons:true">
+                <div data-dojo-type="dijit/form/HorizontalRule" container="bottomDecoration" count="6" style="height:5px;color:#27b2cf"></div>
+                <ol data-dojo-type="dijit/form/HorizontalRuleLabels" container="bottomDecoration" style="height:1em;font-size:75%;color:gray">
+                    <li>0</li>
+                    <li>0.2</li>
+                    <li>0.4</li>
+                    <li>0.6</li>
+                    <li>0.8</li>
+                    <li>1</li>
+                </ol>
+            </div><br/>
+            <div style="vertical-align: top;display: inline-block;margin-top: 5px;width: 20%;">${config.i18n.changeDetection.negative}: </div>
+            <div id="negativeRange"   style="width:78%;display: inline-block;margin-top: 5px;" data-dojo-type="dijit/form/HorizontalSlider" data-dojo-props="value:-0.15,minimum: -1,maximum:0,intermediateChanges:true,showButtons:true">
+                <div data-dojo-type="dijit/form/HorizontalRule" container="bottomDecoration" count="6" style="height:5px;color:#27b2cf"></div>
+                <ol data-dojo-type="dijit/form/HorizontalRuleLabels" container="bottomDecoration" style="height:1em;font-size:75%;color:gray">
+                    <li>-1</li>
+                    <li>-0.8</li>
+                    <li>-0.6</li>
+                    <li>-0.4</li>
+                    <li>-0.2</li>
+                    <li>0</li>
+                </ol>
+            </div>
+        </div>
+        <div id="thresholdRangeSpinners" style="display: none;margin-top: 5px;">
+            
+            <div style="vertical-align: top;display: inline-block;">${config.i18n.changeDetection.threshold}: </div>
+            <div id="thresholdValue"  style="width:70%;display: inline-block;" data-dojo-type="dijit/form/HorizontalSlider" data-dojo-props="value:0,minimum: 0,maximum:1,intermediateChanges:true,showButtons:true">
+                <div data-dojo-type="dijit/form/HorizontalRule" container="bottomDecoration" count="6" style="height:5px;color:#27b2cf"></div>
+                <ol data-dojo-type="dijit/form/HorizontalRuleLabels" container="bottomDecoration" style="height:1em;font-size:75%;color:gray">
+                    <li>0</li>
+                    <li>0.2</li>
+                    <li>0.4</li>
+                    <li>0.6</li>
+                    <li>0.8</li>
+                    <li>1</li>
+                </ol>
+            </div> 
+                        <div style="vertical-align: top;display: inline-block;margin-top: 5px;">${config.i18n.changeDetection.difference}: </div>
+            <div id="differenceValue"   style="width:70%;display: inline-block;margin-top: 5px;" data-dojo-type="dijit/form/HorizontalSlider" data-dojo-props="value:0,minimum: 0,maximum:1,intermediateChanges:true,showButtons:true">
+                <div data-dojo-type="dijit/form/HorizontalRule" container="bottomDecoration" count="6" style="height:5px;color:#27b2cf"></div>
+                <ol data-dojo-type="dijit/form/HorizontalRuleLabels" container="bottomDecoration" style="height:1em;font-size:75%;color:gray">
+                    <li>0</li>
+                    <li>0.2</li>
+                    <li>0.4</li>
+                    <li>0.6</li>
+                    <li>0.8</li>
+                    <li>1</li>
+                </ol>
+            </div>
+        </div>
+        <div style="display: flex;justify-content: center;margin-top: 5px;">
+            <button  data-dojo-type="dijit/form/Button" type="button" id="changeDetectionApply">${config.i18n.changeDetection.apply}</button>
+            <button  data-dojo-type="dijit/form/Button" type="button" id="changeDetectionClear">${config.i18n.changeDetection.clear}</button>
+        </div>
+        <div id="transparencySlider" style="display: none;margin: 5px 0 17px 0;">
+            <div style="vertical-align: top;display: inline-block;">${config.i18n.changeDetection.transparency}: </div>
+            <div  id="resultOpacity" data-dojo-attach-point="transparency" style="max-width:180px;display:inline-block;position: absolute;" data-dojo-type="dijit/form/HorizontalSlider" data-dojo-props="value:0,minimum: 0,maximum:1,intermediateChanges:true,showButtons:true">
+                <div data-dojo-type="dijit/form/HorizontalRule" container="bottomDecoration" style="height:5px;"></div>
+                <ol data-dojo-type="dijit/form/HorizontalRuleLabels" container="bottomDecoration" style="height:1em;font-size:75%;color:gray;">
+                    <li>0%</li>
+                    <li>50%</li>
+                    <li>100%</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>

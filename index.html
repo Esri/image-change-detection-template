@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="fragment" content="!">
+        <!-- Define the versions of IE that will be used to render the page. See Microsoft documentation for details. Optional. -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!-- Responsive -->
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <!-- End Responsive -->
+        <!-- Use protocol relative urls that way if the browser is viewing the page via HTTPS the js/css file will be requested using the HTTPS protocol -->
+        <link rel="stylesheet" href="https://js.arcgis.com/3.23/dijit/themes/claro/claro.css">
+        <link rel="stylesheet" href="https://js.arcgis.com/3.23/esri/css/esri.css">
+        <link rel="shortcut icon" href="https://www.arcgis.com/favicon.ico">
+        <!-- Load any application specific styles -->
+        <link rel="stylesheet" href="css/main.css">
+    </head>
+
+    <body class="claro app-loading">
+
+
+        <div class="loading-indicator">
+            <div class="loading-message" id="loading_message"></div>
+        </div>
+        <div id="titleContainer">
+            <h1 id="titleText" style="display: inline-block;">Image Change Detection</h1>
+            <div id="primaryDate" style="margin-left: 30px;display: inline-block;"></div>
+
+        </div>
+
+        <div id="dockContainer" style='display: none;'><div id='widgetsContainer'>
+                <button role="button" aria-pressed="false" id='operationalLayersContainer'  class="toolContainers"><img alt="" src='images/operationalLayer.png' class='iconNode'/></button>
+                <button role="button" aria-pressed="false" id='changeDetectionContainer'  class="toolContainers"><img alt="" src='images/change.png' class='iconNode'/></button>
+                <button role="button" aria-pressed="false" id='exportContainer' class="toolContainers"><img alt="" src='images/export.png' class='iconNode'/></button>
+                <button role="button" aria-pressed="false" id='measurementContainer'  class="toolContainers"><img alt="" src='images/measurement.png' class='iconNode'/></button>
+                <button role="button" aria-pressed="false" id='editorContainer'  class="toolContainers"><img alt="" src='images/edit.png' class='iconNode'/></button>
+                <button role="button" aria-pressed="false" id='bookmarkContainer'  class="toolContainers"><img alt="" src='images/bookmark.png' class='iconNode'/></button>
+                <button role="button" aria-pressed="false" id='aboutContainer'  class="toolContainers"><img alt="" src='images/about.png' class='iconNode'/></button>
+        </div></div>
+        <div data-dojo-type="dijit/Dialog" data-dojo-props="resize: function(){}, focus: function(){}" id="toolsContentContainer" class="toolsContentContainer"></div>
+        <div id="mapDiv" dir="ltr"></div>
+        <div role="button" tabindex="0" aria-label="BasemapGallery" id="basemapContainer"><div id="basemapIconNode" class="basemapIcon"><img alt="" src='images/basemap.png' height="20" width='20' style='margin: 5px;'/></div></div>
+        <script type="text/javascript">
+            var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+            var dojoConfig = {
+                async: true,
+                parseOnLoad: true,
+                packages: [{
+                        name: "application",
+                        location: package_path + '/js'
+                    }, {
+                        name: "config",
+                        location: package_path + '/config'
+                    }, {
+                        name: "arcgis_templates",
+                        location: package_path + '/..'
+                    }]
+            };
+            // Have to handle a locale parameter before dojo is loaded
+          if (location.search.match(/locale=([\w\-]+)/)) {
+                dojoConfig.locale = RegExp.$1;
+          }
+
+        </script>
+        <script type="text/javascript" src="https://js.arcgis.com/3.23"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script type="text/javascript">
+            require([
+                "config/templateConfig",
+                "application/template",
+                "application/main"
+            ], function (
+                    templateConfig,
+                    Template,
+                    Main
+                    ) {
+                // create the template. This will take care of all the logic required for template applications
+                var myTemplate = new Template(templateConfig);
+                var myApp = new Main();
+                // start template
+                myTemplate.startup().then(function (config) {
+                    myApp.startup(config);
+                }, function (error) {
+                    // something went wrong. Let's report it.
+                    myApp.reportError(error);
+                });
+            });
+        </script>
+    </body>
+</html>

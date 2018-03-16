@@ -1,0 +1,43 @@
+<div class="titleBar"><span class="titleBarTextSpan">${config.i18n.export.title}</span><button class="closeContainerButton"><img src="images/cancel.png" alt="X"/></button></div><br/>
+<div style="margin: 5px;overflow: auto;">
+    <div id='selectExportDisplay' style='display: none;'>
+
+        <label for='saveAndExportOption'>${config.i18n.export.mode}:  </label><select  data-dojo-type="dijit/form/Select" style="/*height: 21px;*/" id="saveAndExportOption">
+            <option value='agol'>${config.i18n.export.modeOption1}</option>
+            <option value='disk'>${config.i18n.export.modeOption2}</option>
+        </select>
+        <br /><br />
+    </div>
+    <div id="exportLayerTitle"></div><br>
+    <div id="saveAgolContainer" style='display: none;'>
+
+
+        <table style="border: 0px solid transparent;">
+            <tr><td><label for="itemTitle" style="color: #0080C0;width:100px;">${config.i18n.export.titleText}: </label></td><td><textarea  id="itemTitle" rows="3" style="height: 40px;width: 200px;" data-dojo-type="dijit/form/SimpleTextarea"></textarea></td>
+            </tr>
+            <tr><td>
+                    <label for="itemDescription" style="color: #0080C0;width:100px;">${config.i18n.export.description}: </label></td><td><textarea  id="itemDescription"  rows="6" style="height: 80px;width: 200px;" data-dojo-type="dijit/form/SimpleTextarea"></textarea></td>
+            </tr>
+            <tr><td><label for="itemTags" style="color : #0080C0;width:100px;">${config.i18n.export.tags}:  </label></td><td><textarea  id="itemTags" rows="2" style="height: 40px;width: 200px;" data-dojo-type="dijit/form/SimpleTextarea"></textarea></td>
+            </tr></table>
+        <br />
+        <input data-dojo-type="dijit/form/CheckBox"  id="defineAgolExtent"/> <label for="defineAgolExtent">${config.i18n.export.extent}</label><br />
+        <button  id="submitAgolBtn" data-dojo-type="dijit/form/Button" type="button" style="margin-left: 40%;">${config.i18n.export.submit}</button>
+        <div id="successNotification" style="color: #ee0000;"></div>
+    </div>
+    <div id="exportSaveContainer" style='display: none;'>
+        <label for="pixelSize">${config.i18n.export.pixel}:&nbsp;</label>
+        <input  type="text" id="pixelSize" data-dojo-type="dijit/form/TextBox" style="width: 100px;"/>&nbsp;&nbsp;m<br /><br />
+        <label for="outputSp">${config.i18n.export.outsr}:&nbsp;</label>
+        <select   id="outputSp" data-dojo-type="dijit/form/Select" style="/*width: 100px;*/"></select>
+        <div id="errorPixelSize" style="color: #ee0000;"></div><br />
+        <input  data-dojo-type="dijit/form/CheckBox"  id="renderer"/> <label for="renderer">${config.i18n.export.renderer}</label>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <input  data-dojo-type="dijit/form/CheckBox"  id="defineExtent"/> <label for="defineExtent">${config.i18n.export.extent}</label><br /><br />
+        <p style='text-align: justify;'><b>Note:</b> ${config.i18n.export.text}</p>
+        <br />
+        <button data-dojo-type="dijit/form/Button"  id="exportBtn" type="button" style="margin-left: 40%" >${config.i18n.export.title}</button>
+        <a href="none" download id="linkDownload" style="display: none;">ExportImage</a>
+    </div>
+    <br/>
+</div>
