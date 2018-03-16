@@ -1,8 +1,8 @@
 # image-change-detection-template
 With the Image Change Detection configurable template, create an app to calculate and visualize change between two images in an imagery layer.
 
-![App](https://github.com/ArcGIS/imagery-viewer-template/blob/master/Imagery%20Viewer%20-%20Single%20Layer.png)
-![App](https://github.com/ArcGIS/imagery-viewer-template/blob/master/Imagery%20Viewer%20-%20Two%20Layers.png)
+![App](https://github.com/ArcGIS/image-change-detection-template/blob/master/Image%20Change%20Detection%20-%20Difference%20Image.png)
+![App](https://github.com/ArcGIS/image-change-detection-template/blob/master/Image%20Change%20Detection%20-%20Difference%20Mask.png)
 
 ## Description
 Image Change Detection is a configurable app template for calculating and visualizing change between two images in an imagery layer. The template also includes tools for measurement, recording locations, and more.
@@ -22,6 +22,7 @@ For each imagery layer, create an app that gives users one or more of the follow
 * **Soil-Adjusted Vegetation Index** (SAVI) (requires red and infrared bands)
 * **Water Index** (requires green and short-wave infrared bands)
 * **Burn Index** (requires infrared and short-wave infrared bands)
+
 For each of the indexes, users also have a choice between three types of analysis: 
 * **Difference Image:** calculates increases and decreases for the full extent
 * **Difference Mask:** users can focus on significant change by setting the minimum increase or decrease to be masked—for example, a user could mask only areas where NDVI increased by at least 0.2
@@ -79,6 +80,6 @@ http://www.apache.org/licenses/LICENSE-2.0.
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
-A copy of the license is available in the repository's [license.txt](https://github.com/ArcGIS/image-change-detection/blob/master/license.txt) file.
+A copy of the license is available in the repository's [license.txt](https://github.com/ArcGIS/image-change-detection-template/blob/master/LICENSE) file.
 
 
