@@ -5,7 +5,7 @@
 /*global define,document,location,require */
 /*jslint sloppy:true,nomen:true,plusplus:true */
 /*
- | Copyright 2014 Esri
+ | Copyright 2018 Esri
  |
  | Licensed under the Apache License, Version 2.0 (the "License");
  | you may not use this file except in compliance with the License.
