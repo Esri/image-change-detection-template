@@ -29,7 +29,8 @@ define([
                     var defaults = {
                         map: null,
                         bookmarks: [],
-                        i18n: null
+                        i18n: null,
+                        extent: null
                     };
                     lang.mixin(this, defaults, parameters);
                 },
@@ -38,11 +39,14 @@ define([
                 registry.byId("bookmarkOptions").on("change", lang.hitch(this, this.changeExtent));
                 registry.byId("addBtn").on("click", lang.hitch(this, this.addBookmark));
                 registry.byId("bookmarkOptions").addOption({label: this.i18n.selectBookmark, value :"Select"});
+                registry.byId("bookmarkOptions").addOption({label: this.i18n.default, value :"0"});
+                this.bookmarkExtentList["0"] = this.extent;
+                
                 for(var a =0;a<this.bookmarks.length;a++){
-                registry.byId("bookmarkOptions").addOption({label: this.bookmarks[a].name, value: a.toString()});
-                this.bookmarkExtentList[a.toString()] = this.bookmarks[a].extent;
+                registry.byId("bookmarkOptions").addOption({label: this.bookmarks[a].name, value: (a+1).toString()});
+                this.bookmarkExtentList[(a+1).toString()] = this.bookmarks[a].extent;
                 }
-                this.index = this.bookmarks.length - 1;
+                this.index = this.bookmarks.length;
                 },
                 addBookmark: function() {
                     var title = registry.byId("bookmarkTitle").get("value");

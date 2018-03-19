@@ -262,7 +262,6 @@ define([
                         }, 1500);
                     }
                 }));
-                console.log(this.config.changeOnByDefault);
                 setTimeout(lang.hitch(this, function () {
                     if (this.config.aboutOnByDefault)
                         dom.byId("aboutContainer").click();
@@ -313,45 +312,45 @@ define([
         },
         resizeTemplate: function () {
             if (window.innerWidth > 1200 && window.innerHeight > ((this.dockToolsActive * 80) + 39)) {
-                this.resizeUIElements("14px","39px","45px","80px","toolsContentContainerClicked_");
+                this.resizeUIElements("14px", "39px", "45px", "80px", "toolsContentContainerClicked_");
                 this.resizeDockContainer("80px", "30px", "25px", "39px", "16px", "5px 9px", "15px", "5px", "-6px", "14px", "3px 2px", "100px", "67px");
-               } else if (window.innerWidth > 1000 && window.innerHeight > ((this.dockToolsActive * 60) + 35)) {
-                this.resizeUIElements("12px","35px","40px","60px","toolsContentContainerClicked2_");
+            } else if (window.innerWidth > 1000 && window.innerHeight > ((this.dockToolsActive * 60) + 35)) {
+                this.resizeUIElements("12px", "35px", "40px", "60px", "toolsContentContainerClicked2_");
                 this.resizeDockContainer("60px", "26px", "17px", "35px", "14px", "4px 7px", "14px", "4px", "-6px", "14px", "3px 2px", "80px", "57px");
-             } else if (window.innerWidth > 800 && window.innerHeight > ((this.dockToolsActive * 40) + 31)) {
-                this.resizeUIElements("10px","31px","36px","40px","toolsContentContainerClicked3_");
+            } else if (window.innerWidth > 800 && window.innerHeight > ((this.dockToolsActive * 40) + 31)) {
+                this.resizeUIElements("10px", "31px", "36px", "40px", "toolsContentContainerClicked3_");
                 this.resizeDockContainer("40px", "20px", "10px", "31px", "13px", "3px 5px", "13px", "3px", "-7px", "13px", "2px 2px", "80px", "52px");
             } else if (window.innerWidth > 600 && window.innerHeight > ((this.dockToolsActive * 30) + 27)) {
-                this.resizeUIElements("8px","27px","32px","30px","toolsContentContainerClicked4_");
+                this.resizeUIElements("8px", "27px", "32px", "30px", "toolsContentContainerClicked4_");
                 this.resizeDockContainer("30px", "16px", "7px", "27px", "12px", "2px 4px", "11px", "2px", "-8px", "12px", "1px 2px", "70px", "52px");
             } else if (window.innerWidth > 500 && window.innerHeight > ((this.dockToolsActive * 25) + 22)) {
-                this.resizeUIElements("6px","22px","27px","25px","toolsContentContainerClicked5_");
+                this.resizeUIElements("6px", "22px", "27px", "25px", "toolsContentContainerClicked5_");
                 this.resizeDockContainer("25px", "13px", "6px", "22px", "11px", "1px 2px", "9px", "0px", "-8px", "11px", "0px 1px", "60px", "47px");
             } else {
-                this.resizeUIElements("5px","21px","26px","20px","toolsContentContainerClicked6_");
+                this.resizeUIElements("5px", "21px", "26px", "20px", "toolsContentContainerClicked6_");
                 this.resizeDockContainer("20px", "10px", "5px", "21px", "10px", "1px 1px", "8px", "0px", "-8px", "10px", "0px 1px", "50px", "42px");
             }
         },
-        resizeUIElements: function(body,top,content,left,className) {
-                document.getElementsByTagName("BODY")[0].style.fontSize = body;
-                document.getElementById("dockContainer").style.top = top;
-                document.getElementById("mapDiv").style.marginTop = top;
-                document.getElementById("mapDiv").style.height = "calc(100% - "+top+")";
-                domStyle.set("toolsContentContainer", "top", content);
+        resizeUIElements: function (body, top, content, left, className) {
+            document.getElementsByTagName("BODY")[0].style.fontSize = body;
+            document.getElementById("dockContainer").style.top = top;
+            document.getElementById("mapDiv").style.marginTop = top;
+            document.getElementById("mapDiv").style.height = "calc(100% - " + top + ")";
+            domStyle.set("toolsContentContainer", "top", content);
 
-                if (domStyle.get("dockContainer", "display") === "block") {
-                    if (window.document.dir === "ltr")
-                        document.getElementById("mapDiv").style.marginLeft = left;
-                    else
-                        document.getElementById("mapDiv").style.marginRight = left;
-                    document.getElementById("mapDiv").style.width = "calc(100% - "+left+")";
+            if (domStyle.get("dockContainer", "display") === "block") {
+                if (window.document.dir === "ltr")
+                    document.getElementById("mapDiv").style.marginLeft = left;
+                else
+                    document.getElementById("mapDiv").style.marginRight = left;
+                document.getElementById("mapDiv").style.width = "calc(100% - " + left + ")";
 
-                }
+            }
             if (this.currentPanelClass) {
-                    domClass.remove("toolsContentContainer", this.currentPanelClass);
-                    domClass.add("toolsContentContainer",className + window.document.dir);
-                }
-                this.currentPanelClass = className + window.document.dir;
+                domClass.remove("toolsContentContainer", this.currentPanelClass);
+                domClass.add("toolsContentContainer", className + window.document.dir);
+            }
+            this.currentPanelClass = className + window.document.dir;
         },
         resizeDockContainer: function (widthHeightValue, iconWH, iconMargin, titleHeight, checkBoxWH, buttonPadding, iconHeight, sliderHeight, sliderTop, sliderBtnWH, textBoxPadding, basemapImageW, basemapImageH) {
             query(".dijitButtonContents").style({
@@ -580,7 +579,7 @@ define([
         },
         setupOperationalLayers: function () {
             var html = '<div class="titleBar"><span class="titleBarTextSpan">' + this.config.i18n.operationalLayers.title + '</span><button class="closeContainerButton"><img src="images/cancel.png" alt="X"/></button></div><br /><div style="margin: 5px;overflow: auto;"><div id="operationalLayerList"></div><br /></div>';
-            this.setupToolContent("operationalLayersContainer", 0, html, this.config.i18n.operationalLayers.title, "operationalLayersNode", null);
+            this.setupToolContent("operationalLayersContainer", 2, html, this.config.i18n.operationalLayers.title, "operationalLayersNode", null);
             var layers = this.config.itemInfo.itemData.operationalLayers;
             var layersList = [];
             for (var a = layers.length - 1; a >= 0; a--) {
@@ -608,7 +607,7 @@ define([
         },
         setupEditor: function () {
             var html = "<div class='titleBar'><span class='titleBarTextSpan'>" + this.config.i18n.editor.title + "</span><button class='closeContainerButton'><img src='images/cancel.png' alt='X'/></button></div><br/><div style='margin:5px;overflow: auto;'><div id='templateDiv'></div><div id='editorDiv'></div><div id='errorEditor' style='color: #ee0000;'></div><br /></div>";
-            this.setupToolContent("editorContainer", 4, html, this.config.i18n.editor.title, "editorNode", null);
+            this.setupToolContent("editorContainer", 3, html, this.config.i18n.editor.title, "editorNode", null);
             var layer = [], heightField;
 
             if (this.config.featureLayers) {
@@ -636,7 +635,7 @@ define([
         },
         setupImageMeasurement: function () {
             var html = "<div class='titleBar'><span class='titleBarTextSpan'>" + this.config.i18n.measurement.title + "</span><button class='closeContainerButton'><img src='images/cancel.png' alt='X'/></button></div><br/><div id='measurementDivContainer' style='margin:5px;overflow: auto;'><div id='measureWidgetDiv'></div><div id='errorMeasurementDiv' style='color: #ee0000;'>" + this.config.i18n.measurement.error + "</div></div><br/>";
-            this.setupToolContent("measurementContainer", 3, html, this.config.i18n.measurement.title, "measurementNode", null);
+            this.setupToolContent("measurementContainer", 1, html, this.config.i18n.measurement.title, "measurementNode", null);
             var config = {
                 angularUnit: this.config.angularUnit,
                 linearUnit: this.config.linearUnit,
@@ -648,7 +647,7 @@ define([
         },
         setupExport: function () {
 
-            this.setupToolContent("exportContainer", 2, exportHtml, this.config.i18n.export.title, "exportNode", "export");
+            this.setupToolContent("exportContainer", 5, exportHtml, this.config.i18n.export.title, "exportNode", "export");
             this.exportFunction = new Export({map: this.map,
                 exportMode: this.config.exportType, i18n: this.config.i18n.export, portalUrl: this.config.sharinghost});
 
@@ -656,7 +655,7 @@ define([
         },
         setupChangeDetection: function () {
 
-            this.setupToolContent("changeDetectionContainer", 1, changeDetectionHtml, this.config.i18n.changeDetection.title, "changeDetectionNode", "changeDetection");
+            this.setupToolContent("changeDetectionContainer", 0, changeDetectionHtml, this.config.i18n.changeDetection.title, "changeDetectionNode", "changeDetection");
 
             var layers = this.config.itemInfo.itemData.operationalLayers;
 
@@ -664,6 +663,8 @@ define([
             var temp = {
                 defaultLayer: this.config.primaryLayer.id,
                 display: this.config.displayOptions,
+                zoomLevel: this.config.zoomLevel,
+                searchExtent: this.config.searchScreenExtent,
                 autoRefresh: this.config.enableAutoRefresh,
                 changeMethods: {difference: this.config.difference, veg: this.config.veg, savi: this.config.savi, water: this.config.water, burn: this.config.burn}
             };
@@ -694,6 +695,8 @@ define([
                             title: layers[a].title || layers[a].layerObject.name || layers[a].id
                         };
                     }
+                    if (layers[a].id !== this.config.primaryLayer.id)
+                        this.map.getLayer(layers[a].id).hide();
                 }
             }
             this.changeDetectionFunction = new ChangeDetection({map: this.map, config: temp, layers: layer, i18n: this.config.i18n.changeDetection, main: this});
@@ -715,8 +718,8 @@ define([
             return initialVal;
         },
         setupBookmark: function () {
-            this.setupToolContent("bookmarkContainer", 5, bookmarkHtml, this.config.i18n.bookmark.title, "bookmarkNode", "bookmark");
-            this.bookmarkFunction = new Bookmark({map: this.map, bookmarks: this.config.itemInfo.itemData.bookmarks ? this.config.itemInfo.itemData.bookmarks : [], i18n: this.config.i18n.bookmark});
+            this.setupToolContent("bookmarkContainer", 4, bookmarkHtml, this.config.i18n.bookmark.title, "bookmarkNode", "bookmark");
+            this.bookmarkFunction = new Bookmark({map: this.map, bookmarks: this.config.itemInfo.itemData.bookmarks ? this.config.itemInfo.itemData.bookmarks : [], i18n: this.config.i18n.bookmark, extent: this.map.extent});
             this.addClickEvent("bookmarkContainer", this.bookmarkFunction, "bookmarkNode");
         },
         setupAbout: function () {
@@ -759,7 +762,7 @@ define([
                             openForFirstTime = false;
                             toolObject.postCreate();
                         }
-                        
+
                         domStyle.set(node, "display", "block");
                         if (toolObject)
                             toolObject.onOpen();

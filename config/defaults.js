@@ -49,6 +49,8 @@ define({
     "changeOnByDefault":false,
     "primaryLayer": {"id": null},
     "displayOptions": "slider",
+    "zoomLevel":8,
+    "searchScreenExtent":50,
     "enableAutoRefresh": false,
     "imageSelectorLayer": "",
     "imageDateFlag": false,

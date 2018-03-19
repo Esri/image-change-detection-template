@@ -55,6 +55,7 @@ define([
                         defaultLengthUnit: this.config.linearUnit
                         
                     },"measureWidgetDiv");
+                    this.imageServiceMeasureWidget.layer = this.layer;
                 }
                     this.imageServiceMeasureWidget.startup();
                      this.map.setInfoWindowOnClick(false);
@@ -68,13 +69,13 @@ define([
                 },
                 onOpen: function () {
                     this.refreshData();
-                    if (this.imageServiceMeasureWidget && this.imageServiceMeasureWidget.layer)
+                    if (this.imageServiceMeasureWidget && this.imageServiceMeasureWidget.measureToolbar)
                         this.imageServiceMeasureWidget.startup();
                     
                 },
                 onClose: function () {
                     if (this.imageServiceMeasureWidget){
-                     if(this.imageServiceMeasureWidget.layer)
+                     if(this.imageServiceMeasureWidget.measureToolbar)
                         this.imageServiceMeasureWidget.deactivate();
                     else{
                          if (this.imageServiceMeasureWidget.activeTool) {
@@ -108,7 +109,7 @@ define([
                         if (!this.imageServiceMeasureWidget)
                             this.createMeasureTool();
                         else {
-                            if (!this.imageServiceMeasureWidget.layer || this.imageServiceMeasureWidget.layer.url !== this.layer.url) {
+                            if (this.imageServiceMeasureWidget.layer.url !== this.layer.url) {
                                 this.imageServiceMeasureWidget.destroy();
                                 domConstruct.place("<div id='measureWidgetDiv' style='color:#ee0000;'></div>", "measurementDivContainer", "first");
                                 this.createMeasureTool();

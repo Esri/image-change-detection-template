@@ -36,6 +36,7 @@ define({
             layerText: "Choose a layer for comparison.",
             imageSelectorText: "Choose two different images for comparison.",
             changeText: "Configure change detection.",
+            zoom: "Zoom in to select images.",
             primary: "Primary Image",
             comparison: "Comparison Image",
             mode: "Mode",
@@ -106,6 +107,7 @@ define({
         },
         bookmark: {
             title: "Bookmarks",
+            default: "Default",
             selectBookmark: "Select bookmarks",
             add: "Add Bookmarks",
             addTitle: "Enter title",

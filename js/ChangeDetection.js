@@ -89,8 +89,18 @@ define([
             registry.byId("dropDownImageList").on("click", lang.hitch(this, this.imageDisplayFormat));
             registry.byId("imageSelectorDropDown").on("change", lang.hitch(this, this.sliderDropDownSelection, "dropDown"));
             registry.byId("layerSelector").on("change", lang.hitch(this, this.selectLayer));
-            registry.byId("primaryImage").on("click", lang.hitch(this, this.setCurrentImage, "primary"));
-            registry.byId("comparisonImage").on("click", lang.hitch(this, this.setCurrentImage, "comparison"));
+            registry.byId("primaryImage").on("click", lang.hitch(this, function () {
+                if (this.layerSwipe) {
+                    this.moveSwipe(this.map.width - 5, this.layerSwipe.invertPlacement, this.layerSwipe.layers);
+                }
+                this.setCurrentImage("primary");
+            }));
+            registry.byId("comparisonImage").on("click", lang.hitch(this, function () {
+                if (this.layerSwipe) {
+                    this.moveSwipe(5, this.layerSwipe.invertPlacement, this.layerSwipe.layers);
+                }
+                this.setCurrentImage("comparison");
+            }));
             registry.byId("method").on("change", lang.hitch(this, this.setChangeMethod));
             registry.byId("changeDetectionApply").on("click", lang.hitch(this, this.getMinMaxCheck));
             registry.byId("positiveRange").on("change", lang.hitch(this, function () {
@@ -150,8 +160,8 @@ define([
             this.populateChangeMethods();
             if (this.map) {
 
-                if (this.config.autoRefresh)
-                    this.map.on("extent-change", lang.hitch(this, this.mapExtentChange));
+
+                this.map.on("extent-change", lang.hitch(this, this.mapExtentChange));
                 this.map.on("update-start", lang.hitch(this, this.showLoading));
                 this.map.on("update-end", lang.hitch(this, this.hideLoading));
                 this.map.on("update-end", lang.hitch(this, this.refreshSwipe));
@@ -172,9 +182,9 @@ define([
                 domStyle.set("imageSelectContainer", "display", "none");
             }
 
-            for (var a in this.layerInfos) {
-                this.map.getLayer(a).hide();
-            }
+            /* for (var a in this.layerInfos) {
+             this.map.getLayer(a).hide();
+             }*/
             for (var a in this.map.layerIds) {
                 layer = this.map.getLayer(this.map.layerIds[a]);
                 if ((layer.type && layer.type === 'ArcGISImageServiceLayer') || (layer.serviceDataType && layer.serviceDataType.substr(0, 16) === "esriImageService")) {
@@ -189,13 +199,13 @@ define([
             this.resizeSlider();
 
         },
-        resizeSlider: function() {
-          if(this.config.display === "both"){
-              document.getElementById("imageSliderDiv").style.width = "82%";
-          }else if(this.config.display === "slider"){
-              document.getElementById("imageSliderDiv").style.width = "95%";
-              document.getElementById("imageSliderDiv").style.marginBottom = "13px";
-          }  
+        resizeSlider: function () {
+            if (this.config.display === "both") {
+                document.getElementById("imageSliderDiv").style.width = "82%";
+            } else if (this.config.display === "slider") {
+                document.getElementById("imageSliderDiv").style.width = "95%";
+                document.getElementById("imageSliderDiv").style.marginBottom = "13px";
+            }
         },
         fillLayerSelector: function () {
             //registry.byId("layerSelector").addOption({label: "None", value: "none"});
@@ -242,6 +252,9 @@ define([
                 };
                 this.previousExtentChangeLevel = this.previousInfo.level;
             }
+            if (this.map.getLevel() < this.config.zoomLevel) {
+                this.turningOffSelector();
+            }
         },
         setCurrentImage: function (value) {
             if (this.slider) {
@@ -265,7 +278,7 @@ define([
                 this.map.removeLayer(this.secondaryLayer);
                 this.secondaryLayer = null;
             }
-            if(this.map.getLayer("resultLayer")){
+            if (this.map.getLayer("resultLayer")) {
                 this.map.getLayer("resultLayer").suspend();
                 this.map.removeLayer(this.map.getLayer("resultLayer"));
             }
@@ -274,7 +287,7 @@ define([
             this.primaryLayer.show();
             if (this.layerInfos[value].changeDetection) {
                 this.populateBands();
-                //this.defaultMosaicRule = this.layerInfos[value].defaultMosaicRule;
+                this.defaultMosaicRule = this.layerInfos[value].defaultMosaicRule;
                 if (this.primaryLayer.currentVersion)
                 {
                     var currentVersion = this.primaryLayer.currentVersion;
@@ -302,31 +315,35 @@ define([
         checkField: function (currentVersion)
         {
             if (currentVersion >= 10.21) {
-
-                if (this.layerInfos[this.primaryLayer.id].imageField && this.layerInfos[this.primaryLayer.id].objectID && this.layerInfos[this.primaryLayer.id].category) {
-                    this.imageField = this.layerInfos[this.primaryLayer.id].imageField;
-                    for (var a in this.primaryLayer.fields) {
-                        if (this.imageField === this.primaryLayer.fields[a].name) {
-                            this.imageFieldType = this.primaryLayer.fields[a].type;
-                            break;
+                if (this.map.getLevel() >= this.config.zoomLevel) {
+                    if (this.layerInfos[this.primaryLayer.id].imageField && this.layerInfos[this.primaryLayer.id].objectID && this.layerInfos[this.primaryLayer.id].category) {
+                        this.imageField = this.layerInfos[this.primaryLayer.id].imageField;
+                        for (var a in this.primaryLayer.fields) {
+                            if (this.imageField === this.primaryLayer.fields[a].name) {
+                                this.imageFieldType = this.primaryLayer.fields[a].type;
+                                break;
+                            }
                         }
-                    }
-                    domStyle.set("selectorDiv", "display", "block");
-                    this.objectID = this.layerInfos[this.primaryLayer.id].objectID;
-                    this.categoryField = this.layerInfos[this.primaryLayer.id].category;
-                    html.set(document.getElementById("errorDiv"), "");
-                    this.imageSliderRefresh();
+                        domStyle.set("selectorDiv", "display", "block");
+                        this.objectID = this.layerInfos[this.primaryLayer.id].objectID;
+                        this.categoryField = this.layerInfos[this.primaryLayer.id].category;
+                        html.set(document.getElementById("errorDiv"), "");
+                        this.imageSliderRefresh();
 
-                } else {
-                    if (!this.layerInfos[this.primaryLayer.id].imageField) {
-                        html.set(document.getElementById("errorDiv"), this.i18n.error1);
-                    } else if (!this.layerInfos[this.primaryLayer.id].objectID) {
-                        html.set(document.getElementById("errorDiv"), this.i18n.error2);
                     } else {
-                        html.set(document.getElementById("errorDiv"), this.i18n.error3);
+                        if (!this.layerInfos[this.primaryLayer.id].imageField) {
+                            html.set(document.getElementById("errorDiv"), this.i18n.error1);
+                        } else if (!this.layerInfos[this.primaryLayer.id].objectID) {
+                            html.set(document.getElementById("errorDiv"), this.i18n.error2);
+                        } else {
+                            html.set(document.getElementById("errorDiv"), this.i18n.error3);
+                        }
+                        domStyle.set("selectorDiv", "display", "none");
+                        domStyle.set("changeSettingsDiv", "display", "none");
                     }
-                    domStyle.set("selectorDiv", "display", "none");
-                    domStyle.set("changeSettingsDiv", "display", "none");
+                } else {
+                    this.turningOffSelector();
+
                 }
             } else {
                 domStyle.set("selectorDiv", "display", "none");
@@ -336,31 +353,34 @@ define([
         },
         mapExtentChange: function (evt) {
 
-
-            var needsUpdate = false;
-            if (evt.levelChange) {
-                var zoomLevelChange = Math.abs(evt.lod.level - this.previousInfo.level);
-                if (zoomLevelChange >= this.mapZoomFactor) {
-                    console.info("LARGE zoom: ", evt);
-                    needsUpdate = true;
-                } else {
-                    if (this.previousExtentChangeLevel < this.config.zoomLevel) {
-                        console.info("THRESHOLD zoom: ", evt);
+            if (evt.lod.level >= this.config.zoomLevel) {
+                if (this.hideSelector) {
+                    this.hideSelector = false;
+                    html.set(document.getElementById("errorDiv"), "");
+                    this.selectLayer(registry.byId("layerSelector").get("value"));
+                }
+                var needsUpdate = false;
+                if (evt.levelChange) {
+                    var zoomLevelChange = Math.abs(evt.lod.level - this.previousInfo.level);
+                    if (zoomLevelChange >= this.mapZoomFactor) {
+                        console.info("LARGE zoom: ", evt);
                         needsUpdate = true;
                     }
                 }
-            }
 
-            var panDistance = Math.abs(mathUtils.getLength(evt.extent.getCenter(), this.previousInfo.extent.getCenter()));
-            var previousMapWidth = (this.previousInfo.extent.getWidth() * this.mapWidthPanFactor);
-            if (panDistance > previousMapWidth) {
-                console.info("LARGE pan: ", evt);
-                needsUpdate = true;
-            }
+                var panDistance = Math.abs(mathUtils.getLength(evt.extent.getCenter(), this.previousInfo.extent.getCenter()));
+                var previousMapWidth = (this.previousInfo.extent.getWidth() * this.mapWidthPanFactor);
+                if (panDistance > previousMapWidth) {
+                    console.info("LARGE pan: ", evt);
+                    needsUpdate = true;
+                }
 
-            if (needsUpdate) {
-                this.panZoomUpdate = true;
-                this.imageSliderRefresh();
+                if (needsUpdate && this.config.autoRefresh) {
+                    this.panZoomUpdate = true;
+                    this.imageSliderRefresh();
+                }
+            } else {
+                this.turningOffSelector();
             }
             this.previousExtentChangeLevel = evt.lod.level;
         },
@@ -405,10 +425,10 @@ define([
         imageSliderShow: function () {
             if (this.primaryLayer) {
                 var extent = this.map.extent;
-                var xminnew = ((extent.xmax + extent.xmin) / 2) - ((extent.xmax - extent.xmin) * 75 / 200);
-                var xmaxnew = ((extent.xmax + extent.xmin) / 2) + ((extent.xmax - extent.xmin) * 75 / 200);
-                var yminnew = ((extent.ymax + extent.ymin) / 2) - ((extent.ymax - extent.ymin) * 75 / 200);
-                var ymaxnew = ((extent.ymax + extent.ymin) / 2) + ((extent.ymax - extent.ymin) * 75 / 200);
+                var xminnew = ((extent.xmax + extent.xmin) / 2) - ((extent.xmax - extent.xmin) * this.config.searchExtent / 200);
+                var xmaxnew = ((extent.xmax + extent.xmin) / 2) + ((extent.xmax - extent.xmin) * this.config.searchExtent / 200);
+                var yminnew = ((extent.ymax + extent.ymin) / 2) - ((extent.ymax - extent.ymin) * this.config.searchExtent / 200);
+                var ymaxnew = ((extent.ymax + extent.ymin) / 2) + ((extent.ymax - extent.ymin) * this.config.searchExtent / 200);
                 var extentnew = new Extent(xminnew, yminnew, xmaxnew, ymaxnew, extent.spatialReference);
                 var query = new Query();
                 query.geometry = extentnew;
@@ -808,14 +828,14 @@ define([
                 domStyle.set("thresholdRangeSpinners", "display", "none");
             } else {
                 if (value === "ndvi" || value === "savi") {
-                    document.getElementById("bandName1").innerHTML = this.i18n.nir+":";
-                    document.getElementById("bandName2").innerHTML = this.i18n.red+":";
+                    document.getElementById("bandName1").innerHTML = this.i18n.nir + ":";
+                    document.getElementById("bandName2").innerHTML = this.i18n.red + ":";
                 } else if (value === "water") {
-                    document.getElementById("bandName1").innerHTML = this.i18n.green+":";
-                    document.getElementById("bandName2").innerHTML = this.i18n.swir+":";
+                    document.getElementById("bandName1").innerHTML = this.i18n.green + ":";
+                    document.getElementById("bandName2").innerHTML = this.i18n.swir + ":";
                 } else {
-                    document.getElementById("bandName1").innerHTML = this.i18n.nir+":";
-                    document.getElementById("bandName2").innerHTML = this.i18n.swir+":";
+                    document.getElementById("bandName1").innerHTML = this.i18n.nir + ":";
+                    document.getElementById("bandName2").innerHTML = this.i18n.swir + ":";
                 }
                 domStyle.set("changeMode", "display", "block");
                 domStyle.set("bandInputs", "display", "block");
@@ -1049,16 +1069,6 @@ define([
                     raster3 = rasterClip;
                 }
 
-                /*  if (changeMode !== "image" && method !== "difference") {
-                 var colormap = new RasterFunction();
-                 colormap.functionName = "Colormap";
-                 var colormapArg = {};
-                 colormapArg.Colormap = [[0, 255, 0, 255], [1, 0, 252, 0]];
-                 colormapArg.Raster = raster3;
-                 colormap.outputPixelType = "U8";
-                 colormap.functionArguments = colormapArg;
-                 raster3 = colormap;
-                 }*/
                 params = new ImageServiceParameters();
                 params.renderingRule = raster3;
                 if (changeMode === "image" || method === "difference") {
@@ -1138,7 +1148,7 @@ define([
                 var nodata = (pixelData.pixelBlock.statistics[0] && pixelData.pixelBlock.statistics[0].noDataValue) ? pixelData.pixelBlock.statistics[0].noDataValue : 0;
                 var positiveDif = registry.byId("positiveRange").get("value");
                 var negativeDif = registry.byId("negativeRange").get("value");
-                
+
                 for (var i = 0; i < numPixels; i++) {
 
                     if (pixelScene[i] === nodata) {
@@ -1215,7 +1225,10 @@ define([
 
                     domConstruct.place("<div id='swipewidget'></div>", "mapDiv_root", "first");
                     if (!this.swipePosition) {
-                        this.swipePosition = parseInt(this.map.width / 2);
+                        if (registry.byId("primaryImage").checked)
+                            this.swipePosition = this.map.width - 5;
+                        else
+                            this.swipePosition = 5;
                     }
                     this.layerSwipe = new LayerSwipe({
                         type: "vertical",
@@ -1235,6 +1248,35 @@ define([
                     this.previousLayerInfo = {primary: null, secondary: null};
                 }
                 domStyle.set("changeSettingsDiv", "display", "none");
+            }
+        },
+        turningOffSelector: function () {
+            domStyle.set("selectorDiv", "display", "none");
+            domStyle.set("changeSettingsDiv", "display", "none");
+            html.set(document.getElementById("errorDiv"), this.i18n.zoom);
+            if (this.primaryLayer && this.defaultMosaicRule) {
+                this.primaryLayer.setMosaicRule(this.defaultMosaicRule);
+            }
+            this.hideSelector = true;
+            if (this.secondaryLayer) {
+                this.secondaryLayer.suspend();
+                this.map.removeLayer(this.secondaryLayer);
+                this.secondaryLayer = null;
+            }
+        },
+        moveSwipe: function (value, invertPlacement, layers) {
+            if (this.primaryLayer && this.secondaryLayer && this.primaryLayer.mosaicRule && this.secondaryLayer.mosaicRule && this.primaryLayer.mosaicRule.lockRasterIds !== this.secondaryLayer.mosaicRule.lockRasterIds) {
+                this.layerSwipe.destroy();
+                this.layerSwipe = null;
+                domConstruct.place("<div id='swipewidget'></div>", "mapDiv_root", "first");
+                this.layerSwipe = new LayerSwipe({
+                    type: "vertical",
+                    map: this.map,
+                    left: value,
+                    invertPlacement: invertPlacement,
+                    layers: layers
+                }, dom.byId("swipewidget"));
+                this.layerSwipe.startup();
             }
         },
         showLoading: function () {

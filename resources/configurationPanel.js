@@ -124,152 +124,8 @@
                                 "label":"Configure search tool"
                         }
                         ]
-                },
-                   {
-                "type":"paragraph",
-                        "value":"<p style='text-align:justify;font-family: verdana;'>The Image Measurement tool allows you to perform measurements on image services with mensuration capability. Mensuration applies geometric rules to find the height, area, or location of a feature.</p>"
-                },
-                {
-                "type":"conditional",
-                        "condition":false,
-                        "fieldName":"measurementFlag",
-                        "label":"Enable Image Measurement",
-                        "items":[
-                        {
-                        "type":"paragraph",
-                                "value":"<p style='text-align:justify;font-family: verdana;margin-bottom:0px;'>Select the units that will be displayed in-app using the dropdown menus.</p>"
-                        },
-                        {
-                        "type":"options",
-                                "fieldName":"angularUnit",
-                                "label":"Default Angular Unit",
-                                "tooltip":"Unit of measure for angular measurement.",
-                                "options":[
-                                {
-                                "label":"Radians",
-                                        "value":"esriDURadians"
-                                },
-                                {
-                                "label":"Degrees",
-                                        "value":"esriDUDecimalDegrees"
-                                }
-                                ]
-                        },
-                        {
-                        "type":"options",
-                                "fieldName":"linearUnit",
-                                "label":"Default Linear Unit",
-                                "tooltip":"Unit of measure for linear measurement.",
-                                "options":[
-                                {
-                                "label":"Inches",
-                                        "value":"esriInches"
-                                },
-                                {
-                                "label":"Feet",
-                                        "value":"esriFeet"
-                                },
-                                {
-                                "label":"Yards",
-                                        "value":"esriYards"
-                                },
-                                {
-                                "label":"Miles",
-                                        "value":"esriMiles"
-                                },
-                                {
-                                "label":"Nautical Miles",
-                                        "value":"esriNauticalMiles"
-                                },
-                                {
-                                "label":"Millimeters",
-                                        "value":"esriMillimeters"
-                                },
-                                {
-                                "label":"Centimeters",
-                                        "value":"esriCentimeters"
-                                },
-                                {
-                                "label":"Decimeters",
-                                        "value":"esriDecimeters"
-                                },
-                                {
-                                "label":"Meters",
-                                        "value":"esriMeters"
-                                },
-                                {
-                                "label":"Kilometers",
-                                        "value":"esriKilometers"
-                                }
-                                ]
-                        },
-                        {
-                        "type":"options",
-                                "fieldName":"areaUnit",
-                                "label":"Default Area Unit",
-                                "tooltip":"Unit of measure for area measurement.",
-                                "options":[
-                                {
-                                "label":"Sq Inches",
-                                        "value":"esriSquareInches"
-                                },
-                                {
-                                "label":"Sq Feet",
-                                        "value":"esriSquareFeet"
-                                },
-                                {
-                                "label":"Sq Yards",
-                                        "value":"esriSquareYards"
-                                },
-                                {
-                                "label":"Acres",
-                                        "value":"esriAcres"
-                                },
-                                {
-                                "label":"Sq Miles",
-                                        "value":"esriSquareMiles"
-                                },
-                                {
-                                "label":"Sq Millimeters",
-                                        "value":"esriSquareMillimeters"
-                                },
-                                {
-                                "label":"Sq Centimeters",
-                                        "value":"esriSquareCentimeters"
-                                },
-                                {
-                                "label":"Sq Decimeters",
-                                        "value":"esriSquareDecimeters"
-                                },
-                                {
-                                "label":"Sq Meters",
-                                        "value":"esriSquareMeters"
-                                },
-                                {
-                                "label":"Ares",
-                                        "value":"esriAres"
-                                },
-                                {
-                                "label":"Hectares",
-                                        "value":"esriHectares"
-                                },
-                                {
-                                "label":"Sq Kilometers",
-                                        "value":"esriSquareKilometers"
-                                }
-                                ]
-                        },
-                        {
-                        "type":"boolean",
-                                "fieldName":"popupMeasurementFlag",
-                                "label":"Display Measure Results in a Pop-up."
-                        },
-                        {
-                        "type":"paragraph",
-                                "value":"<p style='text-align:justify;font-family: verdana;'>If you check Display Measure Results in a Pop-up, the measurements will be displayed in a pop-up window instead of within the image measurement tool.</p>"
-                        }
-                        ]
                 }
+                
                 ]
                 },
         {
@@ -427,7 +283,28 @@
                                 }
                                 ]
                         },
-                        
+                         {
+                "type":"Number",
+                        "fieldName":"zoomLevel",
+                        "label":"Minimum Zoom Level",
+                        "tooltip":"",
+                        "constraints":{
+                        "min":0,
+                                "max":23,
+                                "places":0
+                        }
+                },
+                {
+                "type":"Number",
+                        "fieldName":"searchScreenExtent",
+                        "label":"Search Screen Extent (%)",
+                        "tooltip":"",
+                        "constraints":{
+                        "min":1,
+                                "max":100,
+                                "places":0
+                        }
+                },
                         {
                 "type":"boolean",
                         "fieldName":"enableAutoRefresh",
@@ -436,7 +313,7 @@
                 },
                         {
                         "type":"paragraph",
-                                "value":"<p style='text-align: justify;font-family: verdana;margin:20px 0px -10px; 0px;'>Below, check the box next to each imagery layer you wish to be searchable, then select one attribute per imagery layer by which to sort the images (for example, you might select AcquisitionDate to sort satellite imagery chronologically).</p>"
+                                "value":"<p style='text-align: justify;font-family: verdana;margin:20px 0px -10px; 0px;'>Help app users search for specific images. If you want a layer to be searchable, choose one attribute below for users to search. (For example, to explore imagery chronologically, choose an attribute like Acquisition Date.)</p>"
                         },
                         {
                         "type":"multilayerandfieldselector",
@@ -500,7 +377,151 @@
                         "tooltip":"Normalized Burn Ratio, or NBR"
                 }
                 ]
-        }
+        },   {
+                "type":"paragraph",
+                        "value":"<p style='text-align:justify;font-family: verdana;'>The Image Measurement tool allows you to perform measurements on image services with mensuration capability. Mensuration applies geometric rules to find the height, area, or location of a feature.</p>"
+                },
+                {
+                "type":"conditional",
+                        "condition":false,
+                        "fieldName":"measurementFlag",
+                        "label":"Enable Image Measurement",
+                        "items":[
+                        {
+                        "type":"paragraph",
+                                "value":"<p style='text-align:justify;font-family: verdana;margin-bottom:0px;'>Select the units that will be displayed in-app using the dropdown menus.</p>"
+                        },
+                        {
+                        "type":"options",
+                                "fieldName":"angularUnit",
+                                "label":"Default Angular Unit",
+                                "tooltip":"Unit of measure for angular measurement.",
+                                "options":[
+                                {
+                                "label":"Radians",
+                                        "value":"esriDURadians"
+                                },
+                                {
+                                "label":"Degrees",
+                                        "value":"esriDUDecimalDegrees"
+                                }
+                                ]
+                        },
+                        {
+                        "type":"options",
+                                "fieldName":"linearUnit",
+                                "label":"Default Linear Unit",
+                                "tooltip":"Unit of measure for linear measurement.",
+                                "options":[
+                                {
+                                "label":"Inches",
+                                        "value":"esriInches"
+                                },
+                                {
+                                "label":"Feet",
+                                        "value":"esriFeet"
+                                },
+                                {
+                                "label":"Yards",
+                                        "value":"esriYards"
+                                },
+                                {
+                                "label":"Miles",
+                                        "value":"esriMiles"
+                                },
+                                {
+                                "label":"Nautical Miles",
+                                        "value":"esriNauticalMiles"
+                                },
+                                {
+                                "label":"Millimeters",
+                                        "value":"esriMillimeters"
+                                },
+                                {
+                                "label":"Centimeters",
+                                        "value":"esriCentimeters"
+                                },
+                                {
+                                "label":"Decimeters",
+                                        "value":"esriDecimeters"
+                                },
+                                {
+                                "label":"Meters",
+                                        "value":"esriMeters"
+                                },
+                                {
+                                "label":"Kilometers",
+                                        "value":"esriKilometers"
+                                }
+                                ]
+                        },
+                        {
+                        "type":"options",
+                                "fieldName":"areaUnit",
+                                "label":"Default Area Unit",
+                                "tooltip":"Unit of measure for area measurement.",
+                                "options":[
+                                {
+                                "label":"Sq Inches",
+                                        "value":"esriSquareInches"
+                                },
+                                {
+                                "label":"Sq Feet",
+                                        "value":"esriSquareFeet"
+                                },
+                                {
+                                "label":"Sq Yards",
+                                        "value":"esriSquareYards"
+                                },
+                                {
+                                "label":"Acres",
+                                        "value":"esriAcres"
+                                },
+                                {
+                                "label":"Sq Miles",
+                                        "value":"esriSquareMiles"
+                                },
+                                {
+                                "label":"Sq Millimeters",
+                                        "value":"esriSquareMillimeters"
+                                },
+                                {
+                                "label":"Sq Centimeters",
+                                        "value":"esriSquareCentimeters"
+                                },
+                                {
+                                "label":"Sq Decimeters",
+                                        "value":"esriSquareDecimeters"
+                                },
+                                {
+                                "label":"Sq Meters",
+                                        "value":"esriSquareMeters"
+                                },
+                                {
+                                "label":"Ares",
+                                        "value":"esriAres"
+                                },
+                                {
+                                "label":"Hectares",
+                                        "value":"esriHectares"
+                                },
+                                {
+                                "label":"Sq Kilometers",
+                                        "value":"esriSquareKilometers"
+                                }
+                                ]
+                        },
+                        {
+                        "type":"boolean",
+                                "fieldName":"popupMeasurementFlag",
+                                "label":"Display Measure Results in a Pop-up."
+                        },
+                        {
+                        "type":"paragraph",
+                                "value":"<p style='text-align:justify;font-family: verdana;'>If you check Display Measure Results in a Pop-up, the measurements will be displayed in a pop-up window instead of within the image measurement tool.</p>"
+                        }
+                        ]
+                }
         ]
         },
         {
@@ -517,7 +538,7 @@
                 },
                 {
                 "type":"paragraph",
-                        "value":"<p style='text-align:justify;font-family: verdana;margin-bottom:0px;'>The Editor tool allows users to edit feature layers (to pinpoint locations, delineate boundaries, or add additional notes, among other uses).<br><br><br>Enable the Editor tool and select the feature layers that users will be able to edit in-app. This tool requires editable hosted feature layers in the app's web map.</p>"
+                        "value":"<p style='text-align:justify;font-family: verdana;margin-bottom:0px;'>The Editor tool allows users to edit feature layers (to pinpoint locations, delineate boundaries, or add additional notes, among other uses).<br><br><br>Enable the Editor tool and select the feature layers that users will be able to edit in-app. This tool requires <a href='http://doc.arcgis.com/en/arcgis-online/share-maps/manage-hosted-feature-layers.htm' target='_blank'>editable hosted feature layers</a> in the app's web map.</p>"
                 },
                 {
                 "type":"conditional",
@@ -644,6 +665,8 @@
                 "burn":false,
                 "primaryLayer": {"id": null},
                 "displayOptions":"slider",
+                "zoomLevel":8,
+                "searchScreenExtent":50,
                 "enableAutoRefresh": false,
                 "imageSelectorLayer":"",
                 "imageDateFlag":false,
