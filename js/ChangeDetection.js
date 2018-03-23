@@ -186,7 +186,7 @@ define([
              this.map.getLayer(a).hide();
              }*/
             for (var a in this.map.layerIds) {
-                layer = this.map.getLayer(this.map.layerIds[a]);
+                var layer = this.map.getLayer(this.map.layerIds[a]);
                 if ((layer.type && layer.type === 'ArcGISImageServiceLayer') || (layer.serviceDataType && layer.serviceDataType.substr(0, 16) === "esriImageService")) {
                     if (!this.secondaryLayerIndex)
                         this.secondaryLayerIndex = a;
@@ -196,6 +196,8 @@ define([
 
             if (this.config.defaultLayer)
                 registry.byId("layerSelector").set("value", this.config.defaultLayer);
+            else
+                this.selectLayer(registry.byId("layerSelector").get("value"));
             this.resizeSlider();
 
         },
@@ -283,6 +285,7 @@ define([
                 this.map.removeLayer(this.map.getLayer("resultLayer"));
             }
             this.valueSelected = null;
+            if(value){
             this.primaryLayer = this.map.getLayer(value);
             this.primaryLayer.show();
             if (this.layerInfos[value].changeDetection) {
@@ -311,6 +314,7 @@ define([
                 domStyle.set("changeSettingsDiv", "display", "none");
                 html.set(document.getElementById("errorDiv"), "");
             }
+        }
         },
         checkField: function (currentVersion)
         {
