@@ -656,9 +656,24 @@ define([
         setupChangeDetection: function () {
 
             this.setupToolContent("changeDetectionContainer", 0, changeDetectionHtml, this.config.i18n.changeDetection.title, "changeDetectionNode", "changeDetection");
-
+            
             var layers = this.config.itemInfo.itemData.operationalLayers;
-
+            if (this.config.imageSelectorLayer)
+                this.config.imageSelectorLayer = JSON.parse(this.config.imageSelectorLayer);
+            else
+                this.config.imageSelectorLayer = [];
+            if(!this.config.primaryLayer.id && this.config.imageSelectorLayer.length < 1){
+                for(var z = 0;z<=layers.length - 1;z++){
+                    if ((layers[z].type && layers[z].type === 'ArcGISTiledImageServiceLayer') || (layers[z].type && layers[z].type === 'ArcGISImageServiceLayer') || (this.map.getLayer(layers[z].id).serviceDataType && this.map.getLayer(layers[z].id).serviceDataType.indexOf("esriImageService") !== -1)) {
+                        this.config.primaryLayer.id = layers[z].id;
+                        this.config.imageSelectorLayer.push({
+                            id: layers[z].id,
+                            fields:[]
+                        });
+                        break;
+                    }
+                }
+            }
             var layer = [];
             var temp = {
                 defaultLayer: this.config.primaryLayer.id,
@@ -668,17 +683,30 @@ define([
                 autoRefresh: this.config.enableAutoRefresh,
                 changeMethods: {difference: this.config.difference, veg: this.config.veg, savi: this.config.savi, water: this.config.water, burn: this.config.burn}
             };
-            if (this.config.imageSelectorLayer)
-                this.config.imageSelectorLayer = JSON.parse(this.config.imageSelectorLayer);
+            
             var addLayer = true;
             for (var a = 0; a < layers.length; a++) {
-                if ((layers[a].type && layers[a].type === 'ArcGISTiledImageServiceLayer') || (layers[a].type && layers[a].type === 'ArcGISImageServiceLayer') || (this.map.getLayer(layers[a].id).serviceDataType && this.map.getLayer(layers[a].id).serviceDataType.substr(0, 16) === "esriImageService")) {
+                if ((layers[a].type && layers[a].type === 'ArcGISTiledImageServiceLayer') || (layers[a].type && layers[a].type === 'ArcGISImageServiceLayer') || (this.map.getLayer(layers[a].id).serviceDataType && this.map.getLayer(layers[a].id).serviceDataType.indexOf("esriImageService") !== -1)) {
                     for (var b = 0; b < this.config.imageSelectorLayer.length; b++) {
                         if (this.config.imageSelectorLayer[b].id === layers[a].id /*&& this.config.imageSelectorLayer[b].fields.length > 0*/ && layers[a].layerObject) {
-
+                            if(this.config.imageSelectorLayer[b].fields.length > 0){
+                                var field = this.config.imageSelectorLayer[b].fields[0];
+                            }else {
+                                var field = this.findField(layers[a].layerObject.fields, "esriFieldTypeDate", new RegExp(/acq[a-z]*[_]?Date/i));
+                                if(!field){
+                                    for(var v in layers[a].layerObject.fields){
+                                        if(layers[a].layerObject.fields[v].type === "esriFieldTypeDate"){
+                                            field = layers[a].layerObject.fields[v].name;
+                                            break;
+                                        }
+                                    }
+                                    if(!field)
+                                        field = layers[a].layerObject.fields[0].name;
+                                }
+                            }
                             var tempLayer = {
                                 changeDetection: true,
-                                imageField: this.config.imageSelectorLayer[b].fields.length > 0 ? this.config.imageSelectorLayer[b].fields[0] : (this.findField(layers[a].layerObject.fields, "esriFieldTypeDate", new RegExp(/acq[a-z]*[_]?Date/i))),
+                                imageField: field,
                                 objectID: this.findField(layers[a].layerObject.fields, "esriFieldTypeOID", new RegExp(/O[a-z]*[_]?ID/i)),
                                 category: this.findField(layers[a].layerObject.fields, "esriFieldTypeInteger", new RegExp(/Cate[a-z]*/i)),
                                 title: layers[a].title || layers[a].layerObject.name || layers[a].id
