@@ -60,7 +60,7 @@ define({
             method4: "Water Index",
             method5: "Burn Index",
             dropDown: "Show images in drop down list.",
-            transparency: "Transparency",
+            transparency: "Transparency(results)",
             slider: "Show images on slider.",
             error1: "Field is not specified.",
             error2: "No OBJECTID field.",
@@ -68,12 +68,17 @@ define({
             error4: "Cannot perform action for layer.",
             error5: "Services pre 10.2.1 not supported.",
             error6: "No scenes in current extent.",
-            date: "Date"
+            date: "Date",
+            areaText: "Area Decrease / Increase",
+            areaText2: "Burnt / Post Fire Regrowth Area",
+            unit: "km",
+            swipe:"Swipe"
         },
         editor: {
             title: "Editor",
-            error: "No Edit Layer selected.",
-            error1: "Access denied. Layers cannot be edited."
+            error: "No Edit Layer found.",
+            error1: "Access denied. Layers cannot be edited.",
+            text:"Select a symbol and click on the map."
         },
         measurement: {
             title: "Image Measurement",
@@ -89,8 +94,8 @@ define({
             pixel: "Pixel Size",
             outsr: "Output Spatial Reference",
             renderer: "Current Renderer",
-            extent: "Define Extent",
-            text: "If Current Renderer is checked, the rendering<br /> is exported, else the original data values<br/>will be exported.",
+            extent: "Draw polygon to define extent",
+            text: "If Current Renderer is checked, the rendering<br /> is exported; else, the original data values<br/>will be exported as an TIFF.",
             error: "No visible imagery layers on the map.",
             error1: "Title is required.",
             error2: "Tag(s) is required.",

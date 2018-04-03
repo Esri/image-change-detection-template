@@ -265,9 +265,9 @@ body {
     margin: 5px 5px 5px 10px;
 
 }
-g#mapDiv_graphics_layer path {
+/*g#mapDiv_graphics_layer path {
     fill-opacity: 0;
-}
+}*/
 
 .templatePicker .dojoxGrid {
     overflow: auto;
@@ -410,7 +410,7 @@ g#mapDiv_graphics_layer path {
     box-shadow: 0 -1px 1px rgba(0,0,0,0.15),0 3px 5px rgba(0,0,0,0.25);
 
 }
-.claro .dijitDialogTitleBar {
+/*.claro .dijitDialogTitleBar {
     background:#008299;
     border: 0 none;
     border-bottom: 0 none;
@@ -421,7 +421,7 @@ g#mapDiv_graphics_layer path {
     box-sizing: content-box;
     font-weight: bolder;
 }
-
+*/
 #tooltipDisplayOrder .dijitTooltipContainer, #stretchTooltipContainer .dijitTooltipContainer {
     background: #333;
     -webkit-border-radius: 0;
@@ -733,12 +733,10 @@ g#mapDiv_graphics_layer path {
     background-color: transparent;
     border-bottom: 1px solid;
 }
-/*.toolContainers:focus{
+
+/*.toolContainers:hover{
     background-color:#008299;
 }*/
-.toolContainers:hover{
-    background-color:#008299;
-}
 .toolsContentContainer {
     top: 45px;
     left:-384px;
@@ -869,14 +867,14 @@ g#mapDiv_graphics_layer path {
 
 }
 
-.titleBar {
+/*.titleBar {
     width: 100%;
     height: 39px;
     background-color:#008299;
     color:white;
     font-size: 1.3em;
     font-weight: bolder;
-}
+}*/
 
 #basemapContainer {
     display: block;
@@ -890,13 +888,13 @@ g#mapDiv_graphics_layer path {
     position: absolute;
     border: 1px solid #999;
 }
-.basemapIcon:hover{
+/*.basemapIcon:hover{
     background-color: #008299;;
 }
 .basemapSelected{
     background-color:#008299;
 }
-
+*/
 .esriLayerList .esriContainer {
     background-color: white;
     color: #6e6e6e;
@@ -933,9 +931,9 @@ g#mapDiv_graphics_layer path {
     background-image: linear-gradient(#27b2cf,#008299);
 }
 
-.selected-widget {
+/*.selected-widget {
     background-color:#008299;
-}
+}*/
 #basemapDialog .dijitDialogPaneContent {
     height: calc(100% - 50px);
 }

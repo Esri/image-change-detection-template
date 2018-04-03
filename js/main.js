@@ -70,7 +70,7 @@ define([
                 document.getElementById("titleText").style.color = this.config.color;
                 document.getElementById("primaryDate").style.color = this.config.color;
 
-
+                this.createCSSRules();
                 var toolContainers = document.getElementsByClassName("toolContainers");
                 for (var a = 0; a < toolContainers.length; a++) {
                     toolContainers[a].style.borderBottomColor = this.config.background;
@@ -125,6 +125,23 @@ define([
                 promise = def.promise;
             }
             return promise;
+        },
+        createCSSRules: function () {
+            var style = document.createElement('style');
+            style.type = "text/css";
+            document.getElementsByTagName('head')[0].appendChild(style);
+            var cssRules = {".titleBar": "width: 100%;height: 39px;background-color:" + this.config.widgetTitleColor + ";color:white;font-size: 1.3em;font-weight: bolder;",
+                ".basemapIcon:hover": "background-color: " + this.config.toolsIconColor + ";",
+                ".basemapSelected": "background-color: " + this.config.toolsIconColor + ";",
+                ".toolContainers:hover": "background-color: " + this.config.toolsIconColor + ";",
+                ".selected-widget": "background-color: " + this.config.toolsIconColor + ";",
+                ".claro .dijitDialogTitleBar": "background: " + this.config.widgetTitleColor + ";border: 0 none;border-bottom: 0 none;padding: 7px 10px;text-align: center;line-height: 16px;-webkit-box-sizing: content-box;box-sizing: content-box;font-weight: bolder;"
+            };
+            for (var a in cssRules) {
+                style.sheet.insertRule(a + "{" + cssRules[a] + "}", style.sheet.cssRules.length);
+            }
+
+
         },
         reportError: function (error) {
             // remove loading class from body
@@ -606,7 +623,7 @@ define([
             }
         },
         setupEditor: function () {
-            var html = "<div class='titleBar'><span class='titleBarTextSpan'>" + this.config.i18n.editor.title + "</span><button class='closeContainerButton'><img src='images/cancel.png' alt='X'/></button></div><br/><div style='margin:5px;overflow: auto;'><div id='templateDiv'></div><div id='editorDiv'></div><div id='errorEditor' style='color: #ee0000;'></div><br /></div>";
+            var html = "<div class='titleBar'><span class='titleBarTextSpan'>" + this.config.i18n.editor.title + "</span><button class='closeContainerButton'><img src='images/cancel.png' alt='X'/></button></div><br/><div style='margin:5px;overflow: auto;'>" + this.config.i18n.editor.text + "<div id='templateDiv' style='margin:5px;'></div><div id='editorDiv'></div><div id='errorEditor' style='color: #ee0000;'></div><br /></div>";
             this.setupToolContent("editorContainer", 3, html, this.config.i18n.editor.title, "editorNode", null);
             var layer = [], heightField;
 
@@ -639,8 +656,7 @@ define([
             var config = {
                 angularUnit: this.config.angularUnit,
                 linearUnit: this.config.linearUnit,
-                areaUnit: this.config.areaUnit,
-                displayMeasureResultInPopup: this.config.popupMeasurementFlag
+                areaUnit: this.config.areaUnit
             };
             this.measurementFunction = new Measurement({map: this.map, config: config});
             this.addClickEvent("measurementContainer", this.measurementFunction, "measurementNode");
