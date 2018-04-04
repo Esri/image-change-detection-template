@@ -91,13 +91,13 @@ define([
             registry.byId("layerSelector").on("change", lang.hitch(this, this.selectLayer));
             registry.byId("primaryImage").on("click", lang.hitch(this, function () {
                 if (this.layerSwipe) {
-                    this.moveSwipe(this.map.width - 5, this.layerSwipe.invertPlacement, this.layerSwipe.layers);
+                    this.moveSwipe(this.map.width - 40, this.layerSwipe.invertPlacement, this.layerSwipe.layers);
                 }
                 this.setCurrentImage("primary");
             }));
             registry.byId("comparisonImage").on("click", lang.hitch(this, function () {
                 if (this.layerSwipe) {
-                    this.moveSwipe(5, this.layerSwipe.invertPlacement, this.layerSwipe.layers);
+                    this.moveSwipe(40, this.layerSwipe.invertPlacement, this.layerSwipe.layers);
                 }
                 this.setCurrentImage("comparison");
             }));
@@ -172,7 +172,7 @@ define([
                     if (response.layer.id === "resultLayer") {
                         domStyle.set("transparencySlider", "display", "block");
                         if (registry.byId("changeModeList").get("value") === "image")
-                            registry.byId("resultOpacity").set("value", 1 - 0.5);
+                            registry.byId("resultOpacity").set("value", 1 - 0.8);
                         else
                             registry.byId("resultOpacity").set("value", 1 - response.layer.opacity);
                     }
@@ -1271,9 +1271,9 @@ define([
                         domConstruct.place("<div id='swipewidget'></div>", "mapDiv_root", "first");
                         if (!this.swipePosition) {
                             if (registry.byId("primaryImage").checked)
-                                this.swipePosition = this.map.width - 5;
+                                this.swipePosition = this.map.width - 40;
                             else
-                                this.swipePosition = 5;
+                                this.swipePosition = 40;
                         }
                         this.layerSwipe = new LayerSwipe({
                             type: "vertical",

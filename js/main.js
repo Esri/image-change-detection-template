@@ -81,7 +81,7 @@ define([
                     style.appendChild(document.createTextNode(this.config.customstyle));
                     document.head.appendChild(style);
                 }
-                dom.byId("titleText").innerHTML = this.config.title ? this.config.title : "Image Change Detection";
+                dom.byId("titleText").innerHTML = this.config.title ? this.config.title : "Image Mask";
                 new Tooltip({
                     connectId: ["titleText"],
                     label: this.config.description,
@@ -202,7 +202,17 @@ define([
                     this.setupBasemap();
                 } else
                     domStyle.set("basemapContainer", "display", "none");
-                if (this.config.operationalLayersFlag) {
+                var layers = this.config.itemInfo.itemData.operationalLayers;
+                var layersFlag = false;
+                for (var a = layers.length - 1; a >= 0; a--) {
+                    var title = layers[a].title || layers[a].layerObject.name || layers[a].id;
+                    if ((layers[a].layerType && layers[a].layerType !== "ArcGISTiledImageServiceLayer") && (title && (title.charAt(title.length - 1)) !== "_") && (title && (title.substr(title.length - 2)) !== "__") && ((layers[a].layerObject && layers[a].layerObject.serviceDataType && layers[a].layerObject.serviceDataType.substr(0, 16) !== "esriImageService") || (layers[a].layerType && layers[a].layerType !== "ArcGISImageServiceLayer"))) {
+                        layersFlag = true;
+                        break;
+                    }
+                }
+                
+                if (this.config.operationalLayersFlag && layersFlag) {
                     this.dockToolsActive++;
                     domStyle.set("dockContainer", "display", "block");
                     this.setupOperationalLayers();
@@ -231,13 +241,14 @@ define([
                     this.setupImageMeasurement();
                 } else
                     domStyle.set("measurementContainer", "display", "none");
-                if (this.config.editFlag) {
+                var featureLayers = JSON.parse(this.config.featureLayers);
+                if (this.config.editFlag && featureLayers && featureLayers.length > 0) {
                     this.dockToolsActive++;
                     domStyle.set("dockContainer", "display", "block");
                     this.setupEditor();
                 } else
                     domStyle.set("editorContainer", "display", "none");
-                if (this.config.bookmarkFlag)
+                if (this.config.bookmarkFlag && this.config.itemInfo.itemData.bookmarks)
                 {
                     this.dockToolsActive++;
                     domStyle.set("dockContainer", "display", "block");
@@ -741,6 +752,8 @@ define([
                     }
                     if (layers[a].id !== this.config.primaryLayer.id)
                         this.map.getLayer(layers[a].id).hide();
+                    else
+                        this.map.getLayer(layers[a].id).show();
                 }
             }
             this.changeDetectionFunction = new ChangeDetection({map: this.map, config: temp, layers: layer, i18n: this.config.i18n.changeDetection, main: this});

@@ -48,7 +48,7 @@
                 "type":"color",
                         "fieldName":"widgetTitleColor",
                         "tooltip":"Choose a title header color",
-                        "label":"Tools title header color"
+                        "label":"Widget header color"
                 },
                 {
                 "type":"color",
@@ -248,45 +248,6 @@
                 "fields": [
                 {
                 "type":"paragraph",
-                        "value":"<p style='text-align: justify;font-family: verdana;'>Image Date will display the date of the most central image from the active layer in the theme header next to the app name.</p>"
-                },
-                {
-                "type":"conditional",
-                        "condition":false,
-                        "fieldName":"imageDateFlag",
-                        "label":"Enable Image Date",
-                        "items":[
-                        {
-                        "type": "string",
-                                "fieldName": "imageDateLabel",
-                                "label": "Label: ",
-                                "tooltip": "",
-                                "stringFieldOption": "textbox",
-                                "placeHolder": ""
-                        },
-                        {
-                        "type":"paragraph",
-                                "value":"<p style='text-align: justify;font-family: verdana;margin-bottom:0px;'>Check the box next to all the imagery layers that will display a date when selected as the app's active layer, then select one date field for each layer.</p>"
-                        },
-                        {
-                        "type":"multilayerandfieldselector",
-                                "fieldName":"imageDateLayer",
-                                "label":"Imagery Layers",
-                                "tooltip":"Select date field for each imagery layer.",
-                                "layerOptions":{
-                                "supportedTypes":[
-                                        "ImageServiceLayer"
-                                ]
-                                },
-                                "fieldOptions":{
-                                "supportedTypes":[
-                                        "esriFieldTypeDate"
-                                ]
-                                }
-                        }  ]
-                },
-                {
-                "type":"paragraph",
                         "value":"<p style='text-align: justify;font-family: verdana;'>The Change Detection widget allows users to calculate the difference between the primary and comparison images. The result of the tool will be added as a new Results layer, which can be saved either to the user's ArcGIS Online account as an imagery layer item or to the user's computer as a TIFF file using the Export tool. Increases are shown in green and decreases are shown in magenta.<br></p>"
                 },
                 {
@@ -426,6 +387,45 @@
                         }
                         ]
                 }, {
+                "type":"paragraph",
+                        "value":"<p style='text-align: justify;font-family: verdana;'>Image Date will display the date of the most central image from the active layer in the theme header next to the app name.</p>"
+                },
+                {
+                "type":"conditional",
+                        "condition":false,
+                        "fieldName":"imageDateFlag",
+                        "label":"Enable Image Date",
+                        "items":[
+                        {
+                        "type": "string",
+                                "fieldName": "imageDateLabel",
+                                "label": "Label: ",
+                                "tooltip": "",
+                                "stringFieldOption": "textbox",
+                                "placeHolder": ""
+                        },
+                        {
+                        "type":"paragraph",
+                                "value":"<p style='text-align: justify;font-family: verdana;margin-bottom:0px;'>Check the box next to all the imagery layers that will display a date when selected as the app's active layer, then select one date field for each layer.</p>"
+                        },
+                        {
+                        "type":"multilayerandfieldselector",
+                                "fieldName":"imageDateLayer",
+                                "label":"Imagery Layers",
+                                "tooltip":"Select date field for each imagery layer.",
+                                "layerOptions":{
+                                "supportedTypes":[
+                                        "ImageServiceLayer"
+                                ]
+                                },
+                                "fieldOptions":{
+                                "supportedTypes":[
+                                        "esriFieldTypeDate"
+                                ]
+                                }
+                        }  ]
+                }, 
+                {
                 "type":"paragraph",
                         "value":"<p style='text-align:justify;font-family: verdana;'>The Image Measurement tool allows you to perform measurements on image services with mensuration capability. Mensuration applies geometric rules to find the height, area, or location of a feature.</p>"
                 },
@@ -674,20 +674,20 @@
                 "primaryLayer": {"id": null},
                 "displayOptions":"both",
                 "zoomLevel":8,
-                "searchScreenExtent":50,
+                "searchScreenExtent":15,
                 "enableAutoRefresh": true,
-                "imageSelectorLayer":"",
+                "imageSelectorLayer":"[]",
                 "imageDateFlag":false,
                 "imageDateLabel":"",
-                "imageDateLayer":"",
+                "imageDateLayer":"[]",
                 "exportFlag":false,
-                "exportType":"agol",
+                "exportType":"disk",
                 "measurementFlag":false,
                 "angularUnit":"esriDUDecimalDegrees",
                 "linearUnit":"esriMeters",
                 "areaUnit":"esriSquareMeters",
                 "editFlag":false,
-                "featureLayers":"",
+                "featureLayers":"[]",
                 "featureLayersHeightField":"",
                 "search":false,
                 "units":"english"
