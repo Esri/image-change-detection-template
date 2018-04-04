@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// Copyright (c) 2018 Esri. All Rights Reserved.
+// Copyright 2018 Esri. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,6 +60,9 @@ define([
                                 });
                                 this.templateLayers.push(layer.layerObject);
                                 this.layerFields[layer.layerObject.id] = {date: layer.dateField, height: layer.heightField};
+                                layer.layerObject.on("edits-complete", lang.hitch(this, function(){
+                                    layer.layerObject.refresh();
+                                }));
                             }
                         }));
 

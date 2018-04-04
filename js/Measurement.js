@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// Copyright © 2018 Esri. All Rights Reserved.
+// Copyright 2018 Esri. All Rights Reserved.
 //
 // Licensed under the Apache License Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ define([
                     this.imageServiceMeasureWidget = new JSImageServiceMeasure({
                         map: this.map,
                         layer: this.layer,
-                        displayMeasureResultInPopup: this.config.displayMeasureResultInPopup,
+                        displayMeasureResultInPopup: false,
                         layout: "toolbar",
                         linearUnit: this.config.linearUnit,
                         angularUnit: this.config.angularUnit,

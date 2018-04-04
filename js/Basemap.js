@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// Copyright © 2018 Esri. All Rights Reserved.
+// Copyright 2018 Esri. All Rights Reserved.
 //
 // Licensed under the Apache License Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -111,6 +111,11 @@ define([
                     this.basemapGallery.startup();
                     //  this._responsive();
                     this.resize();
+                    this.map.on("click", lang.hitch(this, this.closeDialog));
+                },
+                closeDialog: function() {
+                    if(registry.byId("basemapDialog").open)
+                        registry.byId("basemapDialog").hide();
                 }
 
 

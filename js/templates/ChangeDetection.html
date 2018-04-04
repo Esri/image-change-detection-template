@@ -11,7 +11,7 @@
         <input id="comparisonImage" data-dojo-type="dijit/form/RadioButton" name="images" value="comparison" type="radio" style="margin-left: 10%;" />
         <label for="comparisonImage">${config.i18n.changeDetection.comparison}</label>
         
-        <div id="imageRange" style="margin-top: 10px;margin-bottom: 10px;"></div>
+        <div id="imageRange" style="margin-top: 10px;margin-bottom: 10px;display: inline-block;"></div><input type="checkbox" data-dojo-type="dijit/form/CheckBox" id="swipeHandler" style="margin-left: 10px;" checked/><label for="swipeHandler">${config.i18n.changeDetection.swipe}</label>
         <div>
             <div  id="imageSelectContainer" style="display:none;">
                 <button  data-dojo-type="dijit/form/Button" type="button" id="dropDownImageList"><img alt="${config.i18n.changeDetection.dropDown}" src="images/dropdownlist.png" id="switchDisplayImage" class="iconHeight"/></button>
@@ -23,6 +23,7 @@
             </div> 
 
         </div>
+        
     </div>
     <div id="errorDiv" style="color: #ee0000;"></div>
     <div id="changeSettingsDiv" style="display: none;">
@@ -101,13 +102,16 @@
                 </ol>
             </div>
         </div>
+        <div id="areaValueContainer" style="margin-top: 5px;display:none;">
+        <div id="areaValueLabel" style="display: inline-block;">${config.i18n.changeDetection.areaText}:</div>&nbsp;&nbsp;<div id="areaValue"  style="font-weight: bolder;color: magenta; display: inline-block;"></div>
+        </div>
         <div style="display: flex;justify-content: center;margin-top: 5px;">
             <button  data-dojo-type="dijit/form/Button" type="button" id="changeDetectionApply">${config.i18n.changeDetection.apply}</button>
             <button  data-dojo-type="dijit/form/Button" type="button" id="changeDetectionClear">${config.i18n.changeDetection.clear}</button>
         </div>
         <div id="transparencySlider" style="display: none;margin: 5px 0 17px 0;">
             <div style="vertical-align: top;display: inline-block;">${config.i18n.changeDetection.transparency}: </div>
-            <div  id="resultOpacity" data-dojo-attach-point="transparency" style="max-width:180px;display:inline-block;position: absolute;" data-dojo-type="dijit/form/HorizontalSlider" data-dojo-props="value:0,minimum: 0,maximum:1,intermediateChanges:true,showButtons:true">
+            <div  id="resultOpacity" data-dojo-attach-point="transparency" style="max-width:180px;display:inline-block;position: absolute;width: -moz-available;" data-dojo-type="dijit/form/HorizontalSlider" data-dojo-props="value:0,minimum: 0,maximum:1,intermediateChanges:true,showButtons:true">
                 <div data-dojo-type="dijit/form/HorizontalRule" container="bottomDecoration" style="height:5px;"></div>
                 <ol data-dojo-type="dijit/form/HorizontalRuleLabels" container="bottomDecoration" style="height:1em;font-size:75%;color:gray;">
                     <li>0%</li>

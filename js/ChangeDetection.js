@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// Copyright (c) 2018 Esri. All Rights Reserved.
+// Copyright 2018 Esri. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ define([
     "dijit/form/CheckBox",
     "dijit/form/TextBox",
     "dijit/form/DropDownButton",
-    "dijit/TooltipDialog",
+    "dijit/TooltipDialog"
 ], function (declare, lang, Evented, registry,
         html,
         domClass,
@@ -91,13 +91,13 @@ define([
             registry.byId("layerSelector").on("change", lang.hitch(this, this.selectLayer));
             registry.byId("primaryImage").on("click", lang.hitch(this, function () {
                 if (this.layerSwipe) {
-                    this.moveSwipe(this.map.width - 5, this.layerSwipe.invertPlacement, this.layerSwipe.layers);
+                    this.moveSwipe(this.map.width - 40, this.layerSwipe.invertPlacement, this.layerSwipe.layers);
                 }
                 this.setCurrentImage("primary");
             }));
             registry.byId("comparisonImage").on("click", lang.hitch(this, function () {
                 if (this.layerSwipe) {
-                    this.moveSwipe(5, this.layerSwipe.invertPlacement, this.layerSwipe.layers);
+                    this.moveSwipe(40, this.layerSwipe.invertPlacement, this.layerSwipe.layers);
                 }
                 this.setCurrentImage("comparison");
             }));
@@ -130,7 +130,7 @@ define([
 
                 }
                 domStyle.set("transparencySlider", "display", "none");
-
+                html.set(document.getElementById("areaValue"), "");
             }));
             registry.byId("band1").on("change", lang.hitch(this, function (value) {
                 if (value === registry.byId("band2").get("value"))
@@ -148,12 +148,15 @@ define([
                 if (value === "mask") {
                     domStyle.set("maskRangeSpinners", "display", "block");
                     domStyle.set("thresholdRangeSpinners", "display", "none");
+                    domStyle.set("areaValueContainer", "display", "block");
                 } else if (value === "threshold") {
                     domStyle.set("maskRangeSpinners", "display", "none");
                     domStyle.set("thresholdRangeSpinners", "display", "block");
+                    domStyle.set("areaValueContainer", "display", "block");
                 } else {
                     domStyle.set("maskRangeSpinners", "display", "none");
                     domStyle.set("thresholdRangeSpinners", "display", "none");
+                    domStyle.set("areaValueContainer", "display", "none");
                 }
             }));
             this.fillLayerSelector();
@@ -168,7 +171,10 @@ define([
                 this.map.on("layer-add", lang.hitch(this, function (response) {
                     if (response.layer.id === "resultLayer") {
                         domStyle.set("transparencySlider", "display", "block");
-                        registry.byId("resultOpacity").set("value", 1 - response.layer.opacity);
+                        if (registry.byId("changeModeList").get("value") === "image")
+                            registry.byId("resultOpacity").set("value", 1 - 0.8);
+                        else
+                            registry.byId("resultOpacity").set("value", 1 - response.layer.opacity);
                     }
                 }));
             }
@@ -186,7 +192,7 @@ define([
              this.map.getLayer(a).hide();
              }*/
             for (var a in this.map.layerIds) {
-                layer = this.map.getLayer(this.map.layerIds[a]);
+                var layer = this.map.getLayer(this.map.layerIds[a]);
                 if ((layer.type && layer.type === 'ArcGISImageServiceLayer') || (layer.serviceDataType && layer.serviceDataType.substr(0, 16) === "esriImageService")) {
                     if (!this.secondaryLayerIndex)
                         this.secondaryLayerIndex = a;
@@ -196,8 +202,22 @@ define([
 
             if (this.config.defaultLayer)
                 registry.byId("layerSelector").set("value", this.config.defaultLayer);
+            else
+                this.selectLayer(registry.byId("layerSelector").get("value"));
             this.resizeSlider();
 
+            registry.byId("swipeHandler").on("change", lang.hitch(this, function (value) {
+                if (value) {
+                    this.refreshSwipe();
+                } else {
+                    if (this.layerSwipe) {
+                        this.swipePosition = this.layerSwipe.domNode.children[0].offsetLeft;
+                        this.layerSwipe.destroy();
+                        this.layerSwipe = null;
+                    }
+                }
+
+            }));
         },
         resizeSlider: function () {
             if (this.config.display === "both") {
@@ -282,34 +302,37 @@ define([
                 this.map.getLayer("resultLayer").suspend();
                 this.map.removeLayer(this.map.getLayer("resultLayer"));
             }
+            html.set(document.getElementById("areaValue"), "");
             this.valueSelected = null;
-            this.primaryLayer = this.map.getLayer(value);
-            this.primaryLayer.show();
-            if (this.layerInfos[value].changeDetection) {
-                this.populateBands();
-                this.defaultMosaicRule = this.layerInfos[value].defaultMosaicRule;
-                if (this.primaryLayer.currentVersion)
-                {
-                    var currentVersion = this.primaryLayer.currentVersion;
-                    this.checkField(currentVersion);
-                } else {
-
-                    var layersRequest = esriRequest({
-                        url: this.primaryLayer.url,
-                        content: {f: "json"},
-                        handleAs: "json",
-                        callbackParamName: "callback"
-                    });
-                    layersRequest.then(lang.hitch(this, function (data) {
-                        var currentVersion = data.currentVersion;
+            if (value) {
+                this.primaryLayer = this.map.getLayer(value);
+                this.primaryLayer.show();
+                if (this.layerInfos[value].changeDetection) {
+                    this.populateBands();
+                    this.defaultMosaicRule = this.layerInfos[value].defaultMosaicRule;
+                    if (this.primaryLayer.currentVersion)
+                    {
+                        var currentVersion = this.primaryLayer.currentVersion;
                         this.checkField(currentVersion);
-                    }));
-                }
+                    } else {
 
-            } else {
-                domStyle.set("selectorDiv", "display", "none");
-                domStyle.set("changeSettingsDiv", "display", "none");
-                html.set(document.getElementById("errorDiv"), "");
+                        var layersRequest = esriRequest({
+                            url: this.primaryLayer.url,
+                            content: {f: "json"},
+                            handleAs: "json",
+                            callbackParamName: "callback"
+                        });
+                        layersRequest.then(lang.hitch(this, function (data) {
+                            var currentVersion = data.currentVersion;
+                            this.checkField(currentVersion);
+                        }));
+                    }
+
+                } else {
+                    domStyle.set("selectorDiv", "display", "none");
+                    domStyle.set("changeSettingsDiv", "display", "none");
+                    html.set(document.getElementById("errorDiv"), "");
+                }
             }
         },
         checkField: function (currentVersion)
@@ -826,7 +849,10 @@ define([
                 domStyle.set("changeMode", "display", "none");
                 domStyle.set("maskRangeSpinners", "display", "none");
                 domStyle.set("thresholdRangeSpinners", "display", "none");
+                domStyle.set("areaValueContainer", "display", "none");
             } else {
+                domStyle.set("areaValue", "color", "magenta");
+                html.set(document.getElementById("areaValueLabel"), this.i18n.areaText + ":");
                 if (value === "ndvi" || value === "savi") {
                     document.getElementById("bandName1").innerHTML = this.i18n.nir + ":";
                     document.getElementById("bandName2").innerHTML = this.i18n.red + ":";
@@ -836,6 +862,8 @@ define([
                 } else {
                     document.getElementById("bandName1").innerHTML = this.i18n.nir + ":";
                     document.getElementById("bandName2").innerHTML = this.i18n.swir + ":";
+                    domStyle.set("areaValue", "color", "#fc6d31");
+                    html.set(document.getElementById("areaValueLabel"), this.i18n.areaText2 + ":");
                 }
                 domStyle.set("changeMode", "display", "block");
                 domStyle.set("bandInputs", "display", "block");
@@ -843,12 +871,15 @@ define([
                 {
                     domStyle.set("maskRangeSpinners", "display", "block");
                     domStyle.set("thresholdRangeSpinners", "display", "none");
+                    domStyle.set("areaValueContainer", "display", "block");
                 } else if (registry.byId("changeModeList").get("value") === "threshold") {
                     domStyle.set("maskRangeSpinners", "display", "none");
                     domStyle.set("thresholdRangeSpinners", "display", "block");
+                    domStyle.set("areaValueContainer", "display", "block");
                 } else {
                     domStyle.set("maskRangeSpinners", "display", "none");
                     domStyle.set("thresholdRangeSpinners", "display", "none");
+                    domStyle.set("areaValueContainer", "display", "none");
                 }
                 this.setBands(value);
             }
@@ -1079,6 +1110,12 @@ define([
                                 imageServiceParameters: params
                             });
                 } else {
+                    var xdistance = this.map.extent.xmax - this.map.extent.xmin;
+                    var ydistance = this.map.extent.ymax - this.map.extent.ymin;
+                    this.pixelSizeX = xdistance / this.map.width;
+                    this.pixelSizeY = ydistance / this.map.height;
+                    var latitude = ((this.map.extent.getCenter()).getLatitude() * Math.PI) / 180;
+                    this.scale = Math.pow((1 / Math.cos(latitude)), 2);
                     params.format = "lerc";
                     changeDetectionLayer = new RasterLayer(
                             this.primaryLayer.url,
@@ -1107,6 +1144,12 @@ define([
                                 imageServiceParameters: params
                             });
                 } else {
+                    var xdistance = this.map.extent.xmax - this.map.extent.xmin;
+                    var ydistance = this.map.extent.ymax - this.map.extent.ymin;
+                    this.pixelSizeX = xdistance / this.map.width;
+                    this.pixelSizeY = ydistance / this.map.height;
+                    var latitude = ((this.map.extent.getCenter()).getLatitude() * Math.PI) / 180;
+                    this.scale = Math.pow((1 / Math.cos(latitude)), 2);
                     params.format = "lerc";
                     changeDetectionLayer = new RasterLayer(
                             this.primaryLayer.url,
@@ -1141,7 +1184,7 @@ define([
             var pr = new Uint8Array(numPixels);
             var pg = new Uint8Array(numPixels);
             var pb = new Uint8Array(numPixels);
-
+            var areaLeft = 0, areaRight = 0;
             var color = registry.byId("method").get("value") === "burn" ? [255, 69, 0] : [255, 0, 255];
             if (registry.byId("changeModeList").get("value") === "mask") {
                 var pixelScene = pixelData.pixelBlock.pixels[0];
@@ -1159,12 +1202,13 @@ define([
                         pg[i] = color[1];
                         pb[i] = color[2];
                         pixelData.pixelBlock.mask[i] = 1;
+                        areaLeft++;
                     } else if (pixelScene[i] >= positiveDif) {
                         pr[i] = 0;
                         pg[i] = 252;
                         pb[i] = 0;
                         pixelData.pixelBlock.mask[i] = 1;
-
+                        areaRight++;
                     } else
                         pixelData.pixelBlock.mask[i] = 0;
                 }
@@ -1190,20 +1234,21 @@ define([
                             pr[i] = 0;
                             pg[i] = 252;
                             pb[i] = 0;
-
+                            areaLeft++;
                         } else if (pixelScene1[i] > threshold && pixelScene2[i] < threshold && (pixelScene1[i] - pixelScene2[i]) > differenceThreshold) {
                             pixelData.pixelBlock.mask[i] = 1;
 
                             pr[i] = color[0];
                             pg[i] = color[1];
                             pb[i] = color[2];
-
+                            areaRight++;
 
                         } else
                             pixelData.pixelBlock.mask[i] = 0;
                     }
                 }
             }
+            html.set(document.getElementById("areaValue"), parseInt((areaLeft * this.pixelSizeX * this.pixelSizeY) / (1000000 * this.scale)) + " " + this.i18n.unit + "<sup>2</sup> <span style='color:black;'>/</span> <span style='color:green;'>" + parseInt((areaRight * this.pixelSizeX * this.pixelSizeY) / (1000000 * this.scale)) + " " + this.i18n.unit + "<sup>2</sup></span>");
             pixelData.pixelBlock.pixels = [pr, pg, pb];
             pixelData.pixelBlock.pixelType = "U8";
 
@@ -1215,39 +1260,40 @@ define([
             return [min, max];
         },
         refreshSwipe: function () {
-            if (this.primaryLayer && this.secondaryLayer && this.primaryLayer.mosaicRule && this.secondaryLayer.mosaicRule && this.primaryLayer.mosaicRule.lockRasterIds !== this.secondaryLayer.mosaicRule.lockRasterIds) {
-                if (this.primaryLayer.mosaicRule.lockRasterIds !== this.previousLayerInfo.primary || this.secondaryLayer.mosaicRule.lockRasterIds !== this.previousLayerInfo.secondary) {
+            if (registry.byId("swipeHandler").checked) {
+                if (this.primaryLayer && this.secondaryLayer && this.primaryLayer.mosaicRule && this.secondaryLayer.mosaicRule && this.primaryLayer.mosaicRule.lockRasterIds !== this.secondaryLayer.mosaicRule.lockRasterIds) {
+                    if (this.primaryLayer.mosaicRule.lockRasterIds !== this.previousLayerInfo.primary || this.secondaryLayer.mosaicRule.lockRasterIds !== this.previousLayerInfo.secondary || !this.layerSwipe) {
+                        if (this.layerSwipe) {
+                            this.swipePosition = this.layerSwipe.domNode.children[0].offsetLeft;
+                            this.layerSwipe.destroy();
+                            this.layerSwipe = null;
+                        }
+                        domConstruct.place("<div id='swipewidget'></div>", "mapDiv_root", "first");
+                        if (!this.swipePosition) {
+                            if (registry.byId("primaryImage").checked)
+                                this.swipePosition = this.map.width - 40;
+                            else
+                                this.swipePosition = 40;
+                        }
+                        this.layerSwipe = new LayerSwipe({
+                            type: "vertical",
+                            map: this.map,
+                            left: this.swipePosition,
+                            invertPlacement: false,
+                            layers: [this.primaryLayer]
+                        }, dom.byId("swipewidget"));
+                        this.layerSwipe.startup();
+                        this.previousLayerInfo = {primary: this.primaryLayer.mosaicRule.lockRasterIds, secondary: this.secondaryLayer.mosaicRule.lockRasterIds};
+                    }
+                    domStyle.set("changeSettingsDiv", "display", "block");
+                } else {
                     if (this.layerSwipe) {
-                        this.swipePosition = this.layerSwipe.domNode.children[0].offsetLeft;
                         this.layerSwipe.destroy();
                         this.layerSwipe = null;
+                        this.previousLayerInfo = {primary: null, secondary: null};
                     }
-
-                    domConstruct.place("<div id='swipewidget'></div>", "mapDiv_root", "first");
-                    if (!this.swipePosition) {
-                        if (registry.byId("primaryImage").checked)
-                            this.swipePosition = this.map.width - 5;
-                        else
-                            this.swipePosition = 5;
-                    }
-                    this.layerSwipe = new LayerSwipe({
-                        type: "vertical",
-                        map: this.map,
-                        left: this.swipePosition,
-                        invertPlacement: false,
-                        layers: [this.primaryLayer]
-                    }, dom.byId("swipewidget"));
-                    this.layerSwipe.startup();
-                    this.previousLayerInfo = {primary: this.primaryLayer.mosaicRule.lockRasterIds, secondary: this.secondaryLayer.mosaicRule.lockRasterIds};
+                    domStyle.set("changeSettingsDiv", "display", "none");
                 }
-                domStyle.set("changeSettingsDiv", "display", "block");
-            } else {
-                if (this.layerSwipe) {
-                    this.layerSwipe.destroy();
-                    this.layerSwipe = null;
-                    this.previousLayerInfo = {primary: null, secondary: null};
-                }
-                domStyle.set("changeSettingsDiv", "display", "none");
             }
         },
         turningOffSelector: function () {

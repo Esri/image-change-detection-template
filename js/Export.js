@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// Copyright (c) 2018 Esri. All Rights Reserved.
+// Copyright 2018 Esri. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -283,8 +283,20 @@ define([
                 activatePolygon: function () {
                     if (registry.byId("defineExtent").checked || registry.byId("defineAgolExtent").checked) {
                         this.map.setInfoWindowOnClick(false);
+                        if(registry.byId("defineExtent").checked){
+                        registry.byId("exportBtn").set("disabled", true);
+                        domStyle.set(document.getElementById("exportBtn"),"color","grey");
+                        }
+                        if(registry.byId("defineAgolExtent").checked){
+                        registry.byId("submitAgolBtn").set("disabled", true);
+                        domStyle.set(document.getElementById("submitAgolBtn"),"color","grey");
+                        }
                         this.toolbarForExport.activate(Draw.POLYGON);
                     } else {
+                        registry.byId("exportBtn").set("disabled", false);
+                        registry.byId("submitAgolBtn").set("disabled", false);
+                        domStyle.set(document.getElementById("exportBtn"),"color","#333");
+                        domStyle.set(document.getElementById("submitAgolBtn"),"color","#333");
                         this.toolbarForExport.deactivate();
                         this.map.setInfoWindowOnClick(true);
                         for (var k in this.map.graphics.graphics)
@@ -301,6 +313,10 @@ define([
                     }
                 },
                 getExtent: function (geometry) {
+                    registry.byId("exportBtn").set("disabled", false);
+                    registry.byId("submitAgolBtn").set("disabled", false);
+                    domStyle.set(document.getElementById("exportBtn"),"color","#333");
+                    domStyle.set(document.getElementById("submitAgolBtn"),"color","#333");
                     var geometry = geometry.geometry;
                     for (var k in this.map.graphics.graphics)
                     {

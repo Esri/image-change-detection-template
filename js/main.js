@@ -70,7 +70,7 @@ define([
                 document.getElementById("titleText").style.color = this.config.color;
                 document.getElementById("primaryDate").style.color = this.config.color;
 
-
+                this.createCSSRules();
                 var toolContainers = document.getElementsByClassName("toolContainers");
                 for (var a = 0; a < toolContainers.length; a++) {
                     toolContainers[a].style.borderBottomColor = this.config.background;
@@ -81,7 +81,7 @@ define([
                     style.appendChild(document.createTextNode(this.config.customstyle));
                     document.head.appendChild(style);
                 }
-                dom.byId("titleText").innerHTML = this.config.title ? this.config.title : "Image Change Detection";
+                dom.byId("titleText").innerHTML = this.config.title ? this.config.title : "Image Mask";
                 new Tooltip({
                     connectId: ["titleText"],
                     label: this.config.description,
@@ -125,6 +125,23 @@ define([
                 promise = def.promise;
             }
             return promise;
+        },
+        createCSSRules: function () {
+            var style = document.createElement('style');
+            style.type = "text/css";
+            document.getElementsByTagName('head')[0].appendChild(style);
+            var cssRules = {".titleBar": "width: 100%;height: 39px;background-color:" + this.config.widgetTitleColor + ";color:white;font-size: 1.3em;font-weight: bolder;",
+                ".basemapIcon:hover": "background-color: " + this.config.toolsIconColor + ";",
+                ".basemapSelected": "background-color: " + this.config.toolsIconColor + ";",
+                ".toolContainers:hover": "background-color: " + this.config.toolsIconColor + ";",
+                ".selected-widget": "background-color: " + this.config.toolsIconColor + ";",
+                ".claro .dijitDialogTitleBar": "background: " + this.config.widgetTitleColor + ";border: 0 none;border-bottom: 0 none;padding: 7px 10px;text-align: center;line-height: 16px;-webkit-box-sizing: content-box;box-sizing: content-box;font-weight: bolder;"
+            };
+            for (var a in cssRules) {
+                style.sheet.insertRule(a + "{" + cssRules[a] + "}", style.sheet.cssRules.length);
+            }
+
+
         },
         reportError: function (error) {
             // remove loading class from body
@@ -185,7 +202,17 @@ define([
                     this.setupBasemap();
                 } else
                     domStyle.set("basemapContainer", "display", "none");
-                if (this.config.operationalLayersFlag) {
+                var layers = this.config.itemInfo.itemData.operationalLayers;
+                var layersFlag = false;
+                for (var a = layers.length - 1; a >= 0; a--) {
+                    var title = layers[a].title || layers[a].layerObject.name || layers[a].id;
+                    if ((layers[a].layerType && layers[a].layerType !== "ArcGISTiledImageServiceLayer") && (title && (title.charAt(title.length - 1)) !== "_") && (title && (title.substr(title.length - 2)) !== "__") && ((layers[a].layerObject && layers[a].layerObject.serviceDataType && layers[a].layerObject.serviceDataType.substr(0, 16) !== "esriImageService") || (layers[a].layerType && layers[a].layerType !== "ArcGISImageServiceLayer"))) {
+                        layersFlag = true;
+                        break;
+                    }
+                }
+                
+                if (this.config.operationalLayersFlag && layersFlag) {
                     this.dockToolsActive++;
                     domStyle.set("dockContainer", "display", "block");
                     this.setupOperationalLayers();
@@ -214,13 +241,14 @@ define([
                     this.setupImageMeasurement();
                 } else
                     domStyle.set("measurementContainer", "display", "none");
-                if (this.config.editFlag) {
+                var featureLayers = JSON.parse(this.config.featureLayers);
+                if (this.config.editFlag && featureLayers && featureLayers.length > 0) {
                     this.dockToolsActive++;
                     domStyle.set("dockContainer", "display", "block");
                     this.setupEditor();
                 } else
                     domStyle.set("editorContainer", "display", "none");
-                if (this.config.bookmarkFlag)
+                if (this.config.bookmarkFlag && this.config.itemInfo.itemData.bookmarks)
                 {
                     this.dockToolsActive++;
                     domStyle.set("dockContainer", "display", "block");
@@ -263,9 +291,9 @@ define([
                     }
                 }));
                 setTimeout(lang.hitch(this, function () {
-                    if (this.config.aboutOnByDefault)
+                    if (this.config.toolOnByDefault === "about" && this.config.aboutFlag)
                         dom.byId("aboutContainer").click();
-                    else if (this.config.changeOnByDefault)
+                    else if (this.config.toolOnByDefault === "change" && this.config.changeDetectionFlag)
                         dom.byId("changeDetectionContainer").click();
                 }), 1000);
                 return response;
@@ -606,7 +634,7 @@ define([
             }
         },
         setupEditor: function () {
-            var html = "<div class='titleBar'><span class='titleBarTextSpan'>" + this.config.i18n.editor.title + "</span><button class='closeContainerButton'><img src='images/cancel.png' alt='X'/></button></div><br/><div style='margin:5px;overflow: auto;'><div id='templateDiv'></div><div id='editorDiv'></div><div id='errorEditor' style='color: #ee0000;'></div><br /></div>";
+            var html = "<div class='titleBar'><span class='titleBarTextSpan'>" + this.config.i18n.editor.title + "</span><button class='closeContainerButton'><img src='images/cancel.png' alt='X'/></button></div><br/><div style='margin:5px;overflow: auto;'>" + this.config.i18n.editor.text + "<div id='templateDiv' style='margin:5px;'></div><div id='editorDiv'></div><div id='errorEditor' style='color: #ee0000;'></div><br /></div>";
             this.setupToolContent("editorContainer", 3, html, this.config.i18n.editor.title, "editorNode", null);
             var layer = [], heightField;
 
@@ -639,8 +667,7 @@ define([
             var config = {
                 angularUnit: this.config.angularUnit,
                 linearUnit: this.config.linearUnit,
-                areaUnit: this.config.areaUnit,
-                displayMeasureResultInPopup: this.config.popupMeasurementFlag
+                areaUnit: this.config.areaUnit
             };
             this.measurementFunction = new Measurement({map: this.map, config: config});
             this.addClickEvent("measurementContainer", this.measurementFunction, "measurementNode");
@@ -656,9 +683,24 @@ define([
         setupChangeDetection: function () {
 
             this.setupToolContent("changeDetectionContainer", 0, changeDetectionHtml, this.config.i18n.changeDetection.title, "changeDetectionNode", "changeDetection");
-
+            
             var layers = this.config.itemInfo.itemData.operationalLayers;
-
+            if (this.config.imageSelectorLayer)
+                this.config.imageSelectorLayer = JSON.parse(this.config.imageSelectorLayer);
+            else
+                this.config.imageSelectorLayer = [];
+            if(!this.config.primaryLayer.id && this.config.imageSelectorLayer.length < 1){
+                for(var z = 0;z<=layers.length - 1;z++){
+                    if ((layers[z].type && layers[z].type === 'ArcGISTiledImageServiceLayer') || (layers[z].type && layers[z].type === 'ArcGISImageServiceLayer') || (this.map.getLayer(layers[z].id).serviceDataType && this.map.getLayer(layers[z].id).serviceDataType.indexOf("esriImageService") !== -1)) {
+                        this.config.primaryLayer.id = layers[z].id;
+                        this.config.imageSelectorLayer.push({
+                            id: layers[z].id,
+                            fields:[]
+                        });
+                        break;
+                    }
+                }
+            }
             var layer = [];
             var temp = {
                 defaultLayer: this.config.primaryLayer.id,
@@ -668,17 +710,30 @@ define([
                 autoRefresh: this.config.enableAutoRefresh,
                 changeMethods: {difference: this.config.difference, veg: this.config.veg, savi: this.config.savi, water: this.config.water, burn: this.config.burn}
             };
-            if (this.config.imageSelectorLayer)
-                this.config.imageSelectorLayer = JSON.parse(this.config.imageSelectorLayer);
+            
             var addLayer = true;
             for (var a = 0; a < layers.length; a++) {
-                if ((layers[a].type && layers[a].type === 'ArcGISTiledImageServiceLayer') || (layers[a].type && layers[a].type === 'ArcGISImageServiceLayer') || (this.map.getLayer(layers[a].id).serviceDataType && this.map.getLayer(layers[a].id).serviceDataType.substr(0, 16) === "esriImageService")) {
+                if ((layers[a].type && layers[a].type === 'ArcGISTiledImageServiceLayer') || (layers[a].type && layers[a].type === 'ArcGISImageServiceLayer') || (this.map.getLayer(layers[a].id).serviceDataType && this.map.getLayer(layers[a].id).serviceDataType.indexOf("esriImageService") !== -1)) {
                     for (var b = 0; b < this.config.imageSelectorLayer.length; b++) {
                         if (this.config.imageSelectorLayer[b].id === layers[a].id /*&& this.config.imageSelectorLayer[b].fields.length > 0*/ && layers[a].layerObject) {
-
+                            if(this.config.imageSelectorLayer[b].fields.length > 0){
+                                var field = this.config.imageSelectorLayer[b].fields[0];
+                            }else {
+                                var field = this.findField(layers[a].layerObject.fields, "esriFieldTypeDate", new RegExp(/acq[a-z]*[_]?Date/i));
+                                if(!field){
+                                    for(var v in layers[a].layerObject.fields){
+                                        if(layers[a].layerObject.fields[v].type === "esriFieldTypeDate"){
+                                            field = layers[a].layerObject.fields[v].name;
+                                            break;
+                                        }
+                                    }
+                                    if(!field)
+                                        field = layers[a].layerObject.fields[0].name;
+                                }
+                            }
                             var tempLayer = {
                                 changeDetection: true,
-                                imageField: this.config.imageSelectorLayer[b].fields.length > 0 ? this.config.imageSelectorLayer[b].fields[0] : (this.findField(layers[a].layerObject.fields, "esriFieldTypeDate", new RegExp(/acq[a-z]*[_]?Date/i))),
+                                imageField: field,
                                 objectID: this.findField(layers[a].layerObject.fields, "esriFieldTypeOID", new RegExp(/O[a-z]*[_]?ID/i)),
                                 category: this.findField(layers[a].layerObject.fields, "esriFieldTypeInteger", new RegExp(/Cate[a-z]*/i)),
                                 title: layers[a].title || layers[a].layerObject.name || layers[a].id
@@ -697,6 +752,8 @@ define([
                     }
                     if (layers[a].id !== this.config.primaryLayer.id)
                         this.map.getLayer(layers[a].id).hide();
+                    else
+                        this.map.getLayer(layers[a].id).show();
                 }
             }
             this.changeDetectionFunction = new ChangeDetection({map: this.map, config: temp, layers: layer, i18n: this.config.i18n.changeDetection, main: this});
