@@ -394,13 +394,14 @@ define([
                             var bbox = (this.geometry.xmin + ", " + this.geometry.ymin + ", " + this.geometry.xmax + ", " + this.geometry.ymax).toString();
                             var width = (this.geometry.xmax - this.geometry.xmin);
                             var height = (this.geometry.ymax - this.geometry.ymin);
-
+                            var bboxSR = this.geometry.spatialReference;
 
                         } else
                         {
                             var bbox = (this.map.extent.xmin + ", " + this.map.extent.ymin + ", " + this.map.extent.xmax + ", " + this.map.extent.ymax).toString();
                             var width = (this.map.extent.xmax - this.map.extent.xmin);
                             var height = (this.map.extent.ymax - this.map.extent.ymin);
+                            var bboxSR = this.map.spatialReference;
                         }
 
                         var pixelsize = parseFloat(registry.byId("pixelSize").get("value"));
@@ -465,6 +466,7 @@ define([
                                     f: "json",
                                     bbox: bbox,
                                     size: size,
+                                    bboxSR:JSON.stringify(bboxSR),
                                     compression: compression,
                                     format: format,
                                     //interpolation: this.imageServiceLayer.interpolation ? this.imageServiceLayer.interpolation : "RSP_BilinearInterpolation",
