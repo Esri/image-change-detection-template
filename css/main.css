@@ -319,7 +319,7 @@ body {
     text-align: center;
     font-size: 11px;
 }
-#stretchRendererTooltipDialog .dijitTooltipContainer, #addBookmarkTooltipDialog .dijitTooltipContainer {
+#colorDialog .dijitTooltipContainer, #addBookmarkTooltipDialog .dijitTooltipContainer {
     color:black;
     background: white;
     border-radius: 5px;
@@ -703,7 +703,7 @@ body {
 .iconHeight {
     height: 15px;
 }
-#addBtn,#addBookmark,#idapply,#changeDetectionClear,#changeDetectionApply,#saveIconBtn,#submitAgolBtn,#exportBtn, #applyAOI, #resetAOI,#dropDownImageList{
+#addBtn,#addBookmark,#idapply,#imageMaskClear,#imageMaskApply,#saveIconBtn,#submitAgolBtn,#exportBtn, #applyAOI, #resetAOI,#dropDownImageList, #colorButton{
     text-align: center;
     background: #fff;
     border: 1px solid #ddd;
@@ -719,7 +719,7 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-#addBtn:hover,#addBookmark:hover,#idapply:hover,#changeDetectionClear:hover,#changeDetectionApply:hover,#dropDownImageList:hover,#saveIconBtn:hover,#submitAgolBtn:hover,#exportBtn:hover{
+#addBtn:hover,#addBookmark:hover,#idapply:hover,#imageMaskClear:hover,#imageMaskApply:hover,#dropDownImageList:hover,#saveIconBtn:hover,#submitAgolBtn:hover,#exportBtn:hover,#colorButton:hover{
     background: #ddd;
 }
 
@@ -930,10 +930,47 @@ body {
     border-color: #ddd;
     background-image: linear-gradient(#27b2cf,#008299);
 }
-
+.mask-slider {
+    width:98%;
+    display: block;
+    margin-top: 8px;
+}
+.mask-slider-left {
+    width:98%;
+    display: block;
+    margin-top: 8px;
+}
+.mask-slider.dijitSlider  .dijitSliderRemainingBarH{
+    background-color:#008299;
+    border-color: #ddd;
+}
+/*.mask-slider.dijitSlider  .dijitSliderProgressBarH {
+    background-color: #ddd;
+    border-color: #ddd;
+    
+}*/
+.mask-slider-left.dijitSlider  .dijitSliderProgressBarH{
+    background-color:#008299;
+    border-color: #ddd;
+    background-image: linear-gradient(#27b2cf,#008299);
+}
+/*.mask-slider-left.dijitSlider  .dijitSliderRemainingBarH {
+    background-color: #ddd;
+    border-color: #ddd;
+    
+}*/
 /*.selected-widget {
     background-color:#008299;
 }*/
+.mask-histogram {
+    margin-top: 10px;
+    width: 100%; 
+    height: 9rem;
+    display: none;
+}
+.mask-align {
+    margin-top: 10px;
+}
 #basemapDialog .dijitDialogPaneContent {
     height: calc(100% - 50px);
 }

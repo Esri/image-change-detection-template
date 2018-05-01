@@ -83,7 +83,7 @@
                                 "value":"none"
                         },
                         {
-                        "label":"Change Detection",
+                        "label":"Image Mask",
                                 "value":"change"
                         },
                         {
@@ -253,10 +253,11 @@
                 {
                 "type": "conditional",
                         "condition": false,
-                        "fieldName": "changeDetectionFlag",
-                        "tooltip": "Enable Change Detection",
-                        "label": "Enable Change Detection",
+                        "fieldName": "imageMaskFlag",
+                        "tooltip": "Enable Image Mask",
+                        "label": "Enable Image Mask",
                         "items": [
+                            
                         {
                         "type":"paragraph",
                                 "value":"<p style='text-align:justify;font-family:verdana;margin-bottom:0px;'>Use the dropdown list to set the default layer in the app.</p>"
@@ -272,6 +273,33 @@
                                 ]
                                 }
                         },
+                        {
+                             "type":"options",
+                                "fieldName":"maskToolOptions",
+                                "tooltip":"",
+                                "label":"Tool:",
+                                "options":[
+                                {
+                                "label":"Mask",
+                                        "value":"mask"
+                                },
+                                {
+                                "label":"Change Detection",
+                                        "value":"change"
+                                },
+                                {
+                                "label":"Select in app",
+                                        "value":"both"
+                                }
+                                ]
+                        },
+                        {
+                "placeHolder":"Image Mask",
+                        "label":"Tool Name:",
+                        "fieldName":"imageMaskTitle",
+                        "type":"string",
+                        "tooltip":"Provide Tool Name"
+                },
                         {
                         "type":"options",
                                 "fieldName":"displayOptions",
@@ -665,7 +693,9 @@
                 "toolOnByDefault": "none",
                 "aboutText": "",
                 "operationalLayersFlag":false,
-                "changeDetectionFlag":true,
+                "imageMaskFlag":true,
+                "maskToolOptions":"mask",
+                "imageMaskTitle": "Image Mask",
                 "difference":true,
                 "veg":false,
                 "savi":false,

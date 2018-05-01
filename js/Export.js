@@ -186,6 +186,8 @@ define([
                         if (this.imageServiceLayer.id === "resultLayer") {
                             if (this.imageServiceLayer.changeMode === "mask" || this.imageServiceLayer.changeMode === "threshold")
                                 var renderer = this.modifyRenderingRule(this.imageServiceLayer.changeMode, this.imageServiceLayer.renderingRule);
+                        } else if (this.imageServiceLayer.maskMethod) {
+                            var renderer = this.modifyRenderer(this.imageServiceLayer.maskMethod, this.imageServiceLayer.renderingRule);
                         } else
                             var renderer = this.imageServiceLayer.renderingRule;
                         if (registry.byId("defineAgolExtent").checked) {
@@ -207,7 +209,7 @@ define([
                         }
                         var opacity = this.imageServiceLayer.opacity ? this.imageServiceLayer.opacity : 1;
                         var interpolation = this.imageServiceLayer.interpolation ? this.imageServiceLayer.interpolation : "RSP_BilinearInterpolation";
-                        var format = this.imageServiceLayer.format ? this.imageServiceLayer.format : "jpgpng";
+                        var format = this.imageServiceLayer.format && this.imageServiceLayer.format.indexOf("lerc") === -1 ? this.imageServiceLayer.format : "jpgpng";
                         var compressionQuality = this.imageServiceLayer.compressionQuality ? this.imageServiceLayer.compressionQuality : 100;
                         var itemData = {
                             "id": this.imageServiceLayer.id,
@@ -283,20 +285,20 @@ define([
                 activatePolygon: function () {
                     if (registry.byId("defineExtent").checked || registry.byId("defineAgolExtent").checked) {
                         this.map.setInfoWindowOnClick(false);
-                        if(registry.byId("defineExtent").checked){
-                        registry.byId("exportBtn").set("disabled", true);
-                        domStyle.set(document.getElementById("exportBtn"),"color","grey");
+                        if (registry.byId("defineExtent").checked) {
+                            registry.byId("exportBtn").set("disabled", true);
+                            domStyle.set(document.getElementById("exportBtn"), "color", "grey");
                         }
-                        if(registry.byId("defineAgolExtent").checked){
-                        registry.byId("submitAgolBtn").set("disabled", true);
-                        domStyle.set(document.getElementById("submitAgolBtn"),"color","grey");
+                        if (registry.byId("defineAgolExtent").checked) {
+                            registry.byId("submitAgolBtn").set("disabled", true);
+                            domStyle.set(document.getElementById("submitAgolBtn"), "color", "grey");
                         }
                         this.toolbarForExport.activate(Draw.POLYGON);
                     } else {
                         registry.byId("exportBtn").set("disabled", false);
                         registry.byId("submitAgolBtn").set("disabled", false);
-                        domStyle.set(document.getElementById("exportBtn"),"color","#333");
-                        domStyle.set(document.getElementById("submitAgolBtn"),"color","#333");
+                        domStyle.set(document.getElementById("exportBtn"), "color", "#333");
+                        domStyle.set(document.getElementById("submitAgolBtn"), "color", "#333");
                         this.toolbarForExport.deactivate();
                         this.map.setInfoWindowOnClick(true);
                         for (var k in this.map.graphics.graphics)
@@ -315,8 +317,8 @@ define([
                 getExtent: function (geometry) {
                     registry.byId("exportBtn").set("disabled", false);
                     registry.byId("submitAgolBtn").set("disabled", false);
-                    domStyle.set(document.getElementById("exportBtn"),"color","#333");
-                    domStyle.set(document.getElementById("submitAgolBtn"),"color","#333");
+                    domStyle.set(document.getElementById("exportBtn"), "color", "#333");
+                    domStyle.set(document.getElementById("submitAgolBtn"), "color", "#333");
                     var geometry = geometry.geometry;
                     for (var k in this.map.graphics.graphics)
                     {
@@ -363,16 +365,18 @@ define([
                     if (registry.byId("outputSp").getOptions())
                         registry.byId("outputSp").removeOption(registry.byId('outputSp').getOptions());
                     if (utm !== 1) {
-                        registry.byId("outputSp").addOption({label: "WGS84 UTM Zone " + (utm - 1) + "", value: wkid - 1});
+                        registry.byId("outputSp").addOption({label: this.i18n.utm + " " + (utm - 1) + "", value: wkid - 1});
                     } else
-                        registry.byId("outputSp").addOption({label: "WGS84 UTM Zone " + (utm + 59) + "", value: wkid + 59});
-                    registry.byId("outputSp").addOption({label: "WGS84 UTM Zone " + utm + "", value: wkid});
+                        registry.byId("outputSp").addOption({label: this.i18n.utm + " " + (utm + 59) + "", value: wkid + 59});
+                    registry.byId("outputSp").addOption({label: this.i18n.utm + " " + utm + "", value: wkid});
                     if (utm !== 60)
-                        registry.byId("outputSp").addOption({label: "WGS84 UTM Zone " + (utm + 1) + "", value: wkid + 1});
+                        registry.byId("outputSp").addOption({label: this.i18n.utm + " " + (utm + 1) + "", value: wkid + 1});
                     else
-                        registry.byId("outputSp").addOption({label: "WGS84 UTM Zone " + utm - 59 + "", value: wkid - 59});
+                        registry.byId("outputSp").addOption({label: this.i18n.utm + " " + utm - 59 + "", value: wkid - 59});
 
-                    registry.byId("outputSp").addOption({label: "WebMercatorAS", value: 102100});
+                    registry.byId("outputSp").addOption({label: this.i18n.mercator, value: 102100});
+                    if (this.imageServiceLayer.hasOwnProperty("spatialReference") && this.imageServiceLayer.spatialReference.wkid !== 102100)
+                        registry.byId("outputSp").addOption({label: this.i18n.default, value: this.imageServiceLayer.spatialReference.wkid});
                     var srsList = registry.byId("outputSp").getOptions();
                     var temp;
                     for (var a in srsList) {
@@ -428,7 +432,9 @@ define([
                                 if (this.imageServiceLayer.id === "resultLayer") {
                                     if (this.imageServiceLayer.changeMode === "mask" || this.imageServiceLayer.changeMode === "threshold")
                                         var renderer = this.modifyRenderingRule(this.imageServiceLayer.changeMode, this.imageServiceLayer.renderingRule);
-                                    else
+                                    else if (this.imageServiceLayer.maskMethod) {
+                                        var renderer = this.modifyRenderer(this.imageServiceLayer.maskMethod, this.imageServiceLayer.renderingRule);
+                                    } else
                                         var renderer = this.imageServiceLayer.renderingRule;
                                 } else
                                     var renderer = this.imageServiceLayer.renderingRule;
@@ -466,7 +472,7 @@ define([
                                     f: "json",
                                     bbox: bbox,
                                     size: size,
-                                    bboxSR:JSON.stringify(bboxSR),
+                                    bboxSR: JSON.stringify(bboxSR),
                                     compression: compression,
                                     format: format,
                                     //interpolation: this.imageServiceLayer.interpolation ? this.imageServiceLayer.interpolation : "RSP_BilinearInterpolation",
@@ -533,7 +539,7 @@ define([
                     if (mode === "mask") {
                         var positiveRange = registry.byId("positiveRange").get("value");
                         var negativeRange = registry.byId("negativeRange").get("value");
-                       
+
                         var remap = new RasterFunction();
                         remap.functionName = "Remap";
                         var remapArg = {};
@@ -656,6 +662,35 @@ define([
                     colormapArg.Raster = raster3;
                     colormap.outputPixelType = "U8";
                     colormap.functionArguments = colormapArg;
+
+                    return colormap;
+                },
+                modifyRenderer: function (maskProperties, renderer) {
+                    var remap = new RasterFunction();
+                    remap.functionName = "Remap";
+                    var argsRemap = {};
+                    argsRemap.Raster = renderer;
+                    if (maskProperties.method === "less") {
+                        argsRemap.InputRanges = [maskProperties.range[0], maskProperties.value];
+                        argsRemap.NoDataRanges = [maskProperties.value, maskProperties.range[1]];
+                    } else {
+                        argsRemap.InputRanges = [maskProperties.value, maskProperties.range[1]];
+                        argsRemap.NoDataRanges = [maskProperties.range[0], maskProperties.value];
+                    }
+                    argsRemap.OutputValues = [1];
+                    remap.functionArguments = argsRemap;
+                    remap.outputPixelType = 'U8';
+
+                    var color = maskProperties.color;
+                    var colorMask = [[1, parseInt(color[0]), parseInt(color[1]), parseInt(color[2])]];
+
+                    var colormap = new RasterFunction();
+                    colormap.functionName = "Colormap";
+                    colormap.outputPixelType = "U8";
+                    var argsColor = {};
+                    argsColor.Colormap = colorMask;
+                    argsColor.Raster = remap;
+                    colormap.functionArguments = argsColor;
 
                     return colormap;
                 },
