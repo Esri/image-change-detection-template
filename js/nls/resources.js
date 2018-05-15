@@ -68,6 +68,7 @@ define({
             method5: "Burn Index",
             method6: "Less than value",
             method7: "Greater than value",
+            method8: "Single Band",
             dropDown: "Show images in drop down list.",
             transparency: "Transparency(results)",
             slider: "Show images on slider.",
@@ -85,7 +86,9 @@ define({
             swipe:"Swipe",
             imageLabel: "image(s)",
             extent: "Draw polygon(s) to define extent",
-            colorPicker: "Color Picker"
+            colorPicker: "Color Picker",
+            refresh: "Refresh Button",
+            refreshTooltip: "Refresh query based on current extent."
         },
         editor: {
             title: "Editor",

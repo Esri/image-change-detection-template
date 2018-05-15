@@ -190,26 +190,21 @@ define([
                         var mosaicRule = this.imageServiceLayer.mosaicRule ? this.imageServiceLayer.mosaicRule.toJson() : null;
                         var bandIds = this.imageServiceLayer.bandIds ? [this.imageServiceLayer.bandIds] : [];
                         if (this.imageServiceLayer.id === "resultLayer") {
-                            if (this.imageServiceLayer.changeMode === "mask" || this.imageServiceLayer.changeMode === "threshold")
+                            if (this.imageServiceLayer.changeMode === "mask" || this.imageServiceLayer.changeMode === "threshold") {
+                                var skipClip = true;
                                 var renderer = this.modifyRenderingRule(this.imageServiceLayer.changeMode, this.imageServiceLayer.renderingRule);
-                        } else if (this.imageServiceLayer.maskMethod) {
-                            var renderer = this.modifyRenderer(this.imageServiceLayer.maskMethod, this.imageServiceLayer.renderingRule);
+                            } else if (this.imageServiceLayer.maskMethod) {
+                                var skipClip = true;
+                                var renderer = this.modifyRenderer(this.imageServiceLayer.maskMethod, this.imageServiceLayer.renderingRule);
+                            } else
+                                var renderer = this.imageServiceLayer.renderingRule;
                         } else
                             var renderer = this.imageServiceLayer.renderingRule;
-                        if (registry.byId("defineAgolExtent").checked) {
 
-                            var rasterClip = new RasterFunction();
-                            rasterClip.functionName = "Clip";
-                            var clipArguments = {};
-                            clipArguments.ClippingGeometry = this.geometryClip;
-                            clipArguments.ClippingType = 1;
-                            if (this.imageServiceLayer.renderingRule)
-                                clipArguments.Raster = renderer;
-                            else
-                                clipArguments.Raster = "$$";
-                            rasterClip.functionArguments = clipArguments;
 
-                            var renderingRule = rasterClip.toJson();
+                        if (registry.byId("defineAgolExtent").checked && !skipClip) {
+
+                            var renderingRule = (this.addClipFunction(renderer)).toJson();
                         } else {
                             var renderingRule = renderer ? renderer.toJson() : null;
                         }
@@ -475,35 +470,33 @@ define([
 
                             if (this.imageServiceLayer.renderingRule) {
                                 if (this.imageServiceLayer.id === "resultLayer") {
-                                    if (this.imageServiceLayer.changeMode === "mask" || this.imageServiceLayer.changeMode === "threshold")
+                                    if (this.imageServiceLayer.changeMode === "mask" || this.imageServiceLayer.changeMode === "threshold") {
+                                        var skipClip = true;
                                         var renderer = this.modifyRenderingRule(this.imageServiceLayer.changeMode, this.imageServiceLayer.renderingRule);
-                                    else if (this.imageServiceLayer.maskMethod) {
+                                    } else if (this.imageServiceLayer.maskMethod) {
+                                        var skipClip = true;
                                         var renderer = this.modifyRenderer(this.imageServiceLayer.maskMethod, this.imageServiceLayer.renderingRule);
                                     } else
                                         var renderer = this.imageServiceLayer.renderingRule;
                                 } else
                                     var renderer = this.imageServiceLayer.renderingRule;
 
-                                var raster = registry.byId("renderer").checked ? renderer : new RasterFunction({"rasterFunction": "None"});
-                                var renderingRule = raster;
 
                             } else
-                                var renderingRule = null;
-                            if (registry.byId("defineExtent").checked) {
+                                var renderer = null;
+                            if(registry.byId("renderer").checked)
+                                var renderingRule = renderer;
+                            else{
+                                var skipClip = false;
+                                var renderingRule =  new RasterFunction({"rasterFunction": "None"});
+                            }
+                            if (registry.byId("defineExtent").checked && !skipClip) {
 
-                                var rasterClip = new RasterFunction();
-                                rasterClip.functionName = "Clip";
-                                var clipArguments = {};
-                                clipArguments.ClippingGeometry = this.geometryClip;
-                                clipArguments.ClippingType = 1;
-                                if (raster)
-                                    clipArguments.Raster = raster;
-                                rasterClip.functionArguments = clipArguments;
-
-                                var renderingRule = JSON.stringify(rasterClip.toJson());
+                                var renderingRule = JSON.stringify((this.addClipFunction(renderingRule)).toJson());
                             } else {
                                 var renderingRule = renderingRule ? JSON.stringify(renderingRule.toJson()) : null;
                             }
+
 
                             var format = "tiff";
                             var compression = "LZ77";
@@ -694,12 +687,14 @@ define([
                         remapArithmetic3.functionArguments = remapArithmeticArg3;
 
 
-                        if (rendererTemp === "Clip") {
+                        if (rendererTemp === "Clip" && !registry.byId("defineAgolExtent").checked && !registry.byId("defineExtent").checked) {
                             renderer.functionArguments.Raster = remapArithmetic3;
                             var raster3 = renderer;
                         } else
                             var raster3 = remapArithmetic3;
                     }
+                    if (registry.byId("defineAgolExtent").checked || registry.byId("defineExtent").checked)
+                        raster3 = this.addClipFunction(raster3);
                     var colormap = new RasterFunction();
                     colormap.functionName = "Colormap";
                     var colormapArg = {};
@@ -715,7 +710,7 @@ define([
                     remap.functionName = "Remap";
                     var argsRemap = {};
                     argsRemap.Raster = renderer;
-                    if (maskProperties.method === "less") {
+                    if (maskProperties.mode === "less") {
                         argsRemap.InputRanges = [maskProperties.range[0], maskProperties.value];
                         argsRemap.NoDataRanges = [maskProperties.value, maskProperties.range[1]];
                     } else {
@@ -728,6 +723,8 @@ define([
 
                     var color = maskProperties.color;
                     var colorMask = [[1, parseInt(color[0]), parseInt(color[1]), parseInt(color[2])]];
+                    if (registry.byId("defineAgolExtent").checked || registry.byId("defineExtent").checked)
+                        remap = this.addClipFunction(remap);
 
                     var colormap = new RasterFunction();
                     colormap.functionName = "Colormap";
@@ -738,6 +735,19 @@ define([
                     colormap.functionArguments = argsColor;
 
                     return colormap;
+                },
+                addClipFunction: function (raster) {
+                    var rasterClip = new RasterFunction();
+                    rasterClip.functionName = "Clip";
+                    var clipArguments = {};
+                    clipArguments.ClippingGeometry = this.geometryClip;
+                    clipArguments.ClippingType = 1;
+                    if (raster)
+                        clipArguments.Raster = raster;
+                    else
+                        clipArguments.Raster = "$$";
+                    rasterClip.functionArguments = clipArguments;
+                    return rasterClip;
                 },
                 showLoading: function () {
                     domStyle.set("loadingExport", "display", "block");

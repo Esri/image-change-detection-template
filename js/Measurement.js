@@ -38,7 +38,7 @@ define([
 
                 },
                 createMeasureTool: function () {
-                    if(this.layer.mensurationCapabilities !== "None"){
+                    if(this.layer.mensurationCapabilities && this.layer.mensurationCapabilities !== "None"){
                     this.imageServiceMeasureWidget = new JSImageServiceMeasure({
                         map: this.map,
                         layer: this.layer,
@@ -98,7 +98,7 @@ define([
 
 
                             var layer = this.map.getLayer(this.map.layerIds[a]);
-                            if (layer && layer.visible && layer.serviceDataType && layer.serviceDataType.substr(0, 16) === "esriImageService" && layer.id !== this.map.resultLayer && layer.id !== "resultLayer" && layer.mensurationCapabilities) {
+                            if (layer && layer.visible && layer.serviceDataType && layer.serviceDataType.substr(0, 16) === "esriImageService" && layer.id !== this.map.resultLayer && layer.id !== "resultLayer") {
                                 this.layer = layer;
                                 break;
                             }

@@ -83,7 +83,7 @@ define([
             domConstruct.place('<img id="loadingImageMask" style="position: absolute;top:0;bottom: 0;left: 0;right: 0;margin:auto;z-index:100;" src="images/loading.gif">', "imageMaskNode");
             domStyle.set("loadingImageMask", "display", "none");
             this.layerInfos = this.layers;
-            window.addEventListener("resize", lang.hitch(this, this.resizeSlider));
+           // window.addEventListener("resize", lang.hitch(this, this.resizeSlider));
             registry.byId("maskTool").on("change", lang.hitch(this, this.setTool));
             registry.byId("imageSelector").on("change", lang.hitch(this, this.setFilter));
             registry.byId("dropDownImageList").on("click", lang.hitch(this, this.imageDisplayFormat));
@@ -97,7 +97,7 @@ define([
             }));
             registry.byId("comparisonImage").on("click", lang.hitch(this, function () {
                 if (this.layerSwipe) {
-                    this.moveSwipe(40, this.layerSwipe.invertPlacement, this.layerSwipe.layers);
+                    this.moveSwipe(document.getElementById("toolsContentContainer").clientWidth ? document.getElementById("toolsContentContainer").clientWidth + 15: 40, this.layerSwipe.invertPlacement, this.layerSwipe.layers);
                 }
                 this.setCurrentImage("comparison");
             }));
@@ -210,7 +210,7 @@ define([
                 registry.byId("layerSelector").set("value", this.config.defaultLayer);
             else
                 this.selectLayer(registry.byId("layerSelector").get("value"));
-            this.resizeSlider();
+            // this.resizeSlider();
 
             registry.byId("swipeHandler").on("change", lang.hitch(this, function (value) {
                 if (value) {
@@ -233,6 +233,7 @@ define([
                     layer.maskMethod.color = this.color;
                     layer.redraw();
                 }
+                domStyle.set("areaValue", "color", "rgb("+this.color[0]+","+this.color[1]+","+this.color[2]+")");
                 popup.close(registry.byId("colorDialog"));
             }));
             registry.byId("aoiExtent").on("change", lang.hitch(this, function (value) {
@@ -244,6 +245,15 @@ define([
                     this.map.setInfoWindowOnClick(true);
                     this.removeGraphic();
                     this.toolbar.deactivate();
+                }
+            }));
+            registry.byId("refreshImageSliderBtn").on("click", lang.hitch(this, this.imageSliderRefresh));
+            registry.byId("maskModeList").on("change", lang.hitch(this, function(value){
+                var layer = this.map.getLayer("resultLayer");
+                if(layer && layer.maskMethod){
+                this.createSlider(true);
+                    layer.redraw();
+                    layer.maskMethod.mode = value;
                 }
             }));
             this.toolbar = new Draw(this.map);
@@ -260,6 +270,7 @@ define([
                 domStyle.set("maskSelector", "display", "block");
                 domStyle.set("swipeDiv", "display", "none");
                 domStyle.set("imageCount", "display", "inline-block");
+                domStyle.set("maskMode", "display", "block");
                 domStyle.set("changeMode", "display", "none");
                 document.getElementById("settingsText").innerHTML = this.i18n.maskText;
                 document.getElementById("areaValueLabel").innerHTML = this.i18n.areaText3 + ":";
@@ -278,17 +289,19 @@ define([
                 domStyle.set("changeSelector", "display", "block");
                 domStyle.set("swipeDiv", "display", "inline-block");
                 domStyle.set("imageCount", "display", "none");
+                domStyle.set("maskMode", "display", "none");
                 document.getElementById("settingsText").innerHTML = this.i18n.changeText;
                 domStyle.set("changeSettingsDiv", "display", "block");
                 domStyle.set("maskSettingsDiv", "display", "none");
                 domStyle.set("imageMaskSettingsDiv", "display", "none");
-                if (this.imageField) {
+               
+              //  if (this.imageField) {
                     if (registry.byId("imageSelector").checked)
                         this.setFilter(true);
                     else
                         registry.byId("imageSelector").set("checked", true);
 
-                }
+                //}
             }
             this.populateMethods(value, registry.byId("method").get("value"));
         },
@@ -350,11 +363,10 @@ define([
                 registry.byId("method").addOption({label: this.i18n.method5, value: "burn"});
             }
             if (tool === "mask") {
-                registry.byId("method").addOption({label: this.i18n.method6, value: "less"});
-                registry.byId("method").addOption({label: this.i18n.method7, value: "more"});
+                registry.byId("method").addOption({label: this.i18n.method8, value: "one"});
             }
             if (currentValue !== registry.byId("method").get("value")) {
-                if (currentValue !== "difference" && currentValue !== "less" && currentValue !== "more")
+                if (currentValue !== "difference"  && currentValue !== "one")
                     registry.byId("method").set("value", currentValue);
                 else
                     this.setMethod(registry.byId("method").get("value"));
@@ -367,6 +379,11 @@ define([
                 connectId: ['dropDownImageList'],
                 position: ['below'],
                 label: this.i18n.dropDown
+            });
+            new Tooltip({
+                connectId: ["refreshImageSliderBtn"],
+                position: ['after', 'below'],
+                label: this.i18n.refreshTooltip
             });
         },
         onOpen: function () {
@@ -536,7 +553,7 @@ define([
                     console.info("LARGE pan: ", evt);
                     needsUpdate = true;
                 }
-
+               
                 if (needsUpdate && this.config.autoRefresh) {
                     this.panZoomUpdate = true;
                     if (registry.byId("imageSelector").checked)
@@ -1061,8 +1078,9 @@ define([
             }
             if (registry.byId("maskTool").get("value") === "mask") {
                 domStyle.set("areaValue", "color", "indianred");
+               // domStyle.set("maskMode", "display", "block");
                 domStyle.set("bandInputs", "display", "block");
-                if (value === "less" || value === "more")
+                if (value === "one")
                     domStyle.set("bandRowTable", "display", "none");
                 else
                     domStyle.set("bandRowTable", "display", "table-row");
@@ -1123,7 +1141,7 @@ define([
         getMinMaxCheck: function () {
             this.showLoading();
             var method = registry.byId("method").get("value");
-            if (method !== "difference" && method !== "less" && method !== "more") {
+            if (method !== "difference"  && method !== "one") {
                 var request = new esriRequest({
                     url: this.primaryLayer.url,
                     content: {
@@ -1525,7 +1543,7 @@ define([
 
             this.maskSlider = new HorizontalSlider({
                 name: "slider",
-                class: registry.byId("method").get("value") === "less" ? "mask-slider-left mask-align" : "mask-slider mask-align",
+                class: registry.byId("maskModeList").get("value") === "less" ? "mask-slider-left mask-align" : "mask-slider mask-align",
                 value: value,
                 minimum: this.min,
                 maximum: this.max,
@@ -1546,9 +1564,13 @@ define([
 
         },
         maskFunction: function (flag) {
+            var previousMethod = registry.byId("method").get("value");
             if (this.map.getLayer("resultLayer")) {
-                this.map.getLayer("resultLayer").suspend();
-                this.map.removeLayer(this.map.getLayer("resultLayer"));
+                var layer = this.map.getLayer("resultLayer");
+                if(layer.maskMethod)
+                    previousMethod = layer.maskMethod.method;
+                layer.suspend();
+                this.map.removeLayer(layer);
             }
             var method = registry.byId("method").get("value");
             if (method === "ndvi") {
@@ -1601,7 +1623,7 @@ define([
 
             var params = new ImageServiceParameters();
             params.renderingRule = raster;
-            this.createHistogram(params.renderingRule, false).then(lang.hitch(this, function (value) {
+            this.createHistogram(params.renderingRule, previousMethod === method ? true:false).then(lang.hitch(this, function (value) {
                 if (value) {
 
                     if (this.primaryLayer && this.primaryLayer.mosaicRule) {
@@ -1622,7 +1644,7 @@ define([
                     }));
 
                     maskLayer.title = "Mask Layer";
-                    maskLayer.maskMethod = {method: method, color: this.color, range: [this.min, this.max], value: this.maskSlider.get("value")};
+                    maskLayer.maskMethod = {method: method, color: this.color, range: [this.min, this.max], value: this.maskSlider.get("value"),mode: registry.byId("maskModeList").get("value")};
                     this.map.addLayer(maskLayer, this.resultLayerIndex);
                 }
             }));
@@ -1676,12 +1698,13 @@ define([
             var area = 0;
             var numPixels = pixelData.pixelBlock.width * pixelData.pixelBlock.height;
             var method = registry.byId("method").get("value");
+            var mode = registry.byId("maskModeList").get("value");
             var maskRangeValue = parseFloat(this.maskSlider.get("value"));
             if (this.maskSlider) {
                 if (!pixelData.pixelBlock.mask) {
                     pixelData.pixelBlock.mask = new Uint8Array(p1.length);
                     var noDataValue = pixelData.pixelBlock.statistics[0].noDataValue;
-                    if (method !== "less") {
+                    if (mode !== "less") {
                         for (var i = 0; i < numPixels; i++) {
                             if (p1[i] >= maskRangeValue && p1[i] !== noDataValue)
                             {
@@ -1708,7 +1731,7 @@ define([
                     }
                 } else {
                     var mask = pixelData.pixelBlock.mask;
-                    if (method !== "less") {
+                    if (mode !== "less") {
                         for (var i = 0; i < numPixels; i++) {
                             if (mask[i] === 1 && p1[i] >= maskRangeValue) {
                                 pr[i] = this.color[0];
@@ -1734,6 +1757,7 @@ define([
                 pixelData.pixelBlock.pixels = [pr, pg, pb];
 
                 pixelData.pixelBlock.pixelType = "U8";
+                 domStyle.set("areaValue", "color", "rgb("+this.color[0]+","+this.color[1]+","+this.color[2]+")");
                 html.set(document.getElementById("areaValue"), parseInt((area * this.pixelSizeX * this.pixelSizeY) / (1000000 * this.scale)) + " " + this.i18n.unit + "<sup>2</sup>");
             }
         },
@@ -1746,7 +1770,7 @@ define([
             this.scale = Math.pow((1 / Math.cos(latitude)), 2);
         },
         refreshSwipe: function () {
-            if (registry.byId("swipeHandler").checked && this.imageMaskTool === "change") {
+            if ((registry.byId("swipeHandler").checked || registry.byId("swipeHandler").disabled) && this.imageMaskTool === "change") {
                 if (this.primaryLayer && this.secondaryLayer && this.primaryLayer.mosaicRule && this.secondaryLayer.mosaicRule && this.primaryLayer.mosaicRule.lockRasterIds !== this.secondaryLayer.mosaicRule.lockRasterIds) {
                     if (this.primaryLayer.mosaicRule.lockRasterIds !== this.previousLayerInfo.primary || this.secondaryLayer.mosaicRule.lockRasterIds !== this.previousLayerInfo.secondary || !this.layerSwipe) {
                         if (this.layerSwipe) {
@@ -1754,13 +1778,18 @@ define([
                             this.layerSwipe.destroy();
                             this.layerSwipe = null;
                         }
+                        if(registry.byId("swipeHandler").disabled){
+                        registry.byId("swipeHandler").set("disabled", false);
+                        registry.byId("swipeHandler").set("checked", true);
+                    }
                         domConstruct.place("<div id='swipewidget'></div>", "mapDiv_root", "first");
                         if (!this.swipePosition) {
                             if (registry.byId("primaryImage").checked)
                                 this.swipePosition = this.map.width - 40;
                             else
-                                this.swipePosition = 40;
+                                this.swipePosition = document.getElementById("toolsContentContainer").clientWidth ? document.getElementById("toolsContentContainer").clientWidth + 15: 40;
                         }
+                        
                         this.layerSwipe = new LayerSwipe({
                             type: "vertical",
                             map: this.map,
@@ -1777,7 +1806,10 @@ define([
                         this.layerSwipe.destroy();
                         this.layerSwipe = null;
                         this.previousLayerInfo = {primary: null, secondary: null};
+                       
                     }
+                     registry.byId("swipeHandler").set("checked", false);
+                     registry.byId("swipeHandler").set("disabled", true);
                     domStyle.set("imageMaskSettingsDiv", "display", "none");
                 }
             } else if (this.layerSwipe) {
