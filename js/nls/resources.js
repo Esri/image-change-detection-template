@@ -30,12 +30,17 @@ define({
           title: "Operational Layers",
           error: "No operational layers in the map."
         },
-        changeDetection: {
-            title: "Change Detection",
+        imageMask: {
+            title: "Image Mask",
+            toolText:"Tool",
+            tool1:"Mask",
+            tool2:"Change Detection",
             layer: "Layer",
-            layerText: "Choose a layer for comparison.",
+            layerText: "Choose your imagery.",
+            maskImageSelector: "Enable Image Selector",
             imageSelectorText: "Choose two different images for comparison.",
             changeText: "Configure change detection.",
+            maskText: "Configure mask.",
             zoom: "Zoom in to select images.",
             primary: "Primary Image",
             comparison: "Comparison Image",
@@ -51,6 +56,8 @@ define({
             "red": "Red Band",
             "green":"Green Band",
             "swir": "Short-wave Infrared Band",
+            "band1": "Band A",
+            "band2": "Band B",
             mode1: "Difference Image",
             mode2: "Difference Mask",
             mode3: "Threshold Mask",
@@ -59,6 +66,9 @@ define({
             method3: "Soil Adjusted Veg. Index",
             method4: "Water Index",
             method5: "Burn Index",
+            method6: "Less than value",
+            method7: "Greater than value",
+            method8: "Single Band",
             dropDown: "Show images in drop down list.",
             transparency: "Transparency(results)",
             slider: "Show images on slider.",
@@ -71,8 +81,14 @@ define({
             date: "Date",
             areaText: "Area Decrease / Increase",
             areaText2: "Burnt / Post Fire Regrowth Area",
+            areaText3: "Area Covered",
             unit: "km",
-            swipe:"Swipe"
+            swipe:"Swipe",
+            imageLabel: "image(s)",
+            extent: "Draw polygon(s) to define extent",
+            colorPicker: "Color Picker",
+            refresh: "Refresh Button",
+            refreshTooltip: "Refresh query based on current extent."
         },
         editor: {
             title: "Editor",
@@ -102,7 +118,10 @@ define({
             error3: "PixelSize of export is restricted to",
             error4: "for this extent.",
             modeOption1: "Save to Portal",
-            modeOption2: "Save to Disk"
+            modeOption2: "Save to Disk",
+            default:"Default",
+            utm: "WGS84 UTM Zone",
+            mercator: "WebMercatorAS"
         },
         imageDate: {
             label: "Image Date"

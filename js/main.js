@@ -31,20 +31,20 @@ define([
     "dijit/Dialog", "dojo/parser",
     "dijit/registry",
     "dojo/text!application/templates/Export.html", "dojo/text!application/templates/Bookmark.html",
-    "dojo/text!application/templates/ChangeDetection.html",
+    "dojo/text!application/templates/ImageMask.html",
     "dijit/Tooltip",
     "esri/arcgis/utils",
     "application/MapUrlParams",
-    "application/Bookmark", "application/Editor", "application/Basemap", "application/OperationalLayers", "application/Export", "application/Measurement", "application/ImageDate", "application/ChangeDetection",
+    "application/Bookmark", "application/Editor", "application/Basemap", "application/OperationalLayers", "application/Export", "application/Measurement", "application/ImageDate", "application/ImageMask",
     "dojo/domReady!"
 ], function (
         declare, lang, kernel,
         on, query, focus,
         Deferred, Scalebar, Search, Locator, SearchSources,
         dom, ArcGISImageServiceLayer, domConstruct, domStyle, html, domClass, Dialog, parser,
-        registry, exportHtml, bookmarkHtml, changeDetectionHtml, Tooltip,
+        registry, exportHtml, bookmarkHtml, imageMaskHtml, Tooltip,
         arcgisUtils,
-        MapUrlParams, Bookmark, Editor, Basemap, OperationalLayers, Export, Measurement, ImageDate, ChangeDetection
+        MapUrlParams, Bookmark, Editor, Basemap, OperationalLayers, Export, Measurement, ImageDate, ImageMask
         ) {
     return declare(null, {
         config: {},
@@ -69,8 +69,10 @@ define([
                 document.getElementById("dockContainer").style.backgroundColor = this.config.background;
                 document.getElementById("titleText").style.color = this.config.color;
                 document.getElementById("primaryDate").style.color = this.config.color;
-
+                
                 this.createCSSRules();
+                if(this.config.imageMaskTitle)
+                  this.config.i18n.imageMask.title = this.config.imageMaskTitle;  
                 var toolContainers = document.getElementsByClassName("toolContainers");
                 for (var a = 0; a < toolContainers.length; a++) {
                     toolContainers[a].style.borderBottomColor = this.config.background;
@@ -203,7 +205,7 @@ define([
                 } else
                     domStyle.set("basemapContainer", "display", "none");
                 var layers = this.config.itemInfo.itemData.operationalLayers;
-                var layersFlag = false;
+                var layersFlag= false;
                 for (var a = layers.length - 1; a >= 0; a--) {
                     var title = layers[a].title || layers[a].layerObject.name || layers[a].id;
                     if ((layers[a].layerType && layers[a].layerType !== "ArcGISTiledImageServiceLayer") && (title && (title.charAt(title.length - 1)) !== "_") && (title && (title.substr(title.length - 2)) !== "__") && ((layers[a].layerObject && layers[a].layerObject.serviceDataType && layers[a].layerObject.serviceDataType.substr(0, 16) !== "esriImageService") || (layers[a].layerType && layers[a].layerType !== "ArcGISImageServiceLayer"))) {
@@ -218,13 +220,16 @@ define([
                     this.setupOperationalLayers();
                 } else
                     domStyle.set("operationalLayersContainer", "display", "none");
-
-                if (this.config.changeDetectionFlag) {
+               /* if(this.config.changeDetectionFlag || this.config.changeDetectionFlag === false){
+                    this.config.imageMaskFlag = this.config.changeDetectionFlag;
+                    this.config.maskToolOptions = "change";
+                }*/
+                if (this.config.imageMaskFlag) {
                     domStyle.set("dockContainer", "display", "block");
                     this.dockToolsActive++;
-                    this.setupChangeDetection();
+                    this.setupImageMask();
                 } else
-                    domStyle.set("changeDetectionContainer", "display", "none");
+                    domStyle.set("imageMaskContainer", "display", "none");
 
 
                 if (this.config.exportFlag) {
@@ -235,7 +240,15 @@ define([
                     domStyle.set("exportContainer", "display", "none");
                 if (this.config.imageDateFlag)
                     this.setupImageDate();
-                if (this.config.measurementFlag) {
+                var measurementFlag = false;
+                for (var a = layers.length - 1; a >= 0; a--) {
+                    var title = layers[a].title || layers[a].layerObject.name || layers[a].id;
+                    if ((layers[a].layerType && layers[a].layerType === "ArcGISTiledImageServiceLayer") || ((layers[a].layerObject && layers[a].layerObject.serviceDataType && layers[a].layerObject.serviceDataType.substr(0, 16) === "esriImageService") || (layers[a].layerType && layers[a].layerType === "ArcGISImageServiceLayer"))) {
+                        measurementFlag = true;
+                        break;
+                    }
+                }
+                if (this.config.measurementFlag && measurementFlag) {
                     this.dockToolsActive++;
                     domStyle.set("dockContainer", "display", "block");
                     this.setupImageMeasurement();
@@ -293,8 +306,8 @@ define([
                 setTimeout(lang.hitch(this, function () {
                     if (this.config.toolOnByDefault === "about" && this.config.aboutFlag)
                         dom.byId("aboutContainer").click();
-                    else if (this.config.toolOnByDefault === "change" && this.config.changeDetectionFlag)
-                        dom.byId("changeDetectionContainer").click();
+                    else if (this.config.toolOnByDefault === "change" && this.config.imageMaskFlag)
+                        dom.byId("imageMaskContainer").click();
                 }), 1000);
                 return response;
             }), this.reportError);
@@ -586,15 +599,33 @@ define([
             var layer = [];
             if (this.config.imageDateLayer) {
                 this.config.imageDateLayer = JSON.parse(this.config.imageDateLayer);
+            
                 for (var a = 0; a < layers.length; a++) {
                     for (var b = 0; b < this.config.imageDateLayer.length; b++) {
-                        if (this.config.imageDateLayer[b].id === layers[a].id && this.config.imageDateLayer[b].fields.length > 0) {
+                        if (this.config.imageDateLayer[b].id === layers[a].id) {
+                            if(this.config.imageDateLayer[b].fields.length > 0){
+                                var field = this.config.imageDateLayer[b].fields[0];
+                            }else {
+                                var field = this.findField(layers[a].layerObject.fields, "esriFieldTypeDate", new RegExp(/acq[a-z]*[_]?Date/i));
+                                if(!field){
+                                    for(var v in layers[a].layerObject.fields){
+                                        if(layers[a].layerObject.fields[v].type === "esriFieldTypeDate"){
+                                            field = layers[a].layerObject.fields[v].name;
+                                            break;
+                                        }
+                                    }
+                                    
+                                }
+                            }
+                            if(field){
                             var tempLayer = {
-                                dateField: this.config.imageDateLayer[b].fields[0],
+                                dateField: field,
                                 title: layers[a].title || layers[a].layerObject.name || layers[a].id
                             };
                             layer[layers[a].id] = tempLayer;
+                            }
                             break;
+                        
                         }
                     }
                 }
@@ -680,9 +711,9 @@ define([
 
             this.addClickEvent("exportContainer", this.exportFunction, "exportNode");
         },
-        setupChangeDetection: function () {
+        setupImageMask: function () {
 
-            this.setupToolContent("changeDetectionContainer", 0, changeDetectionHtml, this.config.i18n.changeDetection.title, "changeDetectionNode", "changeDetection");
+            this.setupToolContent("imageMaskContainer", 0, imageMaskHtml, this.config.i18n.imageMask.title, "imageMaskNode", "imageMask");
             
             var layers = this.config.itemInfo.itemData.operationalLayers;
             if (this.config.imageSelectorLayer)
@@ -703,6 +734,7 @@ define([
             }
             var layer = [];
             var temp = {
+                tool: this.config.maskToolOptions,
                 defaultLayer: this.config.primaryLayer.id,
                 display: this.config.displayOptions,
                 zoomLevel: this.config.zoomLevel,
@@ -756,8 +788,8 @@ define([
                         this.map.getLayer(layers[a].id).show();
                 }
             }
-            this.changeDetectionFunction = new ChangeDetection({map: this.map, config: temp, layers: layer, i18n: this.config.i18n.changeDetection, main: this});
-            this.addClickEvent("changeDetectionContainer", this.changeDetectionFunction, "changeDetectionNode");
+            this.imageMaskFunction = new ImageMask({map: this.map, config: temp, layers: layer, i18n: this.config.i18n.imageMask, main: this});
+            this.addClickEvent("imageMaskContainer", this.imageMaskFunction, "imageMaskNode");
         },
         findField: function (fields, dataType, regExpr) {
             var initialVal = "";
@@ -802,7 +834,8 @@ define([
         addClickEvent: function (container, toolObject, node) {
             var openForFirstTime = true;
             on(dom.byId(container), "click", lang.hitch(this, function (event) {
-
+                if(registry.byId("basemapDialog") && registry.byId("basemapDialog").open)
+                registry.byId("basemapDialog").hide();
                 if (event.type === "click" || event.which === 13 || event.which === 32) {
                     if (domClass.contains(container, "selected-widget")) {
                         this.hideContentPanel();
