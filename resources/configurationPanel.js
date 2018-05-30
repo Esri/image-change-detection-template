@@ -9,14 +9,14 @@
                 },
                 {
                 "placeHolder":"Enter the title",
-                        "label":"Title:",
+                        "label":"Title for ArcGIS Online item:",
                         "fieldName":"title",
                         "type":"string",
                         "tooltip":"Provide App Name"
                 },
                 {
                 "placeHolder":"Description",
-                        "label":"Description:",
+                        "label":"Description for ArcGIS Online item:",
                         "fieldName":"description",
                         "type":"string",
                         "tooltip":"Provide exciting info for the App title tooltip.",
@@ -75,8 +75,8 @@
                 {
                 "type":"options",
                         "fieldName":"toolOnByDefault",
-                        "label":"Specify active tool at app startup",
-                        "tooltip":"",
+                        "label":"Specify the active tool at start-up",
+                        "tooltip":"Pick a tool to open automatically when the app loads.",
                         "options":[
                         {
                         "label":"None",
@@ -92,15 +92,14 @@
                         }
                         ]
                 },
-                {
-                "type":"paragraph",
-                        "value":"<span style='text-align: justify;font-family: verdana;'>Use the About tool to give your app context. Use this widget to explain to the user what the purpose of the app is and how to get started. Click 'Turn on the About widget when the app starts' to make your About text active any time a person opens your app.</span>"
-                },
+                
                 {
                 "type": "conditional",
                         "condition": false,
                         "fieldName": "aboutFlag",
                         "label": "Enable about tool",
+                        "label": "Enable the About tool",
+                        "tooltip": "Tell users what the app does.",
                         "items": [
                         {
                         "type": "string",
@@ -111,134 +110,126 @@
                         }
                         ]
                 },
+                 {
+        "type":"boolean",
+                "label":"Enable Basemap Gallery",
+                "fieldName":"basemapFlag",
+                "tooltip":"Let users choose a basemap."
+        },
+        {
+        "type":"conditional",
+                "condition":false,
+                "fieldName":"scalebarFlag",
+                "label":"Enable Scalebar",
+                "tooltip":"Add a scalebar to your app.",
+                "items":[
                 {
-                "type":"boolean",
-                        "label":"Enable Basemap Gallery",
-                        "fieldName":"basemapFlag",
-                        "tooltip":"Basemap Selector"
-                },
-                {
-                "type":"conditional",
-                        "condition":false,
-                        "fieldName":"scalebarFlag",
-                        "label":"Enable Scalebar",
-                        "tooltip":"Display Scalebar",
-                        "items":[
+                "type":"options",
+                        "fieldName":"scalebarPosition",
+                        "label":"Scalebar Position",
+                        "toolbar":"Select the Scalebar position on the map.",
+                        "options":[
                         {
-                        "type":"options",
-                                "fieldName":"scalebarPosition",
-                                "label":"Scalebar Position",
-                                "toolbar":"Select the Scalebar position on the map.",
-                                "options":[
-                                {
-                                "label":"Top Left",
-                                        "value":"top-left"
-                                },
-                                {
-                                "label":"Top Right",
-                                        "value":"top-right"
-                                },
-                                {
-                                "label":"Bottom Left",
-                                        "value":"bottom-left"
-                                },
-                                {
-                                "label":"Bottom Right",
-                                        "value":"bottom-right"
-                                },
-                                {
-                                "label":"Top Center",
-                                        "value":"top-center"
-                                },
-                                {
-                                "label":"Bottom Center",
-                                        "value":"bottom-center"
-                                }
-                                ]
+                        "label":"Top Left",
+                                "value":"top-left"
                         },
                         {
-                        "type":"options",
-                                "fieldName":"scalebarStyle",
-                                "label":"Scalebar Style",
-                                "toolbar":"Select the style for the scalebar.",
-                                "options":[
-                                {
-                                "label":"Ruler",
-                                        "value":"ruler"
-                                },
-                                {
-                                "label":"Line",
-                                        "value":"line"
-                                }
-                                ]
+                        "label":"Top Right",
+                                "value":"top-right"
                         },
                         {
-                        "type":"options",
-                                "fieldName":"scalebarUnit",
-                                "label":"Scalebar Unit",
-                                "toolbar":"Select the Scalebar units.",
-                                "options":[
-                                {
-                                "label":"English",
-                                        "value":"english"
-                                },
-                                {
-                                "label":"Metric",
-                                        "value":"metric"
-                                },
-                                {
-                                "label":"Both",
-                                        "value":"dual"
-                                }
-                                ]
+                        "label":"Bottom Left",
+                                "value":"bottom-left"
+                        },
+                        {
+                        "label":"Bottom Right",
+                                "value":"bottom-right"
+                        },
+                        {
+                        "label":"Top Center",
+                                "value":"top-center"
+                        },
+                        {
+                        "label":"Bottom Center",
+                                "value":"bottom-center"
                         }
                         ]
                 },
                 {
-                "type":"paragraph",
-                        "value":"<span style='text-align: justify;font-family: verdana;'>Enable the Bookmark tool to let users select any bookmarks that are saved as a part of your web map. Additionally, users can add temporary bookmarks while they use the app (these will disappear if the app is closed or refreshed).</span>"
-                },
-                {
-                "type":"boolean",
-                        "label": "Enable Bookmark tool",
-                        "fieldName": "bookmarkFlag",
-                        "tooltip": "Bookmarks"
-                },
-                {
-                "type":"paragraph",
-                        "value":"<p style='text-align: justify;font-family: verdana;margin:20px 0px 0px 0px;'>The Export tool saves the topmost visible imagery layer, either to the user's ArcGIS Online account as an imagery layer item or to the user's computer as a TIFF file of the current area of interest.</p>"
-                },
-                {
-                "type":"conditional",
-                        "condition":false,
-                        "label":"Enable Export Tool",
-                        "fieldName":"exportFlag",
-                        "items":[
+                "type":"options",
+                        "fieldName":"scalebarStyle",
+                        "label":"Scalebar Style",
+                        "toolbar":"Select the style for the scalebar.",
+                        "options":[
                         {
-                        "type":"paragraph",
-                                "value":"<p style='text-align: justify;font-family: verdana;margin-bottom:0px;'>Select which export options will be available to the user.</p>"
+                        "label":"Ruler",
+                                "value":"ruler"
                         },
                         {
-                        "type":"options",
-                                "fieldName":"exportType",
-                                "label":"Set default Mode: ",
-                                "options":[
-                                {
-                                "label":"Save to Portal",
-                                        "value":"agol"
-                                },
-                                {
-                                "label":"Save to Disk",
-                                        "value":"disk"
-                                },
-                                {
-                                "label":"Select in app",
-                                        "value":"both"
-                                }
-                                ]
+                        "label":"Line",
+                                "value":"line"
                         }
                         ]
-                }, {
+                },
+                {
+                "type":"options",
+                        "fieldName":"scalebarUnit",
+                        "label":"Scalebar Unit",
+                        "toolbar":"Select the Scalebar units.",
+                        "options":[
+                        {
+                        "label":"English",
+                                "value":"english"
+                        },
+                        {
+                        "label":"Metric",
+                                "value":"metric"
+                        },
+                        {
+                        "label":"Both",
+                                "value":"dual"
+                        }
+                        ]
+                }
+                ]
+        },
+        
+        {
+        "type":"boolean",
+                "label": "Enable Bookmark tool",
+                "fieldName": "bookmarkFlag",
+                "tooltip": "Users can navigate using bookmarks from your web map."
+        },
+        
+        {
+        "type":"conditional",
+                "condition":false,
+                "label":"Enable Export Tool",
+                "fieldName":"exportFlag",
+                "tooltip":"Let users export images to their local machine or to their ArcGIS Online portal.",
+                "items":[
+                
+                {
+                "type":"options",
+                        "fieldName":"exportType",
+                        "label":"Set default Mode: ",
+                        "options":[
+                        {
+                        "label":"Save to Portal",
+                                "value":"agol"
+                        },
+                        {
+                        "label":"Save to Disk",
+                                "value":"disk"
+                        },
+                        {
+                        "label":"Select in app",
+                                "value":"both"
+                        }
+                        ]
+                }
+                ]
+        }, {
                 "type": "appproxies"
                 }
                 ]
@@ -414,15 +405,13 @@
                                 "tooltip":"Normalized Burn Ratio, or NBR"
                         }
                         ]
-                }, {
-                "type":"paragraph",
-                        "value":"<p style='text-align: justify;font-family: verdana;'>Image Date will display the date of the most central image from the active layer in the theme header next to the app name.</p>"
-                },
-                {
+                }, 
+                 {
                 "type":"conditional",
                         "condition":false,
                         "fieldName":"imageDateFlag",
                         "label":"Enable Image Date",
+                        "tooltip": "Show the active image's Image Date in the app header.",
                         "items":[
                         {
                         "type": "string",
@@ -451,17 +440,15 @@
                                         "esriFieldTypeDate"
                                 ]
                                 }
-                        }  ]
-                }, 
-                {
-                "type":"paragraph",
-                        "value":"<p style='text-align:justify;font-family: verdana;'>The Image Measurement tool allows you to perform measurements on image services with mensuration capability. Mensuration applies geometric rules to find the height, area, or location of a feature.</p>"
+                        }
+                        ]
                 },
                 {
                 "type":"conditional",
                         "condition":false,
                         "fieldName":"measurementFlag",
-                        "label":"Enable Image Measurement",
+                        "label":"Enable Image Measurement tool",
+                        "tooltip": "Let users find the height, area, distance, or location of a feature.",
                         "items":[
                         {
                         "type":"paragraph",
@@ -594,30 +581,25 @@
         {
         "category":"Operational Layers",
                 "fields":[
-                {
-                "type":"paragraph",
-                        "value":"<p style='text-align: justify;font-family: verdana;'>The Operational Layers tool allows users to change the visibility of non-imagery layers (feature layers or tile layers, for example), as well as to view the legend of each non-imagery layer. This tool is not required if the user will be working with one operational layer and not turning it on and off.</p>"
-                },
+
                 {
                 "type":"boolean",
                         "fieldName":"operationalLayersFlag",
-                        "label":"Enable Operational Layers tool"
-                },
-                {
-                "type":"paragraph",
-                        "value":"<p style='text-align:justify;font-family: verdana;margin-bottom:0px;'>The Editor tool allows users to edit feature layers (to pinpoint locations, delineate boundaries, or add additional notes, among other uses).<br><br><br>Enable the Editor tool and select the feature layers that users will be able to edit in-app. This tool requires <a href='http://doc.arcgis.com/en/arcgis-online/share-maps/manage-hosted-feature-layers.htm' target='_blank'>editable hosted feature layers</a> in the app's web map.</p>"
+                        "label":"Enable the Operational Layers tool",
+                        "tooltip": "Let users turn non-imagery layers on and off."
                 },
                 {
                 "type":"conditional",
                         "condition":false,
                         "fieldName":"editFlag",
-                        "label":"Enable Edit Tool",
+                        "label":"Enable the Editor Tool",
+                        "tooltip": "Let users edit feature layers in-app.",
                         "items":[
                         {
-                        "label":"Turn on the layers to allow editing.<br />For each editable feature layer, select the feature layer field in which to record the date from the active image. (optional)",
+                        "label":"Turn on feature layer(s) to allow editing.<br />Optional: Select a field to record the active image's date for each feature the user adds.",
                                 "fieldName":"featureLayers",
                                 "type":"multilayerandfieldselector",
-                                "tooltip":"Select the feature layer field in which to record the date from the active image.",
+                                "tooltip":"Turn on at least one layer to allow editing.",
                                 "layerOptions":{
                                 "supportedTypes":[
                                         "FeatureLayer"
@@ -630,10 +612,10 @@
                                 }
                         },
                         {
-                        "label":"For each editable feature layer, select the feature layer field in which to record the height from the active image. (optional)",
+                        "label":"Turn on feature layer(s) to allow editing.<br />Optional: Select a field to record the active image's height for each feature the user adds(if the imagery supports it).",
                                 "fieldName":"featureLayersHeightField",
                                 "type":"multilayerandfieldselector",
-                                "tooltip":"Select the feature layer field in which to record the height from the active image.",
+                                "tooltip":"Optional: Select a layer and field to record image height.",
                                 "layerOptions":{
                                 "supportedTypes":[
                                         "FeatureLayer"
@@ -650,20 +632,21 @@
                                 }
                         }
                         ]
+                },
+                {
+                "type":"paragraph",
+                        "value":"<p style='text-align: justify;font-family: verdana;margin:20px 0px -10px; 0px;'><u>Note</u>:  The Editor tool requires <a href='http://doc.arcgis.com/en/arcgis-online/manage-data/manage-hosted-feature-layers.htm' target='_blank'>editable hosted feature layers</a> in the app's web map.</p>"
                 }
                 ]
                 }, {
 "category": "Search",
         "fields": [
         {
-        "type":"paragraph",
-                "value":"<span style='text-align: justify;font-family: verdana;'>Enable search to allow users to find a location or data in the map. Configure the search settings to refine the experience in your app by setting the default search resource, placeholder text, etc.</span>"
-        },
-        {
         "type":"conditional",
                 "condition":false,
                 "fieldName":"search",
-                "label":"Enable search tool",
+                "label":"Enable the Search tool",
+                 "tooltip": "Let users search for a location or data in the app.",
                 "items":[
                 {
                 "type":"search",

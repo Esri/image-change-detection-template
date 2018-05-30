@@ -283,6 +283,21 @@ body {
     text-align: center;
 
 }
+.titleHeader {
+    padding: 0.8em 0px;
+    cursor: pointer;
+    width: 100%;
+    text-align: justify;
+    background: white;
+    border: 0px solid transparent;
+    font: inherit;
+}
+.listExpandBtn {
+    float: right;
+    font-size: 1.5em;
+    line-height: 0.9;
+
+}
 .claro .dijitTextBox .dijitInputField {
     padding: 4px 1px;
 }

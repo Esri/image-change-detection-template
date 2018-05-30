@@ -15,7 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////
 define([
     'dojo/_base/declare', "dojo/Evented",
-    "dojo/html",
+    "dojo/html", "dojo/dom-class",
     "dijit/registry",
     "dojo/_base/lang",
     "dojo/dom-style", "esri/geometry/webMercatorUtils",
@@ -28,7 +28,7 @@ define([
 ],
         function (
                 declare, Evented,
-                html,
+                html, domClass,
                 registry,
                 lang, domStyle, webMercatorUtils, SpatialReference, GeometryService, ProjectParameters, Deferred, Extent, Polygon, esriRequest, bundle, domConstruct, arcgisPortal, Color, Draw, domAttr, RasterFunction) {
             return declare("application.Export", [Evented], {
@@ -51,29 +51,7 @@ define([
                         if (value === "agol") {
                             domStyle.set("saveAgolContainer", "display", "block");
                             domStyle.set("exportSaveContainer", "display", "none");
-                            registry.byId("defineExtent").set("checked", false);
-                            if (registry.byId("defineAgolExtent").checked) {
-                                this.toolbarForExport.activate(Draw.POLYGON);
-                                this.map.setInfoWindowOnClick(false);
-                            }
-                            for (var k in this.map.graphics.graphics)
-                            {
-                                if (this.map.graphics.graphics[k].geometry.type === "polygon") {
-                                    if (this.map.graphics.graphics[k].symbol.color.r === 200)
-                                    {
-                                        this.map.graphics.remove(this.map.graphics.graphics[k]);
-                                        break;
-                                    }
-                                }
-                            }
-                            this.geometry = null;
                         } else {
-
-                            registry.byId("defineAgolExtent").set("checked", false);
-                            if (registry.byId("defineExtent").checked) {
-                                this.toolbarForExport.activate(Draw.POLYGON);
-                                this.map.setInfoWindowOnClick(false);
-                            }
                             domStyle.set("saveAgolContainer", "display", "none");
                             domStyle.set("exportSaveContainer", "display", "block");
                         }
@@ -88,7 +66,6 @@ define([
                     }));
                     registry.byId("exportBtn").on("click", lang.hitch(this, this.exportLayer));
                     registry.byId("defineExtent").on("change", lang.hitch(this, this.activatePolygon));
-                    registry.byId("defineAgolExtent").on("change", lang.hitch(this, this.activatePolygon));
                     if (this.map) {
                         this.map.on("update-start", lang.hitch(this, this.showLoading));
                         this.map.on("update-end", lang.hitch(this, this.hideLoading));
@@ -98,7 +75,21 @@ define([
                         this.toolbarForExport = new Draw(this.map);
                         dojo.connect(this.toolbarForExport, "onDrawComplete", lang.hitch(this, this.getExtent));
                     }
+                    document.getElementById("advanceSaveBtn").addEventListener("click", lang.hitch(this, this.expandMenu));
                     this.resizeContainer();
+                    this.geometryService = new GeometryService("https://utility.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
+                },
+                expandMenu: function () {
+                    var node = document.getElementById("advanceSaveBtn").children[1];
+                    if (domClass.contains(node, "launchpad-icon-arrow-right")) {
+                        domClass.remove(node, "launchpad-icon-arrow-right");
+                        domClass.add(node, "launchpad-icon-arrow-down");
+                        domStyle.set("advanceSaveContainer", "display", "block");
+                    } else {
+                        domStyle.set("advanceSaveContainer", "display", "none");
+                        domClass.remove(node, "launchpad-icon-arrow-down");
+                        domClass.add(node, "launchpad-icon-arrow-right");
+                    }
                 },
                 resizeContainer: function () {
                     if (window.innerWidth > 1200) {
@@ -109,7 +100,6 @@ define([
                         document.getElementById("itemDescription").style.height = "80px";
                         document.getElementById("itemTitle").style.height = "40px";
                         document.getElementById("itemTags").style.height = "40px";
-                        document.getElementById("pixelSize").style.width = "100px";
                     } else if (window.innerWidth > 1000) {
                         document.getElementById("itemTitle").style.width = "180px";
                         document.getElementById("itemTags").style.width = "180px";
@@ -117,7 +107,6 @@ define([
                         document.getElementById("itemDescription").style.height = "70px";
                         document.getElementById("itemTitle").style.height = "36px";
                         document.getElementById("itemTags").style.height = "36px";
-                        document.getElementById("pixelSize").style.width = "90px";
                     } else if (window.innerWidth > 800) {
                         document.getElementById("itemTitle").style.width = "160px";
                         document.getElementById("itemTags").style.width = "160px";
@@ -125,7 +114,6 @@ define([
                         document.getElementById("itemDescription").style.height = "60px";
                         document.getElementById("itemTitle").style.height = "32px";
                         document.getElementById("itemTags").style.height = "32px";
-                        document.getElementById("pixelSize").style.width = "80px";
                     } else if (window.innerWidth > 600) {
                         document.getElementById("itemTitle").style.width = "140px";
                         document.getElementById("itemTags").style.width = "140px";
@@ -133,7 +121,6 @@ define([
                         document.getElementById("itemDescription").style.height = "50px";
                         document.getElementById("itemTitle").style.height = "28px";
                         document.getElementById("itemTags").style.height = "28px";
-                        document.getElementById("pixelSize").style.width = "70px";
                     } else {
                         document.getElementById("itemTitle").style.width = "120px";
                         document.getElementById("itemTags").style.width = "120px";
@@ -141,7 +128,6 @@ define([
                         document.getElementById("itemDescription").style.height = "40px";
                         document.getElementById("itemTitle").style.height = "24px";
                         document.getElementById("itemTags").style.height = "24px";
-                        document.getElementById("pixelSize").style.width = "60px";
                     }
                 },
                 setSavingType: function () {
@@ -177,7 +163,6 @@ define([
                         this.extentchangeHandler = null;
                     }
                     registry.byId("defineExtent").set("checked", false);
-                    registry.byId("defineAgolExtent").set("checked", false);
                 },
                 saveLayerToArcGIS: function () {
 
@@ -202,7 +187,7 @@ define([
                             var renderer = this.imageServiceLayer.renderingRule;
 
 
-                        if (registry.byId("defineAgolExtent").checked && !skipClip) {
+                        if (registry.byId("defineExtent").checked && !skipClip) {
 
                             var renderingRule = (this.addClipFunction(renderer)).toJson();
                         } else {
@@ -281,8 +266,11 @@ define([
                                 var psy = height / widthMax;
                                 var servicePixel = (this.imageServiceLayer && this.imageServiceLayer.pixelSizeX) ? this.imageServiceLayer.pixelSizeX : 0;
                                 var ps = Math.max(psx, psy, servicePixel);
-                                var ps = parseFloat(ps) + 0.001;
+                                var ps = parseFloat(ps);
                                 registry.byId("pixelSize").set("value", ps.toFixed(3));
+                                registry.byId("pixelSize").set("constraints", {min: parseFloat(ps.toFixed(3)), place: 0});
+                                registry.byId("pixelSize").set("rangeMessage", this.i18n.error3 + " " + ps.toFixed(3) + " " + this.i18n.error4);
+                                this.currentPixelSize = ps;
                             }
                         }
                         this.previousSpatialReference = registry.byId("outputSp").get("value");
@@ -291,16 +279,12 @@ define([
                     }));
                 },
                 activatePolygon: function () {
-                    if (registry.byId("defineExtent").checked || registry.byId("defineAgolExtent").checked) {
+                    if (registry.byId("defineExtent").checked) {
                         this.map.setInfoWindowOnClick(false);
-                        if (registry.byId("defineExtent").checked) {
-                            registry.byId("exportBtn").set("disabled", true);
-                            domStyle.set(document.getElementById("exportBtn"), "color", "grey");
-                        }
-                        if (registry.byId("defineAgolExtent").checked) {
-                            registry.byId("submitAgolBtn").set("disabled", true);
-                            domStyle.set(document.getElementById("submitAgolBtn"), "color", "grey");
-                        }
+                        registry.byId("exportBtn").set("disabled", true);
+                        domStyle.set(document.getElementById("exportBtn"), "color", "grey");
+                        registry.byId("submitAgolBtn").set("disabled", true);
+                        domStyle.set(document.getElementById("submitAgolBtn"), "color", "grey");
                         this.toolbarForExport.activate(Draw.POLYGON);
                     } else {
                         registry.byId("exportBtn").set("disabled", false);
@@ -351,8 +335,11 @@ define([
                             var psy = height / this.map.width;
                             var servicePixel = (this.imageServiceLayer && this.imageServiceLayer.pixelSizeX) ? this.imageServiceLayer.pixelSizeX : 0;
                             var ps = Math.max(psx, psy, servicePixel);
-                            var ps = parseFloat(ps) + 0.001;
+                            var ps = parseFloat(ps);
                             registry.byId("pixelSize").set("value", ps.toFixed(3));
+                            registry.byId("pixelSize").set("constraints", {min: parseFloat(ps.toFixed(3)), place: 0});
+                            registry.byId("pixelSize").set("rangeMessage", this.i18n.error3 + " " + ps.toFixed(3) + " " + this.i18n.error4);
+                            this.currentPixelSize = ps;
                         }
                     }));
                 },
@@ -448,24 +435,11 @@ define([
                             var bboxSR = this.mapExtent.spatialReference;
                         }
 
-                        var pixelsize = parseFloat(registry.byId("pixelSize").get("value"));
-
-                        var widthMax = this.map.width;
-                        var heightMax = this.map.height;
-
-                        var psx = width / widthMax;
-                        var psy = height / widthMax;
-
-                        if (pixelsize === "")
-                            pixelsize = psx;
-                        var ps = Math.max(psx, psy, pixelsize);
-
-                        if ((width / pixelsize) > widthMax || (height / pixelsize) > widthMax) {
-                            var size = "";
-                            document.getElementById("errorPixelSize").innerHTML = this.i18n.error3 + " " + ps.toFixed(3) + " " + this.i18n.error4;
+                        var pixelSize = (parseFloat(registry.byId("pixelSize").get("value")) || this.currentPixelSize);
+                        if (pixelSize < this.currentPixelSize) {
                             domStyle.set("loadingExport", "display", "none");
                         } else {
-                            var size = (parseInt(width / ps)).toString() + ", " + (parseInt(height / ps)).toString();
+                            var size = (parseInt(width / pixelSize)).toString() + ", " + (parseInt(height / pixelSize)).toString();
                             document.getElementById("errorPixelSize").innerHTML = "";
 
                             if (this.imageServiceLayer.renderingRule) {
@@ -484,11 +458,11 @@ define([
 
                             } else
                                 var renderer = null;
-                            if(registry.byId("renderer").checked)
+                            if (registry.byId("renderer").checked)
                                 var renderingRule = renderer;
-                            else{
+                            else {
                                 var skipClip = false;
-                                var renderingRule =  new RasterFunction({"rasterFunction": "None"});
+                                var renderingRule = new RasterFunction({"rasterFunction": "None"});
                             }
                             if (registry.byId("defineExtent").checked && !skipClip) {
 
@@ -687,13 +661,13 @@ define([
                         remapArithmetic3.functionArguments = remapArithmeticArg3;
 
 
-                        if (rendererTemp === "Clip" && !registry.byId("defineAgolExtent").checked && !registry.byId("defineExtent").checked) {
+                        if (rendererTemp === "Clip" && !registry.byId("defineExtent").checked) {
                             renderer.functionArguments.Raster = remapArithmetic3;
                             var raster3 = renderer;
                         } else
                             var raster3 = remapArithmetic3;
                     }
-                    if (registry.byId("defineAgolExtent").checked || registry.byId("defineExtent").checked)
+                    if (registry.byId("defineExtent").checked)
                         raster3 = this.addClipFunction(raster3);
                     var colormap = new RasterFunction();
                     colormap.functionName = "Colormap";
@@ -723,7 +697,7 @@ define([
 
                     var color = maskProperties.color;
                     var colorMask = [[1, parseInt(color[0]), parseInt(color[1]), parseInt(color[2])]];
-                    if (registry.byId("defineAgolExtent").checked || registry.byId("defineExtent").checked)
+                    if (registry.byId("defineExtent").checked)
                         remap = this.addClipFunction(remap);
 
                     var colormap = new RasterFunction();

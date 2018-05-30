@@ -710,6 +710,11 @@ define([
                 exportMode: this.config.exportType, i18n: this.config.i18n.export, portalUrl: this.config.sharinghost});
 
             this.addClickEvent("exportContainer", this.exportFunction, "exportNode");
+            if (window.document.dir === "rtl") {
+                    var list = document.getElementsByClassName("listExpandBtn")[0];
+                    list.style.float = "left";
+                    
+                }
         },
         setupImageMask: function () {
 
