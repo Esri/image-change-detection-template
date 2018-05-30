@@ -37,7 +37,7 @@ define({
             tool2:"Change Detection",
             layer: "Layer",
             layerText: "Choose your imagery.",
-            maskImageSelector: "Enable Image Selector",
+            maskImageSelector: "Search for individual images",
             imageSelectorText: "Choose two different images for comparison.",
             changeText: "Configure change detection.",
             maskText: "Configure mask.",
