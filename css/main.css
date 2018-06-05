@@ -718,7 +718,7 @@ body {
 .iconHeight {
     height: 15px;
 }
-#addBtn,#addBookmark,#idapply,#imageMaskClear,#imageMaskApply,#saveIconBtn,#submitAgolBtn,#exportBtn, #applyAOI, #resetAOI,#dropDownImageList, #colorButton,#refreshImageSliderBtn{
+#addBtn,#addBookmark,#maskClear,#maskApply,#changeClear,#changeApply,#submitAgolBtn,#exportBtn,#dropDownImageListMask, #colorButton,#refreshImageSliderBtnMask,#refreshImageSliderBtnChange,#dropDownImageListLeft,#dropDownImageListRight{
     text-align: center;
     background: #fff;
     border: 1px solid #ddd;
@@ -734,7 +734,7 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-#addBtn:hover,#addBookmark:hover,#idapply:hover,#imageMaskClear:hover,#imageMaskApply:hover,#dropDownImageList:hover,#saveIconBtn:hover,#submitAgolBtn:hover,#exportBtn:hover,#colorButton:hover,#refreshImageSliderBtn:hover{
+#addBtn:hover,#addBookmark:hover,#changeClear:hover,#changeApply:hover,#maskClear:hover,#maskApply:hover,#dropDownImageList:hover,#dropDownImageListLeft:hover,#dropDownImageListRight:hover,#submitAgolBtn:hover,#exportBtn:hover,#colorButton:hover,#refreshImageSliderBtnChange:hover,#refreshImageSliderBtnMask:hover{
     background: #ddd;
 }
 

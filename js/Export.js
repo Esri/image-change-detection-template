@@ -501,11 +501,31 @@ define([
                             layersRequest.then(lang.hitch(this, function (data) {
 
                                 domAttr.set("linkDownload", "href", data.href);
-
-                                domAttr.set("linkDownload", "target", "_self");
-                                (document.getElementById("linkDownload")).click();
-                                this.hideLoading();
-
+                                var http = new XMLHttpRequest();
+                                http.open("GET", data.href, true);
+                                http.responseType = "blob";
+                                var global = this;
+                                http.onload = function () {
+                                    domAttr.set("linkDownload", "target", "_self");
+                                    if (this.status === 200) {
+                                        domAttr.set("linkDownload", "href", URL.createObjectURL(http.response));
+                                        (document.getElementById("linkDownload")).click();
+                                    } else {
+                                        document.getElementById("errorPixelSize").innerHTML = global.i18n.error6;
+                                        setTimeout(function () {
+                                            document.getElementById("errorPixelSize").innerHTML = "";
+                                        }, 5000);
+                                    }
+                                    global.hideLoading();
+                                };
+                                http.onerror = function () {
+                                    document.getElementById("errorPixelSize").innerHTML = global.i18n.error6;
+                                    setTimeout(function () {
+                                        document.getElementById("errorPixelSize").innerHTML = "";
+                                    }, 5000);
+                                    global.hideLoading();
+                                };
+                                http.send();
                             }), lang.hitch(this, function (error) {
                                 this.hideLoading();
                             }));

@@ -26,7 +26,7 @@
         <div id="successNotification" style="color: #ee0000;"></div>
     </div>
     <div id="exportSaveContainer" style='display: none;'>
-        <div id="errorPixelSize" style="color: #ee0000;"></div>
+        
         <input type="checkbox" data-dojo-type="dijit/form/CheckBox"  id="renderer" checked/> <label for="renderer">${config.i18n.export.renderer}</label>
         <br />
         <p style='text-align: justify;'><b>Note:</b> ${config.i18n.export.text}</p>
@@ -44,6 +44,7 @@
         </div>
         
         <button data-dojo-type="dijit/form/Button"  id="exportBtn" type="button" style="margin-left: 40%" >${config.i18n.export.submit}</button>
+        <div id="errorPixelSize" style="color: #ee0000;"></div>
         <a href="none" download id="linkDownload" style="display: none;">ExportImage</a>
     </div>
     <br/>

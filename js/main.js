@@ -31,7 +31,7 @@ define([
     "dijit/Dialog", "dojo/parser",
     "dijit/registry",
     "dojo/text!application/templates/Export.html", "dojo/text!application/templates/Bookmark.html",
-    "dojo/text!application/templates/ImageMask.html",
+    "dojo/text!application/templates/ImageMask.html","dojo/text!application/templates/ChangeDetection.html","dojo/text!application/templates/Mask.html",
     "dijit/Tooltip",
     "esri/arcgis/utils",
     "application/MapUrlParams",
@@ -42,7 +42,7 @@ define([
         on, query, focus,
         Deferred, Scalebar, Search, Locator, SearchSources,
         dom, ArcGISImageServiceLayer, domConstruct, domStyle, html, domClass, Dialog, parser,
-        registry, exportHtml, bookmarkHtml, imageMaskHtml, Tooltip,
+        registry, exportHtml, bookmarkHtml, imageMaskHtml,changeHTML,maskHTML, Tooltip,
         arcgisUtils,
         MapUrlParams, Bookmark, Editor, Basemap, OperationalLayers, Export, Measurement, ImageDate, ImageMask
         ) {
@@ -711,15 +711,39 @@ define([
 
             this.addClickEvent("exportContainer", this.exportFunction, "exportNode");
             if (window.document.dir === "rtl") {
-                    var list = document.getElementsByClassName("listExpandBtn")[0];
-                    list.style.float = "left";
-                    
+                    var list = document.getElementsByClassName("listExpandBtn");
+                    if(list.length > 1)
+                    list[0].style.float = "left";
+                if(list.length > 1)    
+                list[1].style.float = "left";
+                
                 }
         },
         setupImageMask: function () {
-
             this.setupToolContent("imageMaskContainer", 1, imageMaskHtml, this.config.i18n.imageMask.title, "imageMaskNode", "imageMask");
+            if(this.config.maskToolOptions === "mask"){
+                maskHTML = this.findAndReplaceStrings(maskHTML, "imageMask");
+            var node = document.getElementById("maskNode");
+            node.innerHTML = maskHTML;
+            parser.parse(node);
             
+            }else if(this.config.maskToolOptions === "change"){
+                changeHTML = this.findAndReplaceStrings(changeHTML, "imageMask");
+            var node = document.getElementById("changeNode");
+            node.innerHTML = changeHTML;
+            parser.parse(node);
+                
+            }else{
+                maskHTML = this.findAndReplaceStrings(maskHTML, "imageMask");
+            var node = document.getElementById("maskNode");
+            node.innerHTML = maskHTML;
+            parser.parse(node);
+                changeHTML = this.findAndReplaceStrings(changeHTML, "imageMask");
+            var node = document.getElementById("changeNode");
+            node.innerHTML = changeHTML;
+            parser.parse(node);
+                
+            }
             var layers = this.config.itemInfo.itemData.operationalLayers;
             if (this.config.imageSelectorLayer)
                 this.config.imageSelectorLayer = JSON.parse(this.config.imageSelectorLayer);
@@ -795,6 +819,14 @@ define([
             }
             this.imageMaskFunction = new ImageMask({map: this.map, config: temp, layers: layer, i18n: this.config.i18n.imageMask, main: this});
             this.addClickEvent("imageMaskContainer", this.imageMaskFunction, "imageMaskNode");
+            if (window.document.dir === "rtl") {
+                    var list = document.getElementsByClassName("listExpandBtn");
+                    if(list.length > 1)
+                    list[0].style.float = "left";
+                if(list.length > 1)    
+                list[1].style.float = "left";
+                
+                }
         },
         findField: function (fields, dataType, regExpr) {
             var initialVal = "";
