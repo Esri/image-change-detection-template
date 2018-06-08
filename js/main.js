@@ -35,7 +35,7 @@ define([
     "dijit/Tooltip",
     "esri/arcgis/utils",
     "application/MapUrlParams",
-    "application/Bookmark", "application/Editor", "application/Basemap", "application/OperationalLayers", "application/Export", "application/Measurement", "application/ImageDate", "application/ImageMask",
+    "application/Bookmark", "application/Editor", "application/Basemap","application/About", "application/OperationalLayers", "application/Export", "application/Measurement", "application/ImageDate", "application/ImageMask",
     "dojo/domReady!"
 ], function (
         declare, lang, kernel,
@@ -44,7 +44,7 @@ define([
         dom, ArcGISImageServiceLayer, domConstruct, domStyle, html, domClass, Dialog, parser,
         registry, exportHtml, bookmarkHtml, imageMaskHtml,changeHTML,maskHTML, Tooltip,
         arcgisUtils,
-        MapUrlParams, Bookmark, Editor, Basemap, OperationalLayers, Export, Measurement, ImageDate, ImageMask
+        MapUrlParams, Bookmark, Editor, Basemap,About, OperationalLayers, Export, Measurement, ImageDate, ImageMask
         ) {
     return declare(null, {
         config: {},
@@ -133,8 +133,8 @@ define([
             style.type = "text/css";
             document.getElementsByTagName('head')[0].appendChild(style);
             var cssRules = {".titleBar": "width: 100%;height: 39px;background-color:" + this.config.widgetTitleColor + ";color:white;font-size: 1.3em;font-weight: bolder;",
-                ".basemapIcon:hover": "background-color: " + this.config.toolsIconColor + ";",
-                ".basemapSelected": "background-color: " + this.config.toolsIconColor + ";",
+                ".aboutIcon:hover": "background-color: " + this.config.toolsIconColor + ";",
+                ".aboutSelected": "background-color: " + this.config.toolsIconColor + ";",
                 ".toolContainers:hover": "background-color: " + this.config.toolsIconColor + ";",
                 ".selected-widget": "background-color: " + this.config.toolsIconColor + ";",
                 ".claro .dijitDialogTitleBar": "background: " + this.config.widgetTitleColor + ";border: 0 none;border-bottom: 0 none;padding: 7px 10px;text-align: center;line-height: 16px;-webkit-box-sizing: content-box;box-sizing: content-box;font-weight: bolder;"
@@ -200,7 +200,8 @@ define([
 
                 this.dockToolsActive = 0;
                 if (this.config.basemapFlag) {
-                    domStyle.set("basemapContainer", "display", "block");
+                     this.dockToolsActive++;
+                    domStyle.set("dockContainer", "display", "block");
                     this.setupBasemap();
                 } else
                     domStyle.set("basemapContainer", "display", "none");
@@ -220,10 +221,6 @@ define([
                     this.setupOperationalLayers();
                 } else
                     domStyle.set("operationalLayersContainer", "display", "none");
-               /* if(this.config.changeDetectionFlag || this.config.changeDetectionFlag === false){
-                    this.config.imageMaskFlag = this.config.changeDetectionFlag;
-                    this.config.maskToolOptions = "change";
-                }*/
                 if (this.config.imageMaskFlag) {
                     domStyle.set("dockContainer", "display", "block");
                     this.dockToolsActive++;
@@ -270,8 +267,7 @@ define([
                     domStyle.set("bookmarkContainer", "display", "none");
                 if (this.config.aboutFlag)
                 {
-                    this.dockToolsActive++;
-                    domStyle.set("dockContainer", "display", "block");
+                    domStyle.set("aboutContainer", "display", "block");
                     this.setupAbout();
                 } else
                     domStyle.set("aboutContainer", "display", "none");
@@ -392,6 +388,9 @@ define([
                 domClass.add("toolsContentContainer", className + window.document.dir);
             }
             this.currentPanelClass = className + window.document.dir;
+            query(".widgetContainer").style({
+                maxHeight: ((window.innerHeight * 0.85) - parseInt(top.split("px")[0]) - 10) + "px"
+            });
         },
         resizeDockContainer: function (widthHeightValue, iconWH, iconMargin, titleHeight, checkBoxWH, buttonPadding, iconHeight, sliderHeight, sliderTop, sliderBtnWH, textBoxPadding, basemapImageW, basemapImageH) {
             query(".dijitButtonContents").style({
@@ -427,7 +426,9 @@ define([
                 height: basemapImageH
 
             });
-
+            query(".esriBasemapGalleryLabelContainer").style({
+                width: basemapImageW
+            });
             query(".dijitSliderDecrementIconH").style({
                 width: sliderBtnWH,
                 height: sliderBtnWH,
@@ -545,50 +546,51 @@ define([
                 domClass.add(document.body, "nosearch");
             }
         },
-        setupBasemap: function () {
-            var basemapDialog = new Dialog({
-                title: this.config.i18n.basemap.title,
-                content: "<div id='basemapGalleryDiv' style='overflow:auto;height:95%;'></div>",
-                style: "background-color:white;width:300px;height:300px;",
-                id: "basemapDialog",
+        setupAbout: function () {
+            var aboutDialog = new Dialog({
+                title: this.config.i18n.about.title,
+                content: "<div id='aboutDivContainer'></div>",
+                style: "background-color:white;",
+                id: "aboutDialog",
                 draggable: false
             });
-            basemapDialog.closeButtonNode.tabIndex = 0;
+            aboutDialog.closeButtonNode.tabIndex = 0;
             new Tooltip({
-                connectId: ["basemapContainer"],
-                label: this.config.i18n.basemap.title,
+                connectId: ["aboutContainer"],
+                label: this.config.i18n.about.title,
                 position: ['before']
             });
-            dojo.connect(basemapDialog, "hide", lang.hitch(this, function () {
-                domClass.remove("basemapIconNode", "basemapSelected");
+            dojo.connect(aboutDialog, "hide", lang.hitch(this, function () {
+                domClass.remove("aboutIconNode", "aboutSelected");
 
             }));
-            document.getElementById("basemapIconNode").children[0].alt = this.config.i18n.basemap.title;
+            document.getElementById("aboutIconNode").children[0].alt = this.config.i18n.about.title;
             if (window.document.dir === "rtl") {
-                document.getElementById("basemapContainer").style.left = "20px";
-                document.getElementById("basemapContainer").style.right = "auto";
+                document.getElementById("aboutContainer").style.left = "20px";
+                document.getElementById("aboutContainer").style.right = "auto";
             }
-            this.basemapFunction = new Basemap({map: this.map});
-            this.basemapFunction.initBasemaps();
-            on(dom.byId("basemapContainer"), "click, keyup", lang.hitch(this, function (event) {
+            this.aboutFunction = new About({map: this.map, aboutText: this.config.aboutText});
+            this.aboutFunction.postCreate();
+
+            on(dom.byId("aboutContainer"), "click, keyup", lang.hitch(this, function (event) {
                 if (event.type === "click" || event.which === 13 || event.which === 32) {
-                    if (domClass.contains("basemapIconNode", "basemapSelected")) {
-                        domClass.remove("basemapIconNode", "basemapSelected");
-                        if (registry.byId("basemapDialog").open)
-                            registry.byId("basemapDialog").hide();
+                    if (domClass.contains("aboutIconNode", "aboutSelected")) {
+                        domClass.remove("aboutIconNode", "aboutSelected");
+                        if (registry.byId("aboutDialog").open)
+                            registry.byId("aboutDialog").hide();
                     } else {
-                        domClass.add("basemapIconNode", "basemapSelected");
-                        registry.byId("basemapDialog").show();
-                        domConstruct.destroy("basemapDialog_underlay");
+                        domClass.add("aboutIconNode", "aboutSelected");
+                        registry.byId("aboutDialog").show();
+                        domConstruct.destroy("aboutDialog_underlay");
                         if (window.document.dir === "ltr") {
-                            domStyle.set("basemapDialog", "left", "auto");
-                            domStyle.set("basemapDialog", "right", "20px");
+                            domStyle.set("aboutDialog", "left", "auto");
+                            domStyle.set("aboutDialog", "right", "20px");
                         } else
                         {
-                            domStyle.set("basemapDialog", "left", "20px");
-                            domStyle.set("basemapDialog", "right", "auto");
+                            domStyle.set("aboutDialog", "left", "20px");
+                            domStyle.set("aboutDialog", "right", "auto");
                         }
-                        domStyle.set("basemapDialog", "top", "220px");
+                        domStyle.set("aboutDialog", "top", "220px");
                     }
                 }
             }));
@@ -637,7 +639,7 @@ define([
 
         },
         setupOperationalLayers: function () {
-            var html = '<div class="titleBar"><span class="titleBarTextSpan">' + this.config.i18n.operationalLayers.title + '</span><button class="closeContainerButton"><img src="images/cancel.png" alt="X"/></button></div><br /><div style="margin: 5px;overflow: auto;"><div id="operationalLayerList"></div><br /></div>';
+            var html = '<div class="titleBar"><span class="titleBarTextSpan">' + this.config.i18n.operationalLayers.title + '</span><button class="closeContainerButton"><img src="images/cancel.png" alt="X"/></button></div><br /><div class="widgetContainer"><div id="operationalLayerList"></div><br /></div>';
             this.setupToolContent("operationalLayersContainer", 4, html, this.config.i18n.operationalLayers.title, "operationalLayersNode", null);
             var layers = this.config.itemInfo.itemData.operationalLayers;
             var layersList = [];
@@ -659,13 +661,12 @@ define([
                 dom.byId(this.openedWidget).click();
                 domStyle.set(this.openedWidget, "display", "none");
                 domClass.remove(this.openedWidget.split("Node")[0] + "Container", "selected-widget");
-                if (this.openedWidget !== "aboutNode")
-                    this[this.openedWidget.split("Node")[0] + "Function"].onClose();
+                this[this.openedWidget.split("Node")[0] + "Function"].onClose();
                 this.openedWidget = "";
             }
         },
         setupEditor: function () {
-            var html = "<div class='titleBar'><span class='titleBarTextSpan'>" + this.config.i18n.editor.title + "</span><button class='closeContainerButton'><img src='images/cancel.png' alt='X'/></button></div><br/><div style='margin:5px;overflow: auto;'>" + this.config.i18n.editor.text + "<div id='templateDiv' style='margin:5px;'></div><div id='editorDiv'></div><div id='errorEditor' style='color: #ee0000;'></div><br /></div>";
+            var html = "<div class='titleBar'><span class='titleBarTextSpan'>" + this.config.i18n.editor.title + "</span><button class='closeContainerButton'><img src='images/cancel.png' alt='X'/></button></div><br/><div class='widgetContainer'>" + this.config.i18n.editor.text + "<div id='templateDiv' style='margin:5px;'></div><div id='editorDiv'></div><div id='errorEditor' style='color: #ee0000;'></div><br /></div>";
             this.setupToolContent("editorContainer", 2, html, this.config.i18n.editor.title, "editorNode", null);
             var layer = [], heightField;
 
@@ -693,7 +694,7 @@ define([
             this.addClickEvent("editorContainer", this.editorFunction, "editorNode");
         },
         setupImageMeasurement: function () {
-            var html = "<div class='titleBar'><span class='titleBarTextSpan'>" + this.config.i18n.measurement.title + "</span><button class='closeContainerButton'><img src='images/cancel.png' alt='X'/></button></div><br/><div id='measurementDivContainer' style='margin:5px;overflow: auto;'><div id='measureWidgetDiv'></div><div id='errorMeasurementDiv' style='color: #ee0000;'>" + this.config.i18n.measurement.error + "</div></div><br/>";
+            var html = "<div class='titleBar'><span class='titleBarTextSpan'>" + this.config.i18n.measurement.title + "</span><button class='closeContainerButton'><img src='images/cancel.png' alt='X'/></button></div><br/><div id='measurementDivContainer' class='widgetContainer'><div id='measureWidgetDiv'></div><div id='errorMeasurementDiv' style='color: #ee0000;'>" + this.config.i18n.measurement.error + "</div></div><br/>";
             this.setupToolContent("measurementContainer", 3, html, this.config.i18n.measurement.title, "measurementNode", null);
             var config = {
                 angularUnit: this.config.angularUnit,
@@ -712,11 +713,16 @@ define([
             this.addClickEvent("exportContainer", this.exportFunction, "exportNode");
             if (window.document.dir === "rtl") {
                     var list = document.getElementsByClassName("listExpandBtn");
-                    if(list.length > 1)
-                    list[0].style.float = "left";
-                if(list.length > 1)    
-                list[1].style.float = "left";
-                
+                    console.log(list.length);
+                    for(var a=0;a<list.length;a++){
+                    list[a].style.float = "left";    
+                    }
+//                    if(list.length === 1)
+//                    list[0].style.float = "left";
+//                if(list.length === 2)    
+//                list[1].style.float = "left";
+//                if(list.length === 3)    
+//                list[2].style.float = "left";
                 }
         },
         setupImageMask: function () {
@@ -821,10 +827,10 @@ define([
             this.addClickEvent("imageMaskContainer", this.imageMaskFunction, "imageMaskNode");
             if (window.document.dir === "rtl") {
                     var list = document.getElementsByClassName("listExpandBtn");
-                    if(list.length > 1)
-                    list[0].style.float = "left";
-                if(list.length > 1)    
-                list[1].style.float = "left";
+                    console.log(list.length);
+                    for(var a=0;a<list.length;a++){
+                    list[a].style.float = "left";    
+                    }
                 
                 }
         },
@@ -848,11 +854,11 @@ define([
             this.bookmarkFunction = new Bookmark({map: this.map, bookmarks: this.config.itemInfo.itemData.bookmarks ? this.config.itemInfo.itemData.bookmarks : [], i18n: this.config.i18n.bookmark, extent: this.map.extent});
             this.addClickEvent("bookmarkContainer", this.bookmarkFunction, "bookmarkNode");
         },
-        setupAbout: function () {
-            var html = "<div class='titleBar'><span class='titleBarTextSpan'>" + this.config.i18n.about.title + "</span><button class='closeContainerButton'><img src='images/cancel.png' alt='X'/></button></div><br/><div id='aboutDivContainer' style='margin:5px;overflow: auto;'></div><br/>";
-            this.setupToolContent("aboutContainer", 6, html, this.config.i18n.about.title, "aboutNode", null);
-            document.getElementById("aboutDivContainer").innerHTML = this.config.aboutText;
-            this.addClickEvent("aboutContainer", null, "aboutNode");
+        setupBasemap: function () {
+            var html = "<div class='titleBar'><span class='titleBarTextSpan'>" + this.config.i18n.basemap.title + "</span><button class='closeContainerButton'><img src='images/cancel.png' alt='X'/></button></div><br/><div class='widgetContainer'><div id='basemapGalleryDiv' style=''></div></div><br/>";
+            this.setupToolContent("basemapContainer", 6, html, this.config.i18n.basemap.title, "basemapNode", null);
+            this.basemapFunction = new Basemap({map: this.map, main: this});
+            this.addClickEvent("basemapContainer", this.basemapFunction, "basemapNode");
 
         },
         setupToolContent: function (container, index, html, title, nodeName, key) {
@@ -871,8 +877,6 @@ define([
         addClickEvent: function (container, toolObject, node) {
             var openForFirstTime = true;
             on(dom.byId(container), "click", lang.hitch(this, function (event) {
-                if(registry.byId("basemapDialog") && registry.byId("basemapDialog").open)
-                registry.byId("basemapDialog").hide();
                 if (event.type === "click" || event.which === 13 || event.which === 32) {
                     if (domClass.contains(container, "selected-widget")) {
                         this.hideContentPanel();
@@ -975,7 +979,7 @@ define([
                 "border-color": bgColor,
                 "opacity": bgOpacity
             });
-            query("#basemapContainer").style({
+            query("#aboutContainer").style({
                 "background": this.config.background,
                 opacity: this.config.backgroundOpacity
             });

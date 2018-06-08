@@ -131,6 +131,7 @@ define([
                     }
                 },
                 setSavingType: function () {
+                    domStyle.set("extentCheckBoxContainer","display","block");
                     if (this.exportMode === "both") {
                         domStyle.set("selectExportDisplay", "display", "block");
                         if (registry.byId("saveAndExportOption").get("value") === "agol")
@@ -565,6 +566,7 @@ define([
                         domStyle.set("exportSaveContainer", "display", "none");
                         domStyle.set("saveAgolContainer", "display", "none");
                         domStyle.set("selectExportDisplay", "display", "none");
+                        domStyle.set("extentCheckBoxContainer","display","none");
                     }
                 },
                 modifyRenderingRule: function (mode, renderer) {

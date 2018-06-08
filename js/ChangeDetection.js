@@ -88,7 +88,16 @@ define([
             registry.byId("dropDownImageListRight").on("click", lang.hitch(this, this.imageDisplayFormatRight));
             registry.byId("imageSelectorDropDownLeft").on("change", lang.hitch(this, this.sliderDropDownSelection, "dropDown"));
             registry.byId("imageSelectorDropDownRight").on("change", lang.hitch(this, this.sliderDropDownSelectionRight, "dropDown"));
-
+            registry.byId("imageSelectorDropDownLeft").on("click", lang.hitch(this, function(){
+                if (this.layerSwipe) {
+                    this.moveSwipe(this.map.width - 40, this.layerSwipe.invertPlacement, this.layerSwipe.layers);
+                }
+            }));
+            registry.byId("imageSelectorDropDownRight").on("click", lang.hitch(this, function(){
+                if (this.layerSwipe) {
+                    this.moveSwipe(document.getElementById("toolsContentContainer").clientWidth ? document.getElementById("toolsContentContainer").clientWidth + 15 : 40, this.layerSwipe.invertPlacement, this.layerSwipe.layers);
+                }
+            }));
 
             registry.byId("methodChange").on("change", lang.hitch(this, this.setMethod));
             registry.byId("changeApply").on("click", lang.hitch(this, this.getMinMaxCheck));
@@ -573,7 +582,12 @@ define([
                             minimum: 0,
                             maximum: this.featureLength - 1,
                             discreteValues: this.featureLength,
-                            onChange: lang.hitch(this, this.sliderDropDownSelection, "slider")
+                            onChange: lang.hitch(this, this.sliderDropDownSelection, "slider"),
+                            onClick: lang.hitch(this, function(){
+                             if (this.layerSwipe) {
+                                this.moveSwipe(this.map.width - 40, this.layerSwipe.invertPlacement, this.layerSwipe.layers);
+                            }   
+                            })
                         }, sliderNode);
                         this.sliderRight = new HorizontalSlider({
                             name: "slider",
@@ -581,7 +595,12 @@ define([
                             minimum: 0,
                             maximum: this.featureLength - 1,
                             discreteValues: this.featureLength,
-                            onChange: lang.hitch(this, this.sliderDropDownSelectionRight, "slider")
+                            onChange: lang.hitch(this, this.sliderDropDownSelectionRight, "slider"),
+                            onClick: lang.hitch(this, function(){
+                                if (this.layerSwipe) {
+                    this.moveSwipe(document.getElementById("toolsContentContainer").clientWidth ? document.getElementById("toolsContentContainer").clientWidth + 15 : 40, this.layerSwipe.invertPlacement, this.layerSwipe.layers);
+                }
+                            })
                         }, sliderNodeRight);
                         this.slider.startup();
                         this.sliderRules.startup();
@@ -751,6 +770,7 @@ define([
         },
         sliderChange: function () {
             if (this.valueSelected || this.valueSelected === 0) {
+                this.sliderMove= "left";
                 var aqDate = this.orderedDates[this.valueSelected].value;
                 var featureSelect = [];
                 var featureIds = [];
@@ -771,66 +791,11 @@ define([
                 mr.operation = "MT_FIRST";
                 mr.lockRasterIds = featureIds;
                 this.primaryLayer.setMosaicRule(mr);
-               /* if ((JSON.stringify(this.layerInfos[this.primaryLayer.id].value.primary) === JSON.stringify(this.layerInfos[this.primaryLayer.id].value.comparison))) {
-
-
-                    if (this.secondaryLayer) {
-                        this.secondaryLayer.suspend();
-                        this.map.removeLayer(this.secondaryLayer);
-                        this.secondaryLayer = null;
-                    }
-                } else {
-                 if (registry.byId("primaryImage").checked) {
-                 this.primaryLayer.setMosaicRule(mr);
-                 if (this.secondaryLayer) {
-                 if (this.panZoomUpdate) {
-                 this.panZoomUpdate = false;
-                 for (var i in this.orderedDates) {
-                 if (this.orderedDates[i].value === this.layerInfos[this.primaryLayer.id].value["comparison"].value && this.orderedDates[i].id === this.layerInfos[this.primaryLayer.id].value["comparison"].id) {
-                 var index = this.orderedDates[i];
-                 break;
-                 } else if ( this.orderedDates[i].value <= this.layerInfos[this.primaryLayer.id].value["comparison"].value) {
-                 var index = this.orderedDates[i];
-                 }
-                 }
-                 if (index)
-                 this.layerInfos[this.primaryLayer.id].value.comparison = index;
-                 }
-                 
-                 if (this.secondaryLayer.mosaicRule && this.secondaryLayer.mosaicRule.lockRasterIds !== this.layerInfos[this.primaryLayer.id].value.comparison.id)
-                 this.secondaryLayer.setMosaicRule(new MosaicRule({"mosaicMethod": "esriMosaicLockRaster", "ascending": true, "mosaicOperation": "MT_FIRST", "lockRasterIds": [this.layerInfos[this.primaryLayer.id].value.comparison.id]}));
-                 } else {
-                 this.createSecondaryLayer(new MosaicRule({"mosaicMethod": "esriMosaicLockRaster", "ascending": true, "mosaicOperation": "MT_FIRST", "lockRasterIds": [this.layerInfos[this.primaryLayer.id].value.comparison.id]}));
-                 }
-                 } else {
-                 if (this.secondaryLayer) {
-                 this.secondaryLayer.setMosaicRule(mr);
-                 } else {
-                 this.createSecondaryLayer(mr);
-                 }
-                 if (this.panZoomUpdate) {
-                 this.panZoomUpdate = false;
-                 for (var i in this.orderedDates) {
-                 if (this.orderedDates[i].value === this.layerInfos[this.primaryLayer.id].value["primary"].value && this.orderedDates[i].id === this.layerInfos[this.primaryLayer.id].value["primary"].id) {
-                 var index = this.orderedDates[i];
-                 break;
-                 } else if ( this.orderedDates[i].value <= this.layerInfos[this.primaryLayer.id].value["primary"].value) {
-                 var index = this.orderedDates[i];
-                 }
-                 }
-                 if (index)
-                 this.layerInfos[this.primaryLayer.id].value.primary = index;
-                 }
-                 if (this.primaryLayer.mosaicRule && this.primaryLayer.mosaicRule.lockRasterIds !== this.layerInfos[this.primaryLayer.id].value.primary.id)
-                 this.primaryLayer.setMosaicRule(new MosaicRule({"mosaicMethod": "esriMosaicLockRaster", "ascending": true, "mosaicOperation": "MT_FIRST", "lockRasterIds": [this.layerInfos[this.primaryLayer.id].value.primary.id]}));
-                 
-                 }
-                 }*/
-
             }
         },
         sliderChangeRight: function () {
             if (this.valueSelectedRight || this.valueSelectedRight === 0) {
+                this.sliderMove= "right";
                 var aqDate = this.orderedDates[this.valueSelectedRight].value;
                 var featureSelect = [];
                 var featureIds = [];
@@ -851,21 +816,11 @@ define([
                 mr.operation = "MT_FIRST";
                 mr.lockRasterIds = featureIds;
 
-//                if ((JSON.stringify(this.layerInfos[this.primaryLayer.id].value.primary) === JSON.stringify(this.layerInfos[this.primaryLayer.id].value.comparison))) {
-//                    if (this.secondaryLayer) {
-//                        this.secondaryLayer.suspend();
-//                        this.map.removeLayer(this.secondaryLayer);
-//                        this.secondaryLayer = null;
-//                    }
-//                } else {
                     if (this.secondaryLayer) {
                         this.secondaryLayer.setMosaicRule(mr);
                     } else {
                         this.createSecondaryLayer(mr);
                     }
-
-
-                //}
             }
         },
         createSecondaryLayer: function (mr) {
@@ -1422,11 +1377,10 @@ define([
                         }
                         domConstruct.place("<div id='swipewidget'></div>", "mapDiv_root", "first");
                         if (!this.swipePosition) {
-                            /* if (registry.byId("primaryImage").checked)
-                             this.swipePosition = this.map.width - 40;
+                             if (this.sliderMove === "right")
+                             this.swipePosition = document.getElementById("toolsContentContainer").clientWidth ? document.getElementById("toolsContentContainer").clientWidth + 15: 40;
                              else
-                             this.swipePosition = document.getElementById("toolsContentContainer").clientWidth ? document.getElementById("toolsContentContainer").clientWidth + 15: 40;*/
-                            this.swipePosition = this.map.width / 2;
+                             this.swipePosition = this.map.width - 40;
                         }
 
                         this.layerSwipe = new LayerSwipe({

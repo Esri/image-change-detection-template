@@ -25,8 +25,11 @@
 
     <div style="display: inline-block;">${config.i18n.imageMask.method}: </div><select autofocus="autofocus"  id="methodMask" data-dojo-type="dijit/form/Select">
     </select>
-    <br/>
-    <div id="bandInputsMask" style="display: none;margin:1em 0;">
+    <button id="advanceIndexBtnMask" class="titleHeader" role="button">
+            <span class="titleLabel">${config.i18n.imageMask.indexText}</span>
+            <span class="launchpad-icon-arrow-right listExpandBtn"></span>
+        </button>
+    <div id="bandInputsMask" style="display: none;">
         <table style="border: 0 solid transparent;"><tr><td><div id="bandName1Mask" style="display: inline-block;"></div></td>
                 <td><select  data-dojo-type="dijit/form/Select" id="band1Mask">
                     </select>
@@ -35,7 +38,7 @@
                 <td><select data-dojo-type="dijit/form/Select" id="band2Mask">
                     </select></td></tr></table>
     </div>
-    <div id="maskMode" style="margin-bottom: 1em;">
+    <div id="maskMode" style="margin-bottom: 1em;margin-top: 5px;">
         <div style="display: inline-block;font-size: 85%;">${config.i18n.imageMask.maskModeText} </div><select  id="maskModeList" data-dojo-type="dijit/form/Select" style="font-size: 85%;margin-left: 5px;">
             <option value="less">${config.i18n.imageMask.method6}</option>
             <option value="more">${config.i18n.imageMask.method7}</option>

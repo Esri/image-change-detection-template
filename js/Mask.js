@@ -140,9 +140,22 @@ define([
                 }
             }));
             this.populateMethods();
+            document.getElementById("advanceIndexBtnMask").addEventListener("click", lang.hitch(this, this.expandMenu));
             this.toolbar = new Draw(this.map);
             this.toolbar.on("draw-complete", lang.hitch(this, this.addGraphic));
         },
+        expandMenu: function () {
+                    var node = document.getElementById("advanceIndexBtnMask").children[1];
+                    if (domClass.contains(node, "launchpad-icon-arrow-right")) {
+                        domClass.remove(node, "launchpad-icon-arrow-right");
+                        domClass.add(node, "launchpad-icon-arrow-down");
+                        domStyle.set("bandInputsMask", "display", "block");
+                    } else {
+                        domStyle.set("bandInputsMask", "display", "none");
+                        domClass.remove(node, "launchpad-icon-arrow-down");
+                        domClass.add(node, "launchpad-icon-arrow-right");
+                    }
+                },
         setFilter: function (value) {
             if (value) {
                 this.imageSliderRefresh();
@@ -772,9 +785,6 @@ define([
                 domStyle.set("bandRowTable", "display", "none");
             else
                 domStyle.set("bandRowTable", "display", "table-row");
-            domStyle.set("bandInputsMask", "display", "block");
-
-
             this.setBands(value);
         },
         setBands: function (value) {

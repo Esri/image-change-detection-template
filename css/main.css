@@ -406,7 +406,7 @@ body {
 }
 .LayerSwipe .vertical {
     background-color: azure;
-    width: 6px;
+    width: 3px;
     z-index: 1;
 }
 .LayerSwipe .horizontal {
@@ -756,19 +756,19 @@ body {
     top: 45px;
     left:-384px;
     position: absolute;
-    width:400px;//0%;
+    width:400px;
     display: block;
     background-color: white;
-
     z-index: 1;
-    //border-radius: 5px;
     opacity: 0;
     visibility: hidden;
-    overflow:auto;
-    // white-space:nowrap;
     max-height: 85%;
-    overflow-y: auto;
     transition:0.5s;
+}
+.widgetContainer {
+    margin: 5px;
+    overflow-y: auto;
+    
 }
 #toolsContentContainer .dijitDialogTitleBar {
     display:none;
@@ -891,7 +891,7 @@ body {
     font-weight: bolder;
 }*/
 
-#basemapContainer {
+#aboutContainer {
     display: block;
     width: 30px;
     height: 30px;
@@ -902,6 +902,9 @@ body {
     cursor: pointer;
     position: absolute;
     border: 1px solid #999;
+}
+.aboutIcon {
+    height: 100%;
 }
 /*.basemapIcon:hover{
     background-color: #008299;;
@@ -986,7 +989,7 @@ body {
 .mask-align {
     margin-top: 10px;
 }
-#basemapDialog .dijitDialogPaneContent {
+#aboutDialog .dijitDialogPaneContent {
     height: calc(100% - 50px);
 }
 .closeContainerButton {
@@ -1366,7 +1369,7 @@ body {
     font-size:inherit;
     background: transparent;
     text-align: center;
-    width: 100%;
+    width: 110px;
     overflow: hidden;
     display: block;
 }

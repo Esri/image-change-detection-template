@@ -1,9 +1,11 @@
 <div class="titleBar"><span class="titleBarTextSpan">${config.i18n.export.title}</span><button class="closeContainerButton"><img src="images/cancel.png" alt="X"/></button></div><br/>
-<div style="margin: 5px;overflow: auto;">
-    <div id="exportLayerTitle"></div><br>
-    <input data-dojo-type="dijit/form/CheckBox"  id="defineExtent"/> <label for="defineExtent">${config.i18n.export.extent}</label><br /><br>
-        
-    <div id='selectExportDisplay' style='display: none;'>
+<div class="widgetContainer">
+    <div id="exportLayerTitle"></div>
+    <div id="extentCheckBoxContainer" style="margin-top: 10px;">
+    <input data-dojo-type="dijit/form/CheckBox"  id="defineExtent"/> <label for="defineExtent">${config.i18n.export.extent}</label>
+    <span style="margin-left: 1.7em;display: block;">${config.i18n.export.drawText}</span>
+    </div>
+   <div id='selectExportDisplay' style='display: none;margin: 10px 0px;'>
 
         <label for='saveAndExportOption'>${config.i18n.export.mode}:  </label><select  data-dojo-type="dijit/form/Select" style="/*height: 21px;*/" id="saveAndExportOption">
             <option value='agol'>${config.i18n.export.modeOption1}</option>
@@ -26,8 +28,9 @@
         <div id="successNotification" style="color: #ee0000;"></div>
     </div>
     <div id="exportSaveContainer" style='display: none;'>
-        
-        <input type="checkbox" data-dojo-type="dijit/form/CheckBox"  id="renderer" checked/> <label for="renderer">${config.i18n.export.renderer}</label>
+         <span style="display: block;margin-bottom: 5px;">${config.i18n.export.renderer}:</span>
+        <input type="radio" data-dojo-type="dijit/form/RadioButton" name="format" checked id="renderer"  value="current"/> <label for="renderer">${config.i18n.export.formatText1}</label> 
+        <input id="rawData" data-dojo-type="dijit/form/RadioButton" name="format" value="raw" type="radio" style="margin-left: 20%;"/><label for="rawData">${config.i18n.export.formatText2}</label> 
         <br />
         <p style='text-align: justify;'><b>Note:</b> ${config.i18n.export.text}</p>
          <button id="advanceSaveBtn" class="titleHeader" role="button">

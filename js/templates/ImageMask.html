@@ -1,5 +1,5 @@
 <div class="titleBar"><span class="titleBarTextSpan">${config.i18n.imageMask.title}</span><button class="closeContainerButton"><img src="images/cancel.png" alt="X"/></button></div>
-<div style="margin: 5px;overflow: auto;">
+<div class="widgetContainer">
     
     <div id="maskToolOptions" style="display: none;">
         <label for="maskTool">${config.i18n.imageMask.toolText}: </label><select id="maskTool" data-dojo-type="dijit/form/Select">
@@ -15,7 +15,7 @@
 
         <div id="transparencySlider" style="display: none;margin: 1em 0 2.5em 0;">
             <div style="vertical-align: top;display: inline-block;">${config.i18n.imageMask.transparency}: </div>
-            <div  id="resultOpacity" data-dojo-attach-point="transparency" style="max-width:180px;display:inline-block;position: absolute;width: -moz-available;" data-dojo-type="dijit/form/HorizontalSlider" data-dojo-props="value:0,minimum: 0,maximum:1,intermediateChanges:true,showButtons:true">
+            <div  id="resultOpacity" data-dojo-attach-point="transparency" style="width:55%;display:inline-block;width: -moz-available;" data-dojo-type="dijit/form/HorizontalSlider" data-dojo-props="value:0,minimum: 0,maximum:1,intermediateChanges:true,showButtons:true">
                 <div data-dojo-type="dijit/form/HorizontalRule" container="bottomDecoration" style="height:0.5em;"></div>
                 <ol data-dojo-type="dijit/form/HorizontalRuleLabels" container="bottomDecoration" style="height:0.5em;font-size:65%;color:gray;">
                     <li>0%</li>
