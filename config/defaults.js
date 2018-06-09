@@ -52,6 +52,7 @@ define({
     "imageMaskTitle": "Image Mask",
     "primaryLayer": {"id": null},
     "displayOptions": "both",
+    "advanceOptions":false,
     "zoomLevel": 8,
     "searchScreenExtent": 15,
     "enableAutoRefresh": true,

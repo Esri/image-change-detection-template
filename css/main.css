@@ -283,6 +283,21 @@ body {
     text-align: center;
 
 }
+.titleHeader {
+    padding: 0.8em 0px;
+    cursor: pointer;
+    width: 100%;
+    text-align: justify;
+    background: white;
+    border: 0px solid transparent;
+    font: inherit;
+}
+.listExpandBtn {
+    float: right;
+    font-size: 1.5em;
+    line-height: 0.9;
+
+}
 .claro .dijitTextBox .dijitInputField {
     padding: 4px 1px;
 }
@@ -391,7 +406,7 @@ body {
 }
 .LayerSwipe .vertical {
     background-color: azure;
-    width: 6px;
+    width: 3px;
     z-index: 1;
 }
 .LayerSwipe .horizontal {
@@ -703,7 +718,7 @@ body {
 .iconHeight {
     height: 15px;
 }
-#addBtn,#addBookmark,#idapply,#imageMaskClear,#imageMaskApply,#saveIconBtn,#submitAgolBtn,#exportBtn, #applyAOI, #resetAOI,#dropDownImageList, #colorButton,#refreshImageSliderBtn{
+#addBtn,#addBookmark,#maskClear,#maskApply,#changeClear,#changeApply,#submitAgolBtn,#exportBtn,#dropDownImageListMask, #colorButton,#refreshImageSliderBtnMask,#refreshImageSliderBtnChange,#dropDownImageListLeft,#dropDownImageListRight{
     text-align: center;
     background: #fff;
     border: 1px solid #ddd;
@@ -719,7 +734,7 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-#addBtn:hover,#addBookmark:hover,#idapply:hover,#imageMaskClear:hover,#imageMaskApply:hover,#dropDownImageList:hover,#saveIconBtn:hover,#submitAgolBtn:hover,#exportBtn:hover,#colorButton:hover,#refreshImageSliderBtn:hover{
+#addBtn:hover,#addBookmark:hover,#changeClear:hover,#changeApply:hover,#maskClear:hover,#maskApply:hover,#dropDownImageList:hover,#dropDownImageListLeft:hover,#dropDownImageListRight:hover,#submitAgolBtn:hover,#exportBtn:hover,#colorButton:hover,#refreshImageSliderBtnChange:hover,#refreshImageSliderBtnMask:hover{
     background: #ddd;
 }
 
@@ -741,19 +756,19 @@ body {
     top: 45px;
     left:-384px;
     position: absolute;
-    width:400px;//0%;
+    width:400px;
     display: block;
     background-color: white;
-
     z-index: 1;
-    //border-radius: 5px;
     opacity: 0;
     visibility: hidden;
-    overflow:auto;
-    // white-space:nowrap;
     max-height: 85%;
-    overflow-y: auto;
     transition:0.5s;
+}
+.widgetContainer {
+    margin: 5px;
+    overflow-y: auto;
+    
 }
 #toolsContentContainer .dijitDialogTitleBar {
     display:none;
@@ -876,7 +891,7 @@ body {
     font-weight: bolder;
 }*/
 
-#basemapContainer {
+#aboutContainer {
     display: block;
     width: 30px;
     height: 30px;
@@ -887,6 +902,9 @@ body {
     cursor: pointer;
     position: absolute;
     border: 1px solid #999;
+}
+.aboutIcon {
+    height: 100%;
 }
 /*.basemapIcon:hover{
     background-color: #008299;;
@@ -971,7 +989,7 @@ body {
 .mask-align {
     margin-top: 10px;
 }
-#basemapDialog .dijitDialogPaneContent {
+#aboutDialog .dijitDialogPaneContent {
     height: calc(100% - 50px);
 }
 .closeContainerButton {
@@ -1351,7 +1369,7 @@ body {
     font-size:inherit;
     background: transparent;
     text-align: center;
-    width: 100%;
+    width: 110px;
     overflow: hidden;
     display: block;
 }

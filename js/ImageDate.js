@@ -43,8 +43,8 @@ define([
                     this.layerInfos = this.layers;
                     if (this.map.layerIds) {
                         this.setPrimaryLayer();
-                        this.map.on("update-start", lang.hitch(this, this.clearDateRange));
-                        this.map.on("update-end", lang.hitch(this, this.changeDateRange));
+                        
+                        this.map.on("update", lang.hitch(this, this.changeDateRange));
                     }
                     this.prefix = this.prefix ? this.prefix : this.i18n.label;
                 },

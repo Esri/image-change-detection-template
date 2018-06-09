@@ -1,56 +1,82 @@
-<div class="titleBar"><span class="titleBarTextSpan">${config.i18n.changeDetection.title}</span><button class="closeContainerButton"><img src="images/cancel.png" alt="X"/></button></div>
-<div style="margin: 5px;overflow: auto;">
-    <div style="font-weight: bolder;margin-bottom: 5px;">${config.i18n.changeDetection.layerText}</div>
-    <label for="layerSelector">${config.i18n.changeDetection.layer}: </label><select id="layerSelector" data-dojo-type="dijit/form/Select"></select>
-
-
-    <div id="selectorDiv" style="display:none;">
-        <hr>
-        <div style="font-weight: bolder;margin-bottom: 10px;">${config.i18n.changeDetection.imageSelectorText}</div>
-        <input type="radio" data-dojo-type="dijit/form/RadioButton" name="images" checked id="primaryImage"  value="primary"/> <label for="primaryImage">${config.i18n.changeDetection.primary}</label> 
-        <input id="comparisonImage" data-dojo-type="dijit/form/RadioButton" name="images" value="comparison" type="radio" style="margin-left: 10%;" />
-        <label for="comparisonImage">${config.i18n.changeDetection.comparison}</label>
+       <input data-dojo-type="dijit/form/CheckBox" id="imageSelectorChange" style="display: none;"/>
         
-        <div id="imageRange" style="margin-top: 10px;margin-bottom: 10px;display: inline-block;"></div><input type="checkbox" data-dojo-type="dijit/form/CheckBox" id="swipeHandler" style="margin-left: 10px;" checked/><label for="swipeHandler">${config.i18n.changeDetection.swipe}</label>
-        <div>
-            <div  id="imageSelectContainer" style="display:none;">
-                <button  data-dojo-type="dijit/form/Button" type="button" id="dropDownImageList"><img alt="${config.i18n.changeDetection.dropDown}" src="images/dropdownlist.png" id="switchDisplayImage" class="iconHeight"/></button>
+    <div id="selectorDivChange" style="display:none;">
+       
+        <hr>
+        <div style="font-weight: bolder;margin-bottom: 5px;">${config.i18n.imageMask.imageSelectorText}</div>
+        <div>${config.i18n.imageMask.primary} <div id="imageRangeLeft" style="display: inline-block;"></div></div>
+        <div style="margin-top: 0.7em;">
+            <div  id="imageSelectContainerLeft" style="display:none;float: right;">
+                <button  data-dojo-type="dijit/form/Button" type="button" id="dropDownImageListLeft"><img alt="${config.i18n.imageMask.dropDown}" src="images/dropdownlist.png" id="switchDisplayImageLeft" class="iconHeight"/></button>
             </div>
-            <div id="dropDownOption" style="display: none;">
-                <select  id="imageSelectorDropDown" data-dojo-type="dijit/form/Select"></select>
+            <div id="dropDownOptionLeft" style="display: none;">
+                <select  id="imageSelectorDropDownLeft" data-dojo-type="dijit/form/Select"></select>
             </div>
-            <div  id='imageSliderDiv' style="display: inline-block;">
+            <div  id='imageSliderDivLeft' style="margin-bottom: 1.5em;">
             </div> 
 
         </div>
-        
+        <div>${config.i18n.imageMask.comparison} <div id="imageRangeRight" style="display: inline-block;"></div></div>
+       <div style="margin-top: 0.7em;">
+            <div  id="imageSelectContainerRight" style="display:none;float: right;">
+                <button  data-dojo-type="dijit/form/Button" type="button" id="dropDownImageListRight"><img alt="${config.i18n.imageMask.dropDown}" src="images/dropdownlist.png" id="switchDisplayImageRight" class="iconHeight"/></button>
+            </div>
+            <div id="dropDownOptionRight" style="display: none;">
+                <select  id="imageSelectorDropDownRight" data-dojo-type="dijit/form/Select"></select>
+            </div>
+            <div  id='imageSliderDivRight' style="margin-bottom: 1.5em;">
+            </div> 
     </div>
-    <div id="errorDiv" style="color: #ee0000;"></div>
-    <div id="changeSettingsDiv" style="display: none;">
+       <div>
+       <div  style="display:inline-block;">
+                    <button data-dojo-type="dijit/form/Button" type="button" id="refreshImageSliderBtnChange"><img alt="${config.i18n.imageMask.refresh}" src="images/refresh.png" class="iconHeight"/></button>
+       </div>
+            <div id="identicalImageError" style="color: #ee0000;display: none;">${config.i18n.imageMask.error7}</div>
+       <div id="swipeDiv" style="display: inline-block;float: right;padding-top: 0.6em;">
+        <input type="checkbox" data-dojo-type="dijit/form/CheckBox" id="swipeHandler" style="margin-left: 10px;" checked/><label for="swipeHandler">${config.i18n.imageMask.swipe}</label>
+        </div>
+        </div> 
+    </div>
+       
+       
+    
+    <div id="errorDivChange" style="color: #ee0000;"></div>
+    <div id="changeDiv" style="display: none;">
         <hr>
-        <div style="font-weight: bolder;margin-bottom: 10px;">${config.i18n.changeDetection.changeText}</div> 
+        <div style="font-weight: bolder;margin-bottom: 10px;">${config.i18n.imageMask.changeText}</div> 
 
-        <div style="display: inline-block;width: 16%;">${config.i18n.changeDetection.method}: </div><select autofocus="autofocus"  id="method" data-dojo-type="dijit/form/Select">
+        <div style="display: inline-block;">${config.i18n.imageMask.changeMethodText}: </div><select autofocus="autofocus"  id="methodChange" data-dojo-type="dijit/form/Select">
         </select>
+        <br/>
         <div id="changeMode" style="display:none;margin-top: 5px;">
-            <div style="display: inline-block;width: 16%;">${config.i18n.changeDetection.mode}: </div><select  id="changeModeList" data-dojo-type="dijit/form/Select">
-                <option value="image">${config.i18n.changeDetection.mode1}</option>
-                <option value="mask">${config.i18n.changeDetection.mode2}</option>
-                <option value="threshold">${config.i18n.changeDetection.mode3}</option>
+            <div style="display: inline-block;">${config.i18n.imageMask.mode}: </div><select  id="changeModeList" data-dojo-type="dijit/form/Select">
+                <option value="image">${config.i18n.imageMask.mode1}</option>
+                <option value="mask">${config.i18n.imageMask.mode2}</option>
+                <option value="threshold">${config.i18n.imageMask.mode3}</option>
             </select>
         </div>
-        <div id="bandInputs" style="display: none;margin-top: 5px;">
-            <table style="border: 0 solid transparent;"><tr><td><div id="bandName1" style="display: inline-block;"></div></td>
-                    <td><select  data-dojo-type="dijit/form/Select" id="band1">
+         <button id="advanceIndexBtn" class="titleHeader" role="button">
+            <span class="titleLabel">${config.i18n.imageMask.indexText}</span>
+            <span class="launchpad-icon-arrow-right listExpandBtn"></span>
+        </button>
+        <div id="bandInputsChange" style="display: none;">
+            <table style="border: 0 solid transparent;"><tr><td><div id="bandName1Change" style="display: inline-block;"></div></td>
+                    <td><select  data-dojo-type="dijit/form/Select" id="band1Change">
                         </select>
                     </td></tr>
-                <tr><td><div id="bandName2" style="display: inline-block;"></div></td>
-                    <td><select data-dojo-type="dijit/form/Select" id="band2">
+                <tr><td><div id="bandName2Change" style="display: inline-block;"></div></td>
+                    <td><select data-dojo-type="dijit/form/Select" id="band2Change">
                         </select></td></tr></table>
         </div>
-        <div id="maskRangeSpinners" style="display: none;margin-top: 5px;">
+        <input id="aoiExtentChange" data-dojo-type="dijit/form/CheckBox" /><label for="aoiExtentChange">${config.i18n.imageMask.extent}</label>
+        <div style="display: flex;justify-content: center;margin: 1em 0px;">
+            <button  data-dojo-type="dijit/form/Button" type="button" id="changeApply">${config.i18n.imageMask.apply}</button>
+            <button  data-dojo-type="dijit/form/Button" type="button" id="changeClear">${config.i18n.imageMask.clear}</button>
+        </div>
+          <div id="changeSettingsDiv" style="display: none;">
+        <div id="maskRangeSpinners" style="display: none;">
             
-            <div style="vertical-align: top;display: inline-block;width: 20%;">${config.i18n.changeDetection.positive}: </div>
+            <div style="vertical-align: top;display: inline-block;width: 20%;">${config.i18n.imageMask.positive}: </div>
             <div id="positiveRange"   style="width:78%;display: inline-block;" data-dojo-type="dijit/form/HorizontalSlider" data-dojo-props="value:0.15,minimum: 0,maximum:1,intermediateChanges:true,showButtons:true">
                 <div data-dojo-type="dijit/form/HorizontalRule" container="bottomDecoration" count="6" style="height:5px;color:#27b2cf"></div>
                 <ol data-dojo-type="dijit/form/HorizontalRuleLabels" container="bottomDecoration" style="height:1em;font-size:75%;color:gray">
@@ -62,7 +88,7 @@
                     <li>1</li>
                 </ol>
             </div><br/>
-            <div style="vertical-align: top;display: inline-block;margin-top: 5px;width: 20%;">${config.i18n.changeDetection.negative}: </div>
+            <div style="vertical-align: top;display: inline-block;margin-top: 5px;width: 20%;">${config.i18n.imageMask.negative}: </div>
             <div id="negativeRange"   style="width:78%;display: inline-block;margin-top: 5px;" data-dojo-type="dijit/form/HorizontalSlider" data-dojo-props="value:-0.15,minimum: -1,maximum:0,intermediateChanges:true,showButtons:true">
                 <div data-dojo-type="dijit/form/HorizontalRule" container="bottomDecoration" count="6" style="height:5px;color:#27b2cf"></div>
                 <ol data-dojo-type="dijit/form/HorizontalRuleLabels" container="bottomDecoration" style="height:1em;font-size:75%;color:gray">
@@ -75,9 +101,9 @@
                 </ol>
             </div>
         </div>
-        <div id="thresholdRangeSpinners" style="display: none;margin-top: 5px;">
+        <div id="thresholdRangeSpinners" style="display: none;">
             
-            <div style="vertical-align: top;display: inline-block;">${config.i18n.changeDetection.threshold}: </div>
+            <div style="vertical-align: top;display: inline-block;">${config.i18n.imageMask.threshold}: </div>
             <div id="thresholdValue"  style="width:70%;display: inline-block;" data-dojo-type="dijit/form/HorizontalSlider" data-dojo-props="value:0,minimum: 0,maximum:1,intermediateChanges:true,showButtons:true">
                 <div data-dojo-type="dijit/form/HorizontalRule" container="bottomDecoration" count="6" style="height:5px;color:#27b2cf"></div>
                 <ol data-dojo-type="dijit/form/HorizontalRuleLabels" container="bottomDecoration" style="height:1em;font-size:75%;color:gray">
@@ -89,7 +115,7 @@
                     <li>1</li>
                 </ol>
             </div> 
-                        <div style="vertical-align: top;display: inline-block;margin-top: 5px;">${config.i18n.changeDetection.difference}: </div>
+                        <div style="vertical-align: top;display: inline-block;margin-top: 5px;">${config.i18n.imageMask.difference}: </div>
             <div id="differenceValue"   style="width:70%;display: inline-block;margin-top: 5px;" data-dojo-type="dijit/form/HorizontalSlider" data-dojo-props="value:0,minimum: 0,maximum:1,intermediateChanges:true,showButtons:true">
                 <div data-dojo-type="dijit/form/HorizontalRule" container="bottomDecoration" count="6" style="height:5px;color:#27b2cf"></div>
                 <ol data-dojo-type="dijit/form/HorizontalRuleLabels" container="bottomDecoration" style="height:1em;font-size:75%;color:gray">
@@ -102,23 +128,9 @@
                 </ol>
             </div>
         </div>
-        <div id="areaValueContainer" style="margin-top: 5px;display:none;">
-        <div id="areaValueLabel" style="display: inline-block;">${config.i18n.changeDetection.areaText}:</div>&nbsp;&nbsp;<div id="areaValue"  style="font-weight: bolder;color: magenta; display: inline-block;"></div>
         </div>
-        <div style="display: flex;justify-content: center;margin-top: 5px;">
-            <button  data-dojo-type="dijit/form/Button" type="button" id="changeDetectionApply">${config.i18n.changeDetection.apply}</button>
-            <button  data-dojo-type="dijit/form/Button" type="button" id="changeDetectionClear">${config.i18n.changeDetection.clear}</button>
-        </div>
-        <div id="transparencySlider" style="display: none;margin: 5px 0 17px 0;">
-            <div style="vertical-align: top;display: inline-block;">${config.i18n.changeDetection.transparency}: </div>
-            <div  id="resultOpacity" data-dojo-attach-point="transparency" style="max-width:180px;display:inline-block;position: absolute;width: -moz-available;" data-dojo-type="dijit/form/HorizontalSlider" data-dojo-props="value:0,minimum: 0,maximum:1,intermediateChanges:true,showButtons:true">
-                <div data-dojo-type="dijit/form/HorizontalRule" container="bottomDecoration" style="height:5px;"></div>
-                <ol data-dojo-type="dijit/form/HorizontalRuleLabels" container="bottomDecoration" style="height:1em;font-size:75%;color:gray;">
-                    <li>0%</li>
-                    <li>50%</li>
-                    <li>100%</li>
-                </ol>
-            </div>
+         
+         <div id="areaValueContainerChange" style="margin-top: 8px;display:none;">
+        <div id="areaValueLabelChange" style="display: inline-block;">${config.i18n.imageMask.areaText}:</div>&nbsp;&nbsp;<div id="areaValueChange"  style="font-weight: bolder;color: magenta; display: inline-block;"></div>
         </div>
     </div>
-</div>
