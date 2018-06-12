@@ -416,8 +416,7 @@ define([
 
                 if (needsUpdate && this.config.autoRefresh) {
                     this.panZoomUpdate = true;
-                    if (registry.byId("imageSelectorChange").checked)
-                        this.imageSliderRefresh();
+                    this.imageSliderRefresh();
 
                 }
                 if (this.changeExtent && !geometryEngine.intersects(this.changeExtent, this.map.extent)) {

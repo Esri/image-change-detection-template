@@ -98,7 +98,7 @@ define([
                         domStyle.set("transparencySlider", "display", "block");
                         registry.byId("resultOpacity").set("value", 1 - response.layer.opacity);
                         if (this.imageMaskTool === "change") {
-                            var mode = registry.byId("changeModeList").get("value");
+                           var mode = registry.byId("changeModeList").get("value");
                             if (mode === "image") {
                                 registry.byId("resultOpacity").set("value", 1 - 0.8);
                                 domStyle.set("changeSettingsDiv", "display", "none");
@@ -111,6 +111,8 @@ define([
                                 domStyle.set("maskRangeSpinners", "display", "none");
                                 domStyle.set("thresholdRangeSpinners", "display", "block");
                             }
+                             var element =document.getElementById("imageMaskNode").children[1];
+                            element.scrollTop = element.scrollHeight;
                         }
                     }
                 }));
