@@ -93,12 +93,13 @@ define([
                 this.map.on("update-end", lang.hitch(this, this.hideLoading));
                 this.map.on("layer-add", lang.hitch(this, function (response) {
                     if (response.layer.id === "resultLayer") {
+                        if(this.imageMaskTool === "mask")
                         registry.byId("aoiExtentMask").set("checked", false);
-                        registry.byId("aoiExtentChange").set("checked", false);
                         domStyle.set("transparencySlider", "display", "block");
                         registry.byId("resultOpacity").set("value", 1 - response.layer.opacity);
                         if (this.imageMaskTool === "change") {
-                           var mode = registry.byId("changeModeList").get("value");
+                        registry.byId("aoiExtentChange").set("checked", false);
+                            var mode = registry.byId("changeModeList").get("value");
                             if (mode === "image") {
                                 registry.byId("resultOpacity").set("value", 1 - 0.8);
                                 domStyle.set("changeSettingsDiv", "display", "none");
