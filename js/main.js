@@ -20,7 +20,7 @@ define([
     "dojo/_base/lang",
     "dojo/_base/kernel",
     "dojo/on",
-    "dojo/query", "dijit/focus",
+    "dojo/query", "dijit/focus","dojo/dom-attr",
     "dojo/Deferred",
     "esri/dijit/Scalebar",
     "esri/dijit/Search", "esri/tasks/locator", "application/SearchSources",
@@ -39,7 +39,7 @@ define([
     "dojo/domReady!"
 ], function (
         declare, lang, kernel,
-        on, query, focus,
+        on, query, focus,domAttr,
         Deferred, Scalebar, Search, Locator, SearchSources,
         dom, ArcGISImageServiceLayer, domConstruct, domStyle, html, domClass, Dialog, parser,
         registry, exportHtml, bookmarkHtml, imageMaskHtml,changeHTML,maskHTML, Tooltip,
@@ -554,7 +554,7 @@ define([
                 id: "aboutDialog",
                 draggable: false
             });
-            aboutDialog.closeButtonNode.tabIndex = 0;
+            domAttr.remove(aboutDialog.closeButtonNode,"tabIndex");
             new Tooltip({
                 connectId: ["aboutContainer"],
                 label: this.config.i18n.about.title,
