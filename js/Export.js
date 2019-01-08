@@ -66,6 +66,11 @@ define([
                     }));
                     registry.byId("exportBtn").on("click", lang.hitch(this, this.exportLayer));
                     registry.byId("defineExtent").on("change", lang.hitch(this, this.activatePolygon));
+                    document.getElementById("saveAgolBtn").addEventListener("click", lang.hitch(this, this.addItemRequest));
+                    document.getElementById("cancelAgolBtn").addEventListener("click", lang.hitch(this, function () {
+                        domStyle.set("previewContainer", "display", "none");
+                        document.getElementsByClassName("h3Title")[0].innerHTML = document.getElementsByClassName("h3Title")[0].title = "";
+                    }));
                     if (this.map) {
                         this.map.on("update-start", lang.hitch(this, this.showLoading));
                         this.map.on("update-end", lang.hitch(this, this.hideLoading));
@@ -131,7 +136,7 @@ define([
                     }
                 },
                 setSavingType: function () {
-                    domStyle.set("extentCheckBoxContainer","display","block");
+                    domStyle.set("extentCheckBoxContainer", "display", "block");
                     if (this.exportMode === "both") {
                         domStyle.set("selectExportDisplay", "display", "block");
                         if (registry.byId("saveAndExportOption").get("value") === "agol")
@@ -178,7 +183,7 @@ define([
                         if (this.imageServiceLayer.id === "resultLayer") {
                             if (this.imageServiceLayer.changeMode === "mask" || this.imageServiceLayer.changeMode === "threshold") {
                                 var skipClip = true;
-                                var renderer = this.modifyRenderingRule(this.imageServiceLayer.changeMode, this.imageServiceLayer.renderingRule);
+                                var renderer = this.modifyRenderingRule(this.imageServiceLayer.changeMode, JSON.stringify(this.imageServiceLayer.renderingRule.toJson()));
                             } else if (this.imageServiceLayer.maskMethod) {
                                 var skipClip = true;
                                 var renderer = this.modifyRenderer(this.imageServiceLayer.maskMethod, this.imageServiceLayer.renderingRule);
@@ -211,6 +216,30 @@ define([
                             "format": format,
                             "compressionQuality": compressionQuality
                         };
+                        var layersRequest = esriRequest({
+                            url: this.imageServiceLayer.url + "/exportImage",
+                            content: {
+                                f: "image",
+                                bbox: extent,
+                                bboxSR: 4326,
+                                size: "300,200",
+                                compressionQuality: compressionQuality,
+                                format: format,
+                                interpolation: interpolation,
+                                renderingRule: JSON.stringify(renderingRule),
+                                mosaicRule: JSON.stringify(mosaicRule),
+                                bandIds: this.imageServiceLayer.bandIds,
+                                imageSR: JSON.stringify(this.imageServiceLayer.spatialReference)
+                            },
+                            handleAs: "blob",
+                            callbackParamName: "callback"
+                        });
+
+                        layersRequest.then(lang.hitch(this, function (data) {
+                            document.getElementById("layerThumbnail").src = URL.createObjectURL(data);
+                        }));
+                        document.getElementsByClassName("h3Title")[0].innerHTML = document.getElementsByClassName("h3Title")[0].title = registry.byId("itemTitle").get("value");
+                        this.itemInfo = {itemData: itemData, extent: extent};
                         var portalUrl = this.portalUrl.indexOf("arcgis.com") !== -1 ? "http://www.arcgis.com" : this.portalUrl;
                         var portal = new arcgisPortal.Portal(portalUrl);
                         bundle.identity.lblItem = "Account";
@@ -219,37 +248,82 @@ define([
 
                         portal.signIn().then(lang.hitch(this, function (loggedInUser) {
 
-                            var url = loggedInUser.userContentUrl;
-                            var addItemRequest = esriRequest({
-                                url: url + "/addItem",
-                                content: {f: "json",
-                                    title: registry.byId("itemTitle").get("value"),
-                                    type: "Image Service",
-                                    url: this.imageServiceLayer.url,
-                                    description: registry.byId("itemDescription").get("value"),
-                                    tags: registry.byId("itemTags").get("value"),
-                                    extent: extent,
-                                    spatialReference: spatialReference,
-                                    text: JSON.stringify(itemData)
-                                },
-                                handleAs: "json",
-                                callbackParamName: "callback"
-                            }, {usePost: true});
-                            addItemRequest.then(lang.hitch(this, function (result) {
-                                html.set(document.getElementById("successNotification"), "<br />Layer saved.");
-                                setTimeout(lang.hitch(this, function () {
-                                    html.set(document.getElementById("successNotification"), "");
-                                }), 4000);
-                                domStyle.set("loadingExport", "display", "none");
+                            if (loggedInUser.userContentUrl !== this.userContentUrl) {
+                                registry.byId("folderList").removeOption(registry.byId("folderList").getOptions());
+                                registry.byId("folderList").addOption({label: this.i18n.default, value: ""});
+                                domStyle.set("folderContainer", "display", "none");
+                                this.userContentUrl = loggedInUser.userContentUrl;
+                                var request = esriRequest({
+                                    url: loggedInUser.userContentUrl,
+                                    content: {f: "json"},
+                                    handleAs: "json",
+                                    callbackParamName: "callback"
+                                });
+                                request.then(lang.hitch(this, function (result) {
+                                    if (result.folders.length > 0)
+                                        domStyle.set("folderContainer", "display", "inline-block");
 
-                            }), lang.hitch(this, function (error) {
-                                html.set(document.getElementById("successNotification"), "Error! " + error);
+
+                                    for (var a = 0; a < result.folders.length; a++) {
+                                        registry.byId("folderList").addOption({label: result.folders[a].title, value: result.folders[a].id});
+                                    }
+                                    domStyle.set("previewContainer", "display", "block");
+                                    domStyle.set("loadingExport", "display", "none");
+                                }), lang.hitch(this, function () {
+                                    domStyle.set("previewContainer", "display", "block");
+                                    html.set(document.getElementById("successNotification"), "Error! " + error);
+                                    domStyle.set("loadingExport", "display", "none");
+                                }));
+                            } else {
+                                domStyle.set("previewContainer", "display", "block");
                                 domStyle.set("loadingExport", "display", "none");
-                            }));
+                            }
+
                         }));
                     } else {
                         html.set(document.getElementById("successNotification"), this.i18n.error);
                     }
+                },
+                addItemRequest: function () {
+                    this.showLoading();
+                    var portalUrl = this.portalUrl.indexOf("arcgis.com") !== -1 ? "http://www.arcgis.com" : this.portalUrl;
+                    var portal = new arcgisPortal.Portal(portalUrl);
+                    bundle.identity.lblItem = "Account";
+                    var tempText = (bundle.identity.info).split("access the item on");
+                    bundle.identity.info = tempText[0] + tempText[1];
+
+                    portal.signIn().then(lang.hitch(this, function (loggedInUser) {
+                        var folder = registry.byId("folderList").get("value");
+                        var url = loggedInUser.userContentUrl;
+                        var addItemRequest = esriRequest({
+                            url: url + (folder ? "/" + folder : "") + "/addItem",
+                            content: {f: "json",
+                                title: registry.byId("itemTitle").get("value"),
+                                type: "Image Service",
+                                url: this.imageServiceLayer.url,
+                                description: registry.byId("itemDescription").get("value"),
+                                tags: registry.byId("itemTags").get("value"),
+                                extent: this.itemInfo.extent,
+                                spatialReference: JSON.stringify(this.map.extent.spatialReference.toJson()),
+                                text: JSON.stringify(this.itemInfo.itemData)
+                            },
+                            handleAs: "json",
+                            callbackParamName: "callback"
+                        }, {usePost: true});
+                        addItemRequest.then(lang.hitch(this, function (result) {
+                            domStyle.set("previewContainer", "display", "none");
+                            html.set(document.getElementById("successNotification"), "<br />Layer saved.");
+                            setTimeout(lang.hitch(this, function () {
+                                html.set(document.getElementById("successNotification"), "");
+                            }), 4000);
+                            domStyle.set("loadingExport", "display", "none");
+
+                        }), lang.hitch(this, function (error) {
+                            domStyle.set("previewContainer", "display", "none");
+                            html.set(document.getElementById("successNotification"), "Error! " + error);
+                            domStyle.set("loadingExport", "display", "none");
+                        }));
+                    }));
                 },
                 updateValues: function (info) {
                     this.project(this.map.extent, "extent").then(lang.hitch(this, function (extent) {
@@ -271,7 +345,7 @@ define([
                                 registry.byId("pixelSize").set("value", ps.toFixed(3));
                                 registry.byId("pixelSize").set("constraints", {min: parseFloat(ps.toFixed(3)), place: 0});
                                 registry.byId("pixelSize").set("rangeMessage", this.i18n.error3 + " " + ps.toFixed(3) + " " + this.i18n.error4);
-                                this.currentPixelSize = ps;
+                                 this.currentPixelSize = parseFloat(ps.toFixed(3));
                             }
                         }
                         this.previousSpatialReference = registry.byId("outputSp").get("value");
@@ -305,6 +379,9 @@ define([
                             }
                         }
                         this.geometry = null;
+                        var info = {};
+                        info.levelChange = true;
+                        this.updateValues(info);
                     }
                 },
                 getExtent: function (geometry) {
@@ -340,7 +417,7 @@ define([
                             registry.byId("pixelSize").set("value", ps.toFixed(3));
                             registry.byId("pixelSize").set("constraints", {min: parseFloat(ps.toFixed(3)), place: 0});
                             registry.byId("pixelSize").set("rangeMessage", this.i18n.error3 + " " + ps.toFixed(3) + " " + this.i18n.error4);
-                            this.currentPixelSize = ps;
+                            this.currentPixelSize = parseFloat(ps.toFixed(3));
                         }
                     }));
                 },
@@ -447,7 +524,7 @@ define([
                                 if (this.imageServiceLayer.id === "resultLayer") {
                                     if (this.imageServiceLayer.changeMode === "mask" || this.imageServiceLayer.changeMode === "threshold") {
                                         var skipClip = true;
-                                        var renderer = this.modifyRenderingRule(this.imageServiceLayer.changeMode, this.imageServiceLayer.renderingRule);
+                                        var renderer = this.modifyRenderingRule(this.imageServiceLayer.changeMode, JSON.stringify(this.imageServiceLayer.renderingRule.toJson()));
                                     } else if (this.imageServiceLayer.maskMethod) {
                                         var skipClip = true;
                                         var renderer = this.modifyRenderer(this.imageServiceLayer.maskMethod, this.imageServiceLayer.renderingRule);
@@ -566,10 +643,11 @@ define([
                         domStyle.set("exportSaveContainer", "display", "none");
                         domStyle.set("saveAgolContainer", "display", "none");
                         domStyle.set("selectExportDisplay", "display", "none");
-                        domStyle.set("extentCheckBoxContainer","display","none");
+                        domStyle.set("extentCheckBoxContainer", "display", "none");
                     }
                 },
                 modifyRenderingRule: function (mode, renderer) {
+                    renderer = new RasterFunction(JSON.parse(renderer));
                     if (mode === "mask") {
                         var positiveRange = registry.byId("positiveRange").get("value");
                         var negativeRange = registry.byId("negativeRange").get("value");
@@ -589,14 +667,19 @@ define([
                             var rendererTemp = renderer.rasterFunction;
                         else
                             var rendererTemp = renderer.functionName;
-                        if (rendererTemp === "CompositeBand") {
-                            var raster1 = renderer.functionArguments.Rasters[0];
-                            var raster2 = renderer.functionArguments.Rasters[1];
-                        } else
-                        {
-                            var raster1 = renderer.functionArguments.Raster.functionArguments.Rasters[0];
-                            var raster2 = renderer.functionArguments.Raster.functionArguments.Rasters[1];
+                        var tempVariable = renderer.functionArguments;
+                        for (var a = 0; a < 20; a++) {
+                            if (tempVariable) {
+                                if (tempVariable.Rasters) {
+                                    var raster1 = tempVariable.Rasters[0];
+                                    var raster2 = tempVariable.Rasters[1];
+                                    break;
+                                } else {
+                                    tempVariable = tempVariable.Raster.functionArguments;
+                                }
+                            }
                         }
+
                         var thresholdValue = registry.byId("thresholdValue").get("value");
                         var differenceValue = registry.byId("differenceValue").get("value");
                         var remapRaster1 = new RasterFunction();

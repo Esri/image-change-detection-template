@@ -17,7 +17,11 @@
 define({
     root: ({
         map: {
-            error: "Unable to create map"
+            error: "Unable to create map",
+			licenseError: {
+				message: "Your account is not licensed to use Configurable Apps that are not public. Please ask your organization administrator to assign you a user type that includes Essential Apps or an add-on Essential Apps license.",
+				title: "Not Licensed"
+			}
         },
         nav: {
             "close": "Close"
@@ -70,6 +74,7 @@ define({
             method6: "Less than my threshold",
             method7: "Greater than my threshold",
             method8: "Single Band",
+            method9: "Custom Index",
             dropDown: "Show images in drop down list.",
             transparency: "Transparency(results)",
             slider: "Show images on slider.",
@@ -96,7 +101,8 @@ define({
             sliderText: "Set your threshold",
             maskModeText: "Which values should I mask?",
             positiveSliderText: "Set the minimum increase required between the images before the area is shown in green.",
-            negativeSliderText: "Set the minimum decrease required between the images before the area is shown in magenta."
+            negativeSliderText: "Set the minimum decrease required between the images before the area is shown in magenta.",
+            updateResult: "Your image has changed; click Apply to update analysis."
         },
         editor: {
             title: "Editor",
@@ -114,7 +120,9 @@ define({
             titleText: "Title(required)",
             description: "Description",
             tags: "Tags(required)",
+             preview: "Preview",
             submit: "Save",
+             cancel: "Cancel",
             pixel: "Pixel Size",
             outsr: "Output Spatial Reference",
             renderer: "TIFF download options",
@@ -130,13 +138,15 @@ define({
             error4: "for this extent.",
             error5: "Please enter a valid numeric value.",
             error6: "Your image can't be exported at this time.",
+            thumbnailError: "No thumbnail available",
             advance: "Advanced save options",
             modeOption1: "Save to portal",
             modeOption2: "Save to disk",
             default:"Default",
             utm: "WGS84 UTM Zone",
             layer: "Layer",
-            mercator: "WebMercatorAS"
+            mercator: "WebMercatorAS",
+             folder: "Select folder"
         },
         imageDate: {
             label: "Image Date"
@@ -154,34 +164,40 @@ define({
         }
     }),
     "ar": 1,
-    "cs": 1,
-    "da": 1,
-    "de": 1,
-    "es": 1,
-    "et": 1,
-    "fi": 1,
-    "fr": 1,
-    "he": 1,
-    "hr": 1,
-    "it": 1,
-    "ja": 1,
-    "ko": 1,
-    "lt": 1,
-    "lv": 1,
-    "nl": 1,
-    "nb": 1,
-    "pl": 1,
-    "pt-br": 1,
-    "pt-pt": 1,
-    "ro": 1,
-    "ru": 1,
-    "su": 1,
-    "sr": 1,
-    "sv": 1,
-    "tr": 1,
-    "th": 1,
-    "vi": 1,
-    "zh-cn": 1,
-    "zh-hk": 1,
-    "zh-tw": 1
+	"bs": 1,
+	"ca": 1,
+	"cs": 1,
+	"da": 1,
+	"de": 1,
+	"el": 1,
+	"es": 1,
+	"et": 1,
+	"fi": 1,
+	"fr": 1,
+	"he": 1,
+	"hi": 1,
+	"hr": 1,
+	"hu": 1,
+	"id": 1,
+	"it": 1,
+	"ja": 1,
+	"ko": 1,
+	"lt": 1,
+	"lv": 1,
+	"nl": 1,
+	"nb": 1,
+	"pl": 1,
+	"pt-br": 1,
+	"pt-pt": 1,
+	"ro": 1,
+	"ru": 1,
+	"sl": 1,
+	"sr": 1,
+	"sv": 1,
+	"th": 1,
+	"tr": 1,
+	"vi": 1,
+	"zh-cn": 1,
+	"zh-hk": 1,
+	"zh-tw": 1
 });

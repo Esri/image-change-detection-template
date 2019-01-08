@@ -15,7 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////
 define([
     "dojo/_base/declare",
-    "dojo/_base/lang", "dojo/Evented",
+    "dojo/_base/lang", "dojo/Evented","dojo/_base/connect",
     "dijit/registry",
     "dojo/html",
     "dojo/dom-class",
@@ -45,7 +45,7 @@ define([
     "dijit/form/DropDownButton",
     "dijit/TooltipDialog"
 
-], function (declare, lang, Evented, registry,
+], function (declare, lang, Evented,connect, registry,
         html,
         domClass,
         dom,
@@ -77,23 +77,17 @@ define([
         previousLayerInfo: {primary: null, secondary: null},
         postCreate: function () {
             this.layerInfos = this.layers;
-            /*window.addEventListener("resize", lang.hitch(this, function(){
-             var clientHeight = document.getElementById("imageMaskNode").children[1].clientHeight;
-             if(clientHeight){
-             domStyle.set(document.getElementById("imageMaskNode").children[1],"height",clientHeight+"px");
-             }
-             }));*/
             registry.byId("imageSelectorChange").on("change", lang.hitch(this, this.setFilter));
             registry.byId("dropDownImageListLeft").on("click", lang.hitch(this, this.imageDisplayFormat));
             registry.byId("dropDownImageListRight").on("click", lang.hitch(this, this.imageDisplayFormatRight));
             registry.byId("imageSelectorDropDownLeft").on("change", lang.hitch(this, this.sliderDropDownSelection, "dropDown"));
             registry.byId("imageSelectorDropDownRight").on("change", lang.hitch(this, this.sliderDropDownSelectionRight, "dropDown"));
-            registry.byId("imageSelectorDropDownLeft").on("click", lang.hitch(this, function(){
+            registry.byId("imageSelectorDropDownLeft").on("click", lang.hitch(this, function () {
                 if (this.layerSwipe) {
-                    this.moveSwipe(this.map.width - 40, this.layerSwipe.invertPlacement, this.layerSwipe.layers);
+                    this.moveSwipe(document.getElementById("aboutDialog") && document.getElementById("aboutDialog").clientWidth ? this.map.width - document.getElementById("aboutDialog").clientWidth - 35 : this.map.width - 40, this.layerSwipe.invertPlacement, this.layerSwipe.layers);
                 }
             }));
-            registry.byId("imageSelectorDropDownRight").on("click", lang.hitch(this, function(){
+            registry.byId("imageSelectorDropDownRight").on("click", lang.hitch(this, function () {
                 if (this.layerSwipe) {
                     this.moveSwipe(document.getElementById("toolsContentContainer").clientWidth ? document.getElementById("toolsContentContainer").clientWidth + 15 : 40, this.layerSwipe.invertPlacement, this.layerSwipe.layers);
                 }
@@ -118,7 +112,10 @@ define([
                     this.map.getLayer("resultLayer").redraw();
             }));
 
-            registry.byId("changeClear").on("click", lang.hitch(this, this.clearResultLayer));
+            registry.byId("changeClear").on("click", lang.hitch(this, function () {
+                domStyle.set("updateChangeLayer", "display", "none");
+                this.clearResultLayer();
+            }));
             registry.byId("band1Change").on("change", lang.hitch(this, function (value) {
 
                 if (value === registry.byId("band2Change").get("value"))
@@ -192,19 +189,41 @@ define([
             this.populateMethods();
             this.toolbar = new Draw(this.map);
             this.toolbar.on("draw-complete", lang.hitch(this, this.addGraphic));
+            var popup = this.map.infoWindow;
+            connect.connect(popup, "onDfdComplete", lang.hitch(this, function (e) {
+                if (this.layerSwipe && popup && popup.location && popup.features) {
+                    var showFeatures = [];
+                    var screenPoint = this.map.toScreen(popup.location);
+                    if (screenPoint.x <= this.layerSwipe.domNode.children[0].offsetLeft) {
+                        var layerId = this.secondaryLayer ? this.secondaryLayer.id : "";
+                    } else
+                        var layerId = this.primaryLayer ? this.primaryLayer.id : "";
+
+
+                    for (var b = popup.features.length - 1; b >= 0; b--) {
+                        if (popup.features[b]._layer.id === layerId) {
+                            popup.features.splice(b, 1);
+                            popup.count--;
+                        } else
+                            showFeatures.push(popup.features[b]);
+                    }
+                    if (!popup.deferreds)
+                        popup.setFeatures(showFeatures);
+                }
+            }));
         },
         expandMenu: function () {
-                    var node = document.getElementById("advanceIndexBtn").children[1];
-                    if (domClass.contains(node, "launchpad-icon-arrow-right")) {
-                        domClass.remove(node, "launchpad-icon-arrow-right");
-                        domClass.add(node, "launchpad-icon-arrow-down");
-                        domStyle.set("bandInputsChange", "display", "block");
-                    } else {
-                        domStyle.set("bandInputsChange", "display", "none");
-                        domClass.remove(node, "launchpad-icon-arrow-down");
-                        domClass.add(node, "launchpad-icon-arrow-right");
-                    }
-                },
+            var node = document.getElementById("advanceIndexBtn").children[1];
+            if (domClass.contains(node, "launchpad-icon-arrow-right")) {
+                domClass.remove(node, "launchpad-icon-arrow-right");
+                domClass.add(node, "launchpad-icon-arrow-down");
+                domStyle.set("bandInputsChange", "display", "block");
+            } else {
+                domStyle.set("bandInputsChange", "display", "none");
+                domClass.remove(node, "launchpad-icon-arrow-down");
+                domClass.add(node, "launchpad-icon-arrow-right");
+            }
+        },
         setFilter: function (value) {
             if (value) {
                 this.imageSliderRefresh();
@@ -223,6 +242,7 @@ define([
                     this.secondaryLayer.suspend();
                     this.map.removeLayer(this.secondaryLayer);
                     this.secondaryLayer = null;
+                    this.map.secondaryLayer = null;
                 }
             }
 
@@ -252,18 +272,19 @@ define([
             if (this.config.changeMethods.burn) {
                 registry.byId("methodChange").addOption({label: this.i18n.method5, value: "burn"});
             }
-
-            
+            if (this.config.changeMethods.custom && this.config.customFormula) {
+                registry.byId("methodChange").addOption({label: this.config.customIndexLabel, value: "custom"});
+            }
 
         },
-        setCurrentMethod: function(currentValue) {
-          if (currentValue !== registry.byId("methodChange").get("value")) {
+        setCurrentMethod: function (currentValue) {
+            if (currentValue !== registry.byId("methodChange").get("value")) {
                 if (currentValue !== "one")
                     registry.byId("methodChange").set("value", currentValue);
                 else
                     this.setMethod(registry.byId("methodChange").get("value"));
             } else
-                this.setMethod(registry.byId("methodChange").get("value"));  
+                this.setMethod(registry.byId("methodChange").get("value"));
         },
         setTooltips: function () {
             this.switchDisplayTooltip = new Tooltip({
@@ -271,7 +292,7 @@ define([
                 position: ['after', 'below'],
                 label: this.i18n.dropDown
             });
-             this.switchDisplayTooltipRight = new Tooltip({
+            this.switchDisplayTooltipRight = new Tooltip({
                 connectId: ['dropDownImageListRight'],
                 position: ['after', 'below'],
                 label: this.i18n.dropDown
@@ -312,15 +333,17 @@ define([
                 this.secondaryLayer.suspend();
                 this.map.removeLayer(this.secondaryLayer);
                 this.secondaryLayer = null;
+                this.map.secondaryLayer = null;
             }
             this.clearResultLayer();
-
+            domStyle.set("updateChangeLayer", "display", "none");
             this.valueSelected = null;
             this.valueSelectedRight = null;
             if (value) {
                 this.primaryLayer = this.map.getLayer(value);
+                this.map.primaryLayer = value;
                 this.primaryLayer.show();
-
+                this.primaryLayer.on("mosaic-rule-change", lang.hitch(this, this.mosaicRuleChanged));
                 if (this.layerInfos[value].changeDetection) {
                     this.populateBands();
                     this.defaultMosaicRule = this.layerInfos[value].defaultMosaicRule;
@@ -371,7 +394,7 @@ define([
 
                     } else {
                         if (!this.layerInfos[this.primaryLayer.id].imageField) {
-                            html.set(document.getElementById("errorDivChange"), this.i18n.error1);
+                            html.set(document.getElementById("errorDivChange"), "");
                         } else if (!this.layerInfos[this.primaryLayer.id].objectID) {
                             html.set(document.getElementById("errorDivChange"), this.i18n.error2);
                         } else {
@@ -389,6 +412,13 @@ define([
                 domStyle.set("changeDiv", "display", "none");
                 html.set(document.getElementById("errorDivChange"), this.i18n.error5);
             }
+        },
+        mosaicRuleChanged: function () {
+            var resultLayer = this.map.getLayer("resultLayer");
+            if (resultLayer && this.primaryLayer && this.secondaryLayer && this.primaryLayer.url === resultLayer.url && this.primaryLayer.mosaicRule && this.primaryLayer.mosaicRule.lockRasterIds && (this.primaryLayer.mosaicRule.lockRasterIds[0] !== resultLayer.rasterIds[0] || this.secondaryLayer.mosaicRule.lockRasterIds[0] !== resultLayer.rasterIds[1])) {
+                domStyle.set("updateChangeLayer", "display", "block");
+            }
+
         },
         mapExtentChange: function (evt) {
 
@@ -454,7 +484,7 @@ define([
                     domStyle.set(this.sliderLabels.domNode, "display", "none");
                 }
             } else {
-                 domStyle.set(document.getElementById("imageRangeLeft"), "display", "none");
+                domStyle.set(document.getElementById("imageRangeLeft"), "display", "none");
                 if (this.slider) {
                     domStyle.set(this.slider.domNode, "display", "none");
                     domStyle.set(this.sliderRules.domNode, "display", "none");
@@ -478,7 +508,7 @@ define([
         },
         imageDisplayFormatRight2: function () {
             if (!domClass.contains(registry.byId("dropDownImageListRight").domNode, "dropDownSelected")) {
-               domStyle.set(document.getElementById("imageRangeRight"), "display", "inline-block");
+                domStyle.set(document.getElementById("imageRangeRight"), "display", "inline-block");
                 domStyle.set("dropDownOptionRight", "display", "none");
                 if (this.featureLength > 1) {
                     domStyle.set(this.sliderRight.domNode, "display", "block");
@@ -582,10 +612,10 @@ define([
                             maximum: this.featureLength - 1,
                             discreteValues: this.featureLength,
                             onChange: lang.hitch(this, this.sliderDropDownSelection, "slider"),
-                            onClick: lang.hitch(this, function(){
-                             if (this.layerSwipe) {
-                                this.moveSwipe(this.map.width - 40, this.layerSwipe.invertPlacement, this.layerSwipe.layers);
-                            }   
+                            onClick: lang.hitch(this, function () {
+                                if (this.layerSwipe) {
+                                    this.moveSwipe(document.getElementById("aboutDialog") && document.getElementById("aboutDialog").clientWidth ? this.map.width - document.getElementById("aboutDialog").clientWidth - 35 : this.map.width - 40, this.layerSwipe.invertPlacement, this.layerSwipe.layers);
+                                }
                             })
                         }, sliderNode);
                         this.sliderRight = new HorizontalSlider({
@@ -595,10 +625,10 @@ define([
                             maximum: this.featureLength - 1,
                             discreteValues: this.featureLength,
                             onChange: lang.hitch(this, this.sliderDropDownSelectionRight, "slider"),
-                            onClick: lang.hitch(this, function(){
+                            onClick: lang.hitch(this, function () {
                                 if (this.layerSwipe) {
-                    this.moveSwipe(document.getElementById("toolsContentContainer").clientWidth ? document.getElementById("toolsContentContainer").clientWidth + 15 : 40, this.layerSwipe.invertPlacement, this.layerSwipe.layers);
-                }
+                                    this.moveSwipe(document.getElementById("toolsContentContainer").clientWidth ? document.getElementById("toolsContentContainer").clientWidth + 15 : 40, this.layerSwipe.invertPlacement, this.layerSwipe.layers);
+                                }
                             })
                         }, sliderNodeRight);
                         this.slider.startup();
@@ -660,12 +690,12 @@ define([
             registry.byId("imageSelectorDropDownRight").set("value", indexRight);
             this.slider.set("value", index);
             this.sliderRight.set("value", indexRight);
-            if (this.imageFieldType === "esriFieldTypeDate"){
-                html.set(document.getElementById("imageRangeLeft"),": <b>" + locale.format(new Date(this.orderedDates[index].value), {selector: "date", formatLength: "long"}) + "</b>");
+            if (this.imageFieldType === "esriFieldTypeDate") {
+                html.set(document.getElementById("imageRangeLeft"), ": <b>" + locale.format(new Date(this.orderedDates[index].value), {selector: "date", formatLength: "long"}) + "</b>");
                 html.set(document.getElementById("imageRangeRight"), ": <b>" + locale.format(new Date(this.orderedDates[indexRight].value), {selector: "date", formatLength: "long"}) + "</b>");
-            }else{
+            } else {
                 html.set(document.getElementById("imageRangeLeft"), ": <b>" + this.orderedDates[index].value + "</b>");
-                html.set(document.getElementById("imageRangeRight"),": <b>" + this.orderedDates[indexRight].value + "</b>");
+                html.set(document.getElementById("imageRangeRight"), ": <b>" + this.orderedDates[indexRight].value + "</b>");
             }
             this.hideLoading();
         },
@@ -769,7 +799,7 @@ define([
         },
         sliderChange: function () {
             if (this.valueSelected || this.valueSelected === 0) {
-                this.sliderMove= "left";
+                this.sliderMove = "left";
                 var aqDate = this.orderedDates[this.valueSelected].value;
                 var featureSelect = [];
                 var featureIds = [];
@@ -780,10 +810,10 @@ define([
 
 
                 if (this.imageFieldType !== "esriFieldTypeDate")
-                    html.set(document.getElementById("imageRangeLeft"),  ": <b>" + aqDate + "</b>");
-                else{
-                    html.set(document.getElementById("imageRangeLeft"),  ": <b>" + locale.format(new Date(aqDate), {selector: "date", formatLength: "long"}) + "</b>");
-                    }
+                    html.set(document.getElementById("imageRangeLeft"), ": <b>" + aqDate + "</b>");
+                else {
+                    html.set(document.getElementById("imageRangeLeft"), ": <b>" + locale.format(new Date(aqDate), {selector: "date", formatLength: "long"}) + "</b>");
+                }
                 var mr = new MosaicRule();
                 mr.method = MosaicRule.METHOD_LOCKRASTER;
                 mr.ascending = true;
@@ -794,7 +824,7 @@ define([
         },
         sliderChangeRight: function () {
             if (this.valueSelectedRight || this.valueSelectedRight === 0) {
-                this.sliderMove= "right";
+                this.sliderMove = "right";
                 var aqDate = this.orderedDates[this.valueSelectedRight].value;
                 var featureSelect = [];
                 var featureIds = [];
@@ -805,9 +835,9 @@ define([
 
 
                 if (this.imageFieldType !== "esriFieldTypeDate")
-                    html.set(document.getElementById("imageRangeRight"),": <b>" + aqDate + "</b>");
+                    html.set(document.getElementById("imageRangeRight"), ": <b>" + aqDate + "</b>");
                 else
-                    html.set(document.getElementById("imageRangeRight"),  ": <b>" + locale.format(new Date(aqDate), {selector: "date", formatLength: "long"}) + "</b>");
+                    html.set(document.getElementById("imageRangeRight"), ": <b>" + locale.format(new Date(aqDate), {selector: "date", formatLength: "long"}) + "</b>");
 
                 var mr = new MosaicRule();
                 mr.method = MosaicRule.METHOD_LOCKRASTER;
@@ -815,11 +845,11 @@ define([
                 mr.operation = "MT_FIRST";
                 mr.lockRasterIds = featureIds;
 
-                    if (this.secondaryLayer) {
-                        this.secondaryLayer.setMosaicRule(mr);
-                    } else {
-                        this.createSecondaryLayer(mr);
-                    }
+                if (this.secondaryLayer) {
+                    this.secondaryLayer.setMosaicRule(mr);
+                } else {
+                    this.createSecondaryLayer(mr);
+                }
             }
         },
         createSecondaryLayer: function (mr) {
@@ -845,8 +875,8 @@ define([
             if (layer.timeInfo && layer.timeInfo.timeExtent)
                 params.timeExtent = layer.timeInfo.timeExtent;
             var popupInfo = "";
-            if (layer.popupInfo) {
-                popupInfo = new PopupTemplate(layer.popupInfo);
+            if (layer.infoTemplate) {
+                popupInfo = layer.infoTemplate;
             }
 
             this.secondaryLayer = new ArcGISImageServiceLayer(
@@ -860,6 +890,8 @@ define([
                         useMapTime: layer.useMapTime,
                         useMapImage: layer.useMapImage
                     });
+            this.secondaryLayer.on("mosaic-rule-change", lang.hitch(this, this.mosaicRuleChanged));
+            this.map.secondaryLayer = this.secondaryLayer.id;
             this.map.addLayer(this.secondaryLayer, this.secondaryLayerIndex);
         },
         imageSliderRefresh: function () {
@@ -874,7 +906,7 @@ define([
             registry.byId("band1Change").removeOption(registry.byId("band1Change").getOptions());
             registry.byId("band2Change").removeOption(registry.byId("band2Change").getOptions());
             var layersRequest = esriRequest({
-                url: this.primaryLayer.url + "/1/info/keyProperties",
+                url: this.primaryLayer.url + "/keyProperties",
                 content: {f: "json"},
                 handleAs: "json",
                 callbackParamName: "callback"
@@ -962,6 +994,8 @@ define([
 
             if (value === "difference") {
                 domStyle.set("advanceIndexBtn", "display", "none");
+                if (domClass.contains(document.getElementById("advanceIndexBtn").children[1], "launchpad-icon-arrow-down"))
+                    document.getElementById("advanceIndexBtn").click();
                 domStyle.set("changeMode", "display", "none");
             } else {
                 domStyle.set("areaValueChange", "color", "magenta");
@@ -971,7 +1005,14 @@ define([
                     html.set(document.getElementById("areaValueLabelChange"), this.i18n.areaText2 + ":");
                 }
                 domStyle.set("changeMode", "display", "block");
-                domStyle.set("advanceIndexBtn", "display", "block");
+                if (value === "custom") {
+                    domStyle.set("advanceIndexBtn", "display", "none");
+                    if (domClass.contains(document.getElementById("advanceIndexBtn").children[1], "launchpad-icon-arrow-down"))
+                        document.getElementById("advanceIndexBtn").click();
+                } else {
+                    domStyle.set("advanceIndexBtn", "display", "block");
+
+                }
             }
 
             this.setBands(value);
@@ -995,8 +1036,9 @@ define([
         getMinMaxCheck: function () {
             this.showLoading();
             this.clearResultLayer(true);
+            domStyle.set("updateChangeLayer", "display", "none");
             var method = registry.byId("methodChange").get("value");
-            if (method !== "difference") {
+            if (method !== "difference" && method !== "custom") {
                 var request = new esriRequest({
                     url: this.primaryLayer.url,
                     content: {
@@ -1091,18 +1133,21 @@ define([
                 raster3 = raster4;
             } else {
                 var changeMode = registry.byId("changeModeList").get("value");
-                var band1 = "B" + (Math.abs(parseInt(registry.byId("band1Change").get("value"))));
-                var band2 = "B" + (Math.abs(parseInt(registry.byId("band2Change").get("value"))));
-                var value1 = this.max1 - this.min1;
-                var value2 = this.max2 - this.min2;
-
-
-                if (method !== "savi") {
-                    var indexFormula = "((" + value2 + "*(" + band1 + "-" + this.min1 + "))+(" + value1 + "*(" + this.min2 + "-" + band2 + ")))/((" + value2 + "*(" + band1 + "-" + this.min1 + "))+(" + value1 + "*(" + band2 + "-" + this.min2 + ")))";
+                if (method === "custom") {
+                    var indexFormula = this.config.customFormula;
                 } else {
-                    var indexFormula = "1.5 * ((" + value2 + "*(" + band1 + "-" + this.min1 + "))+(" + value1 + "*(" + this.min2 + "-" + band2 + ")))/((" + value2 + "*(" + band1 + "-" + this.min1 + "))+(" + value1 + "*(" + band2 + "-" + this.min2 + "))+(0.5*" + value1 + "*" + value2 + "))";
-                }
+                    var band1 = "B" + (Math.abs(parseInt(registry.byId("band1Change").get("value"))));
+                    var band2 = "B" + (Math.abs(parseInt(registry.byId("band2Change").get("value"))));
+                    var value1 = this.max1 - this.min1;
+                    var value2 = this.max2 - this.min2;
 
+
+                    if (method !== "savi") {
+                        var indexFormula = "((" + value2 + "*(" + band1 + "-" + this.min1 + "))+(" + value1 + "*(" + this.min2 + "-" + band2 + ")))/((" + value2 + "*(" + band1 + "-" + this.min1 + "))+(" + value1 + "*(" + band2 + "-" + this.min2 + ")))";
+                    } else {
+                        var indexFormula = "1.5 * ((" + value2 + "*(" + band1 + "-" + this.min1 + "))+(" + value1 + "*(" + this.min2 + "-" + band2 + ")))/((" + value2 + "*(" + band1 + "-" + this.min1 + "))+(" + value1 + "*(" + band2 + "-" + this.min2 + "))+(0.5*" + value1 + "*" + value2 + "))";
+                    }
+                }
                 raster1 = new RasterFunction();
                 raster1.functionName = "BandArithmetic";
                 args1.Method = 0;
@@ -1226,6 +1271,7 @@ define([
                 this.changeDetectionLayer.title = "Change Layer";
                 this.changeDetectionLayer.changeMethod = method;
                 this.changeDetectionLayer.changeMode = changeMode;
+                this.changeDetectionLayer.rasterIds = [this.primaryLayer.mosaicRule.lockRasterIds[0], this.secondaryLayer.mosaicRule.lockRasterIds[0]];
                 this.map.addLayer(this.changeDetectionLayer, this.resultLayerIndex);
             }), lang.hitch(this, function () {
                 params = new ImageServiceParameters();
@@ -1255,10 +1301,11 @@ define([
                 this.changeExtent = this.map.extent;
                 this.changeDetectionLayer.changeMethod = method;
                 this.changeDetectionLayer.changeMode = changeMode;
+                this.changeDetectionLayer.rasterIds = [this.primaryLayer.mosaicRule.lockRasterIds[0], this.secondaryLayer.mosaicRule.lockRasterIds[0]];
                 this.map.addLayer(this.changeDetectionLayer, this.resultLayerIndex);
             }));
         },
-         calculatePixelSize: function () {
+        calculatePixelSize: function () {
             var xdistance = this.map.extent.xmax - this.map.extent.xmin;
             var ydistance = this.map.extent.ymax - this.map.extent.ymin;
             this.pixelSizeX = xdistance / this.map.width;
@@ -1362,8 +1409,8 @@ define([
         },
         refreshSwipe: function () {
             if ((registry.byId("swipeHandler").checked || registry.byId("swipeHandler").disabled)) {
-                
-                if (this.primaryLayer && this.secondaryLayer && this.primaryLayer.mosaicRule && this.secondaryLayer.mosaicRule && this.primaryLayer.mosaicRule.lockRasterIds && this.secondaryLayer.mosaicRule.lockRasterIds &&  this.primaryLayer.mosaicRule.lockRasterIds[0] !== this.secondaryLayer.mosaicRule.lockRasterIds[0]) {
+
+                if (this.primaryLayer && this.secondaryLayer && this.primaryLayer.mosaicRule && this.secondaryLayer.mosaicRule && this.primaryLayer.mosaicRule.lockRasterIds && this.secondaryLayer.mosaicRule.lockRasterIds && this.primaryLayer.mosaicRule.lockRasterIds[0] !== this.secondaryLayer.mosaicRule.lockRasterIds[0]) {
                     if (this.primaryLayer.mosaicRule.lockRasterIds[0] !== this.previousLayerInfo.primary || this.secondaryLayer.mosaicRule.lockRasterIds[0] !== this.previousLayerInfo.secondary || !this.layerSwipe) {
                         if (this.layerSwipe) {
                             this.swipePosition = this.layerSwipe.domNode.children[0].offsetLeft;
@@ -1376,10 +1423,10 @@ define([
                         }
                         domConstruct.place("<div id='swipewidget'></div>", "mapDiv_root", "first");
                         if (!this.swipePosition) {
-                             if (this.sliderMove === "right")
-                             this.swipePosition = document.getElementById("toolsContentContainer").clientWidth ? document.getElementById("toolsContentContainer").clientWidth + 15: 40;
-                             else
-                             this.swipePosition = this.map.width - 40;
+                            if (this.sliderMove === "right")
+                                this.swipePosition = document.getElementById("toolsContentContainer").clientWidth ? document.getElementById("toolsContentContainer").clientWidth + 15 : 40;
+                            else
+                                this.swipePosition = document.getElementById("aboutDialog") && document.getElementById("aboutDialog").clientWidth ? this.map.width - document.getElementById("aboutDialog").clientWidth - 35 : this.map.width - 40;
                         }
 
                         this.layerSwipe = new LayerSwipe({
@@ -1393,19 +1440,20 @@ define([
                         this.previousLayerInfo = {primary: this.primaryLayer.mosaicRule.lockRasterIds[0], secondary: this.secondaryLayer.mosaicRule.lockRasterIds[0]};
                     }
                     domStyle.set("changeDiv", "display", "block");
-                    domStyle.set("identicalImageError","display","none");
+                    domStyle.set("identicalImageError", "display", "none");
                 } else {
                     if (this.layerSwipe) {
                         this.layerSwipe.destroy();
                         this.layerSwipe = null;
                         this.previousLayerInfo = {primary: null, secondary: null};
                         this.clearResultLayer();
+                        domStyle.set("updateChangeLayer", "display", "none");
                     }
                     registry.byId("swipeHandler").set("checked", false);
                     registry.byId("swipeHandler").set("disabled", true);
                     domStyle.set("changeDiv", "display", "none");
-                    domStyle.set("identicalImageError","display","inline-block");
-                    
+                    domStyle.set("identicalImageError", "display", "inline-block");
+
                 }
             } else if (this.layerSwipe) {
                 this.layerSwipe.destroy();
@@ -1426,6 +1474,7 @@ define([
                 this.secondaryLayer.suspend();
                 this.map.removeLayer(this.secondaryLayer);
                 this.secondaryLayer = null;
+                this.map.secondaryLayer = null;
             }
 
         },

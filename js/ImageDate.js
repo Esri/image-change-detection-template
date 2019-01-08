@@ -19,14 +19,14 @@ define([
     'dojo/_base/lang',
     "dojo/date/locale",
     "dojo/html",
-    "esri/request"
+    "esri/request","dojo/dom-class"
 ],
         function (
                 declare, Evented,
                 lang,
                 locale,
                 html,
-                esriRequest) {
+                esriRequest,domClass) {
             return declare("application.ImageDate", [Evented], {
                 constructor: function (parameters) {
                     var defaults = {
@@ -60,13 +60,13 @@ define([
                         } else
                             this.secondaryLayer = null;
                     } else if (this.map.secondaryLayer && this.map.getLayer(this.map.secondaryLayer).visible && this.map.getLayer(this.map.secondaryLayer).serviceDataType && this.map.getLayer(this.map.secondaryLayer).serviceDataType.substr(0, 16) === "esriImageService") {
-                        this.primaryLayer = this.map.getLayer(this.map.secondaryLayer);
-                        this.secondaryLayer = null;
+                        this.secondaryLayer = this.map.getLayer(this.map.secondaryLayer);
+                        this.primaryLayer = null;
                     } else {
                         for (var a = this.map.layerIds.length - 1; a >= 0; a--) {
                             var layerObject = this.map.getLayer(this.map.layerIds[a]);
                             var title = layerObject.arcgisProps && layerObject.arcgisProps.title ? layerObject.arcgisProps.title : layerObject.title;
-                            if (layerObject && layerObject.visible && layerObject.serviceDataType && layerObject.serviceDataType.substr(0, 16) === "esriImageService" && layerObject.id !== "resultLayer" && layerObject.id !== "scatterResultLayer" && layerObject.id !== this.map.resultLayer && (!title || ((title).substr(title.length - 2)) !== "__")) {
+                            if (layerObject && layerObject.visible && layerObject.serviceDataType && layerObject.serviceDataType.substr(0, 16) === "esriImageService" && layerObject.id !== "resultLayer" &&  layerObject.id !== this.map.resultLayer && (!title || ((title).substr(title.length - 2)) !== "__")) {
                                 this.primaryLayer = layerObject;
                                 break;
                             } else
@@ -103,7 +103,7 @@ define([
                         var point = this.map.extent.getCenter();
                         var mosaicRule = layer.mosaicRule ? layer.mosaicRule : layer.defaultMosaicRule ? layer.defaultMosaicRule : "";
 
-                        var request = new esriRequest({
+                   var request = new esriRequest({
                             url: layer.url + "/getSamples",
                             content: {
                                 f: "json",
@@ -118,218 +118,97 @@ define([
                             callbackParamName: "callback"
                         });
                         request.then(lang.hitch(this, function (result) {
-                            if (result.samples && result.samples.length > 0) {
-                                var primaryDate = result.samples[0].attributes[this.dateField];
+                            if (result.samples && result.samples.length > 0)
                                 this.map.primaryDate = result.samples[0].attributes[this.dateField];
-                                if (this.secondaryLayer) {
-                                    var mosaicRule = this.secondaryLayer.mosaicRule ? this.secondaryLayer.mosaicRule : this.secondaryLayer.defaultMosaicRule ? this.secondaryLayer.defaultMosaicRule : "";
-                                    var requestSecondary = new esriRequest({
-                                        url: this.secondaryLayer.url + "/getSamples",
-                                        content: {
-                                            f: "json",
-                                            geometry: JSON.stringify(point),
-                                            geometryType: "esriGeometryPoint",
-                                            returnGeometry: false,
-                                            mosaicRule: mosaicRule ? JSON.stringify(mosaicRule.toJson()) : mosaicRule,
-                                            returnFirstValueOnly: true,
-                                            outFields: this.secondaryDateField
-                                        },
-                                        handleAs: "json",
-                                        callbackParamName: "callback"
-                                    });
-                                    requestSecondary.then(lang.hitch(this, function (data) {
-                                        if (data.samples && data.samples.length > 0) {
-                                            var secondaryDate = data.samples[0].attributes[this.secondaryDateField];
-                                            html.set("primaryDate", this.prefix + ": " + locale.format(new Date(primaryDate), {selector: "date", formatLength: "long"}) + " vs " + locale.format(new Date(secondaryDate), {selector: "date", formatLength: "long"}));
-                                        } else {
-                                            var secondaryDate = null;
-                                            html.set("primaryDate", this.prefix + ": " + locale.format(new Date(primaryDate), {selector: "date", formatLength: "long"}));
-                                        }
-                                    }), lang.hitch(this, function () {
-                                        html.set("primaryDate", this.prefix + ": " + locale.format(new Date(primaryDate), {selector: "date", formatLength: "long"}));
-                                    }));
-                                } else {
-                                    html.set("primaryDate", this.prefix + ": " + locale.format(new Date(primaryDate), {selector: "date", formatLength: "long"}));
-                                }
-                            } else {
-                                html.set("primaryDate", "");
+                            else
                                 this.map.primaryDate = null;
-                            }
+                            this.displayDate(this.map.primaryDate, this.map.secondaryDate);
                         }), lang.hitch(this, function (error) {
-                            html.set("primaryDate", "");
                             this.map.primaryDate = null;
+                            this.displayDate(this.map.primaryDate, this.map.secondaryDate);
                         }));
-
+                    
 
                     } else {
-                        html.set("primaryDate", '');
+                        
                         this.map.primaryDate = null;
+                         this.displayDate(this.map.primaryDate, this.map.secondaryDate);
+                    }
+                },
+                secondaryDate: function () {
+                    if (this.secondaryDateField) {
+                        var point = this.map.extent.getCenter();
+                        var mosaicRule = this.secondaryLayer.mosaicRule ? this.secondaryLayer.mosaicRule : this.secondaryLayer.defaultMosaicRule ? this.secondaryLayer.defaultMosaicRule : "";
+                   
+                        var requestSecondary = new esriRequest({
+                            url: this.secondaryLayer.url + "/getSamples",
+                            content: {
+                                f: "json",
+                                geometry: JSON.stringify(point),
+                                geometryType: "esriGeometryPoint",
+                                returnGeometry: false,
+                                mosaicRule: mosaicRule ? JSON.stringify(mosaicRule.toJson()) : mosaicRule,
+                                returnFirstValueOnly: true,
+                                outFields: this.secondaryDateField
+                            },
+                            handleAs: "json",
+                            callbackParamName: "callback"
+                        });
+                        requestSecondary.then(lang.hitch(this, function (data) {
+                            if (data.samples && data.samples.length > 0)
+                                this.map.secondaryDate = data.samples[0].attributes[this.secondaryDateField];
+                            else
+                                this.map.secondaryDate = null;
+                            this.displayDate(this.map.primaryDate, this.map.secondaryDate);
+                        }), lang.hitch(this, function () {
+                            this.map.secondaryDate = null;
+                            this.displayDate(this.map.primaryDate, this.map.secondaryDate);
+                        }));
+                    
+                    } else {
+                        this.map.secondaryDate = null;
+                        this.displayDate(this.map.primaryDate, this.map.secondaryDate);
                     }
                 },
                 changeDateRange: function () {
-                    this.previousPrimary = this.primaryLayer;
                     this.setPrimaryLayer();
-                    if (this.primaryLayer) {
-                        this.label = this.primaryLayer.id;//url.split('//')[1];
-
-                        if (this.primaryLayer && this.primaryLayer.visible) {
-                            if (this.layerInfos[this.label]) {
-                                this.dateField = this.layerInfos[this.label].dateField;
-                                if (this.secondaryLayer)
-                                    this.getSecondaryDateField();
-                                else
-                                    this.primarydate();
-                            } else {
-                                var obj = {};
-                                if (this.primaryLayer.timeInfo && this.primaryLayer.timeInfo.startTimeField) {
-                                    var timeInfo = this.primaryLayer.timeInfo;
-                                    var field = timeInfo.startTimeField;
-                                    if (field) {
-                                        this.dateField = field;
-                                        obj.dateField = field;
-                                    } else {
-                                        this.dateField = null;
-                                        obj.dateField = null;
-                                    }
-                                    if (this.secondaryLayer)
-                                        this.getSecondaryDateField();
-                                    else
-                                        this.primarydate();
-                                } else {
-                                    var layersRequest = esriRequest({
-                                        url: this.primaryLayer.url,
-                                        content: {f: "json"},
-                                        handleAs: "json",
-                                        callbackParamName: "callback"
-                                    });
-                                    layersRequest.then(lang.hitch(this, function (data) {
-                                        var timeInfo = data.timeInfo;
-                                        if (timeInfo) {
-                                            var field = timeInfo.startTimeField;
-                                            if (field) {
-                                                this.dateField = field;
-                                                obj.dateField = field;
-                                            } else {
-                                                var regExp = new RegExp(/acq[a-z]*[_]?Date/i);
-                                                for (var i in data.fields) {
-                                                    if (regExp.test(data.fields[i].name)) {
-                                                        this.dateField = data.fields[i].name;
-                                                        obj.dateField = data.fields[i].name;
-                                                        break;
-                                                    } else if (data.fields[i].type === "esriFieldTypeDate") {
-                                                        this.dateField = data.fields[i].name;
-                                                        obj.dateField = data.fields[i].name;
-                                                        break;
-                                                    }
-                                                    this.dateField = null;
-                                                    obj.dateField = null;
-                                                }
-                                            }
-                                        } else {
-                                            var regExp = new RegExp(/acq[a-z]*[_]?Date/i);
-                                            for (var i in data.fields) {
-                                                if (regExp.test(data.fields[i].name)) {
-                                                    this.dateField = data.fields[i].name;
-                                                    obj.dateField = data.fields[i].name;
-                                                    break;
-                                                } else if (data.fields[i].type === "esriFieldTypeDate") {
-                                                    this.dateField = data.fields[i].name;
-                                                    obj.dateField = data.fields[i].name;
-                                                    break;
-                                                }
-                                                this.dateField = null;
-                                                obj.dateField = null;
-                                            }
-                                        }
-                                        if (this.secondaryLayer)
-                                            this.getSecondaryDateField();
-                                        else
-                                            this.primarydate();
-                                    }));
-                                }
-                                this.layerInfos[this.label] = obj;
-                            }
-
-                        } else {
-                            html.set("primaryDate", '');
-                            this.map.primaryDate = null;
-                        }
-                    } else {
-                        html.set("primaryDate", '');
-                        this.map.primaryDate = null;
-                    }
-                },
-                getSecondaryDateField: function () {
-                    var label = this.secondaryLayer.url.split('//')[1];
-                    ;
-
-                    if (this.layerInfos[label]) {
-                        this.secondaryDateField = this.layerInfos[label].dateField;
-                        this.primarydate();
-                    } else {
-                        var obj = {};
-                        if (this.secondaryLayer.timeInfo && this.secondaryLayer.timeInfo.startTimeField) {
-                            var timeInfo = this.secondaryLayer.timeInfo;
-                            var field = timeInfo.startTimeField;
-                            if (field) {
-                                this.secondaryDateField = field;
-                                obj.dateField = field;
-                            } else {
-                                this.secondaryDateField = null;
-                                obj.dateField = null;
-                            }
+                    if (this.primaryLayer && this.primaryLayer.visible) {
+                        var label = this.primaryLayer.id;
+                        if (this.layerInfos[label]) {
+                            this.dateField = this.layerInfos[label].dateField;
                             this.primarydate();
                         } else {
-                            var layersRequest = esriRequest({
-                                url: this.secondaryLayer.url,
-                                content: {f: "json"},
-                                handleAs: "json",
-                                callbackParamName: "callback"
-                            });
-                            layersRequest.then(lang.hitch(this, function (data) {
-                                var timeInfo = data.timeInfo;
-                                if (timeInfo) {
-                                    var field = timeInfo.startTimeField;
-                                    if (field) {
-                                        this.secondaryDateField = field;
-                                        obj.dateField = field;
-                                    } else {
-                                        var regExp = new RegExp(/acq[a-z]*[_]?Date/i);
-                                        for (var i in data.fields) {
-                                            if (regExp.test(data.fields[i].name)) {
-                                                this.secondaryDateField = data.fields[i].name;
-                                                obj.dateField = data.fields[i].name;
-                                                break;
-                                            } else if (data.fields[i].type === "esriFieldTypeDate") {
-                                                this.secondaryDateField = data.fields[i].name;
-                                                obj.dateField = data.fields[i].name;
-                                                break;
-                                            }
-                                            this.secondaryDateField = null;
-                                            obj.dateField = null;
-                                        }
-                                    }
-                                } else {
-                                    var regExp = new RegExp(/acq[a-z]*[_]?Date/i);
-                                    for (var i in data.fields) {
-                                        if (regExp.test(data.fields[i].name)) {
-                                            this.secondaryDateField = data.fields[i].name;
-                                            obj.dateField = data.fields[i].name;
-                                            break;
-                                        } else if (data.fields[i].type === "esriFieldTypeDate") {
-                                            this.secondaryDateField = data.fields[i].name;
-                                            obj.dateField = data.fields[i].name;
-                                            break;
-                                        }
-                                        this.secondaryDateField = null;
-                                        obj.dateField = null;
-                                    }
-                                }
-
-                                this.primarydate();
-                            }));
+                            this.map.primaryDate = null;
+                            this.displayDate(this.map.primaryDate, this.map.secondaryDate);
                         }
+                    } else {
+                        this.map.primaryDate = null;
+                        this.displayDate(this.map.primaryDate, this.map.secondaryDate);
                     }
+                    if (this.secondaryLayer && this.secondaryLayer.visible) {
+                        var label = this.secondaryLayer.id.split("_ComparisonLayer")[0];
+                        if (this.layerInfos[label]) {
+                            this.secondaryDateField = this.layerInfos[label].dateField;
+                            this.secondaryDate();
+                        } else {
+                            this.map.secondaryDate = null;
+                            this.displayDate(this.map.primaryDate, this.map.secondaryDate);
+                        }
+                    } else {
+                        this.map.secondaryDate = null;
+                        this.displayDate(this.map.primaryDate, this.map.secondaryDate);
+                    }
+                },
+                 displayDate: function (primary, secondary) {
+                    if (primary || secondary) {
+                        if (primary)
+                            html.set("primaryDate", this.prefix + ": " + locale.format(new Date(primary), {selector: "date", formatLength: "long"}));
+                        else
+                            html.set("primaryDate", this.prefix + ": ");
+                        if (secondary)
+                            html.set("primaryDate", document.getElementById("primaryDate").innerHTML + " vs " + locale.format(new Date(secondary), {selector: "date", formatLength: "long"}));
+                    } else
+                        html.set("primaryDate", '');
                 }
 
             });

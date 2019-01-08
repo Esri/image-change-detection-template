@@ -21,6 +21,8 @@
                 "type":"string",
                 "tooltip":"Provide exciting info for the App title tooltip.",
                 "stringFieldOption":"textarea"
+        }, {
+        "type": "appproxies"
         }
 
         ]
@@ -220,8 +222,6 @@
                         ]
                 }
                 ]
-        }, {
-        "type": "appproxies"
         }
         ]
 },
@@ -361,6 +361,34 @@
                         "fieldName":"burn",
                         "label":"Burn Index",
                         "tooltip":"Normalized Burn Ratio, or NBR"
+                },
+                {
+                "type":"conditional",
+                "condition": false,
+                        "fieldName":"customIndex",
+                        "label":"Custom Index",
+                        "items":[
+                {
+                "type": "string",
+                        "fieldName": "customIndexLabel",
+                        "label": "Label: ",
+                        "tooltip": "",
+                        "stringFieldOption": "textbox",
+                        "placeHolder": "Give a name to custom index"
+                },
+                {
+                "type":"paragraph",
+                        "value":"<p style='text-align: justify;font-family: verdana;margin-bottom:0px;'>Specify the formula for custom index. Example - For landsat service, Vegetation Index formula is (B5 - B4)/ (B5 + B4) where B5 denotes Infrared band and B4 denotes red band.</p>"
+                },
+                {
+                "type": "string",
+                        "fieldName": "customFormula",
+                        "label": "Index equation: ",
+                        "tooltip": "",
+                        "stringFieldOption": "textbox",
+                        "placeHolder": ""
+                }
+                ]
                 },
                 {
                 "type":"multilayerandfieldselector",
@@ -657,12 +685,15 @@
                 "operationalLayersFlag":false,
                 "imageMaskFlag":true,
                 "maskToolOptions":"mask",
-                "imageMaskTitle": "Image Mask",
+                "imageMaskTitle": "",
                 "difference":true,
                 "veg":false,
                 "savi":false,
                 "water":false,
                 "burn":false,
+                "customIndex": false,
+                "customIndexLabel":"",
+                "customFormula":"",
                 "primaryLayer": {"id": null},
                 "displayOptions":"both",
                 "advanceOptions":false,

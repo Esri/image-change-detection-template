@@ -71,6 +71,7 @@ define([
         defaultMosaicRule: null,
         mapZoomFactor: 2.0,
         mapWidthPanFactor: 0.75,
+        updateMask: false,
         postCreate: function () {
             this.layerInfos = this.layers;
             /*window.addEventListener("resize", lang.hitch(this, function(){
@@ -85,8 +86,11 @@ define([
             registry.byId("imageSelectorDropDownMask").on("change", lang.hitch(this, this.sliderDropDownSelection, "dropDown"));
             registry.byId("methodMask").on("change", lang.hitch(this, this.setMethod));
             registry.byId("maskApply").on("click", lang.hitch(this, this.getMinMaxCheck));
-            registry.byId("maskClear").on("click", lang.hitch(this, this.clearResultLayer));
-            
+            registry.byId("maskClear").on("click", lang.hitch(this, function () {
+                domStyle.set("updateMaskLayer", "display", "none");
+                this.clearResultLayer();
+            }));
+
             this.setTooltips();
             if (this.config.display === "both") {
 
@@ -145,17 +149,17 @@ define([
             this.toolbar.on("draw-complete", lang.hitch(this, this.addGraphic));
         },
         expandMenu: function () {
-                    var node = document.getElementById("advanceIndexBtnMask").children[1];
-                    if (domClass.contains(node, "launchpad-icon-arrow-right")) {
-                        domClass.remove(node, "launchpad-icon-arrow-right");
-                        domClass.add(node, "launchpad-icon-arrow-down");
-                        domStyle.set("bandInputsMask", "display", "block");
-                    } else {
-                        domStyle.set("bandInputsMask", "display", "none");
-                        domClass.remove(node, "launchpad-icon-arrow-down");
-                        domClass.add(node, "launchpad-icon-arrow-right");
-                    }
-                },
+            var node = document.getElementById("advanceIndexBtnMask").children[1];
+            if (domClass.contains(node, "launchpad-icon-arrow-right")) {
+                domClass.remove(node, "launchpad-icon-arrow-right");
+                domClass.add(node, "launchpad-icon-arrow-down");
+                domStyle.set("bandInputsMask", "display", "block");
+            } else {
+                domStyle.set("bandInputsMask", "display", "none");
+                domClass.remove(node, "launchpad-icon-arrow-down");
+                domClass.add(node, "launchpad-icon-arrow-right");
+            }
+        },
         setFilter: function (value) {
             if (value) {
                 this.imageSliderRefresh();
@@ -169,8 +173,6 @@ define([
                     if (this.defaultMosaicRule)
                         this.primaryLayer.setMosaicRule(this.defaultMosaicRule);
                 }
-                // this.hideSelector = true;
-
             }
 
         },
@@ -196,17 +198,18 @@ define([
             if (this.config.changeMethods.burn) {
                 registry.byId("methodMask").addOption({label: this.i18n.method5, value: "burn"});
             }
-
+            if (this.config.changeMethods.custom && this.config.customFormula)
+                registry.byId("methodMask").addOption({label: this.config.customIndexLabel, value: "custom"});
             registry.byId("methodMask").addOption({label: this.i18n.method8, value: "one"});
         },
-        setCurrentMethod: function(currentValue){
-          if (currentValue !== registry.byId("methodMask").get("value")) {
+        setCurrentMethod: function (currentValue) {
+            if (currentValue !== registry.byId("methodMask").get("value")) {
                 if (currentValue !== "difference")
                     registry.byId("methodMask").set("value", currentValue);
                 else
                     this.setMethod(registry.byId("methodMask").get("value"));
             } else
-                this.setMethod(registry.byId("methodMask").get("value"));  
+                this.setMethod(registry.byId("methodMask").get("value"));
         },
         setTooltips: function () {
             this.switchDisplayTooltip = new Tooltip({
@@ -248,13 +251,14 @@ define([
                 this.secondaryLayer = null;
             }
             this.clearResultLayer();
-
+            domStyle.set("updateMaskLayer", "display", "none");
             this.valueSelected = null;
             if (value) {
                 this.primaryLayer = this.map.getLayer(value);
+                this.map.primaryLayer = value;
                 this.primaryLayer.show();
 
-
+                this.primaryLayer.on("mosaic-rule-change", lang.hitch(this, this.mosaicRuleChanged));
                 this.populateBands();
                 this.defaultMosaicRule = this.layerInfos[value].defaultMosaicRule;
                 if (this.primaryLayer.currentVersion)
@@ -293,14 +297,19 @@ define([
                         this.objectID = this.layerInfos[this.primaryLayer.id].objectID;
                         this.categoryField = this.layerInfos[this.primaryLayer.id].category;
                         html.set(document.getElementById("errorDivMask"), "");
-
-                        domStyle.set("maskSelector", "display", "block");
+                        registry.byId("imageSelectorMask").set("disabled", false);
+                        if (this.layerInfos[this.primaryLayer.id].changeDetection)
+                            domStyle.set("maskSelector", "display", "block");
+                        else
+                            domStyle.set("maskSelector", "display", "none");
                         if (this.layerInfos[this.primaryLayer.id].imageSelector) {
+
                             if (!registry.byId("imageSelectorMask").checked)
                                 registry.byId("imageSelectorMask").set("checked", true);
                             else
                                 this.setFilter(true);
                         } else {
+
                             if (registry.byId("imageSelectorMask").checked)
                                 registry.byId("imageSelectorMask").set("checked", false);
                             else
@@ -310,12 +319,14 @@ define([
 
                     } else {
                         if (!this.layerInfos[this.primaryLayer.id].imageField) {
-                            html.set(document.getElementById("errorDivMask"), this.i18n.error1);
+                            html.set(document.getElementById("errorDivMask"), "");
                         } else if (!this.layerInfos[this.primaryLayer.id].objectID) {
                             html.set(document.getElementById("errorDivMask"), this.i18n.error2);
                         } else {
                             html.set(document.getElementById("errorDivMask"), this.i18n.error3);
                         }
+                        registry.byId("imageSelectorMask").set("checked", false);
+                        registry.byId("imageSelectorMask").set("disabled", true);
                         domStyle.set("selectorDivMask", "display", "none");
                         domStyle.set("maskSelector", "display", "none");
 
@@ -328,6 +339,8 @@ define([
                 domStyle.set("selectorDivMask", "display", "none");
                 domStyle.set("maskSelectorMask", "display", "none");
                 domStyle.set("maskDiv", "display", "none");
+                registry.byId("imageSelectorMask").set("checked", false);
+                registry.byId("imageSelectorMask").set("disabled", true);
                 html.set(document.getElementById("errorDivMask"), this.i18n.error5);
             }
         },
@@ -354,10 +367,9 @@ define([
                 }
             }
             if (evt.lod.level >= this.config.zoomLevel) {
-                if (this.hideSelector) {
-                    this.hideSelector = false;
+                if (registry.byId("imageSelectorMask").get("disabled")) {
+                    registry.byId("imageSelectorMask").set("disabled", false);
                     html.set(document.getElementById("errorDivMask"), "");
-                    this.selectLayer(registry.byId("layerSelector").get("value"));
                 }
                 var needsUpdate = false;
                 if (evt.levelChange) {
@@ -385,6 +397,13 @@ define([
                 this.turningOffSelector();
             }
             this.previousExtentChangeLevel = evt.lod.level;
+        },
+        mosaicRuleChanged: function () {
+            var resultLayer = this.map.getLayer("resultLayer");
+            if (resultLayer && this.primaryLayer && this.primaryLayer.mosaicRule !== resultLayer.mosaicRule && this.primaryLayer.url === resultLayer.url) {
+                domStyle.set("updateMaskLayer", "display", "block");
+            }
+
         },
         imageDisplayFormat: function () {
             if (domClass.contains(registry.byId("dropDownImageListMask").domNode, "dropDownSelected")) {
@@ -696,7 +715,7 @@ define([
             registry.byId("band1Mask").removeOption(registry.byId("band1Mask").getOptions());
             registry.byId("band2Mask").removeOption(registry.byId("band2Mask").getOptions());
             var layersRequest = esriRequest({
-                url: this.primaryLayer.url + "/1/info/keyProperties",
+                url: this.primaryLayer.url + "/keyProperties",
                 content: {f: "json"},
                 handleAs: "json",
                 callbackParamName: "callback"
@@ -785,6 +804,14 @@ define([
                 domStyle.set("bandRowTable", "display", "none");
             else
                 domStyle.set("bandRowTable", "display", "table-row");
+            if (value === "custom") {
+                domStyle.set("advanceIndexBtnMask", "display", "none");
+                if (domClass.contains(document.getElementById("advanceIndexBtnMask").children[1], "launchpad-icon-arrow-down"))
+                    document.getElementById("advanceIndexBtnMask").click();
+            } else {
+                domStyle.set("advanceIndexBtnMask", "display", "block");
+
+            }
             this.setBands(value);
         },
         setBands: function (value) {
@@ -806,8 +833,9 @@ define([
         getMinMaxCheck: function () {
             this.showLoading();
             this.clearResultLayer(true);
+            domStyle.set("updateMaskLayer", "display", "none");
             var method = registry.byId("methodMask").get("value");
-            if (method !== "one") {
+            if (method !== "one" && method !== "custom") {
                 var request = new esriRequest({
                     url: this.primaryLayer.url,
                     content: {
@@ -817,6 +845,7 @@ define([
                     callbackParamName: "callback"
                 });
                 request.then(lang.hitch(this, function (prop) {
+
                     var band1Index = Math.abs(parseInt(registry.byId("band1Mask").get("value")));
                     var band2Index = Math.abs(parseInt(registry.byId("band2Mask").get("value")));
 
@@ -961,10 +990,18 @@ define([
                 args.BandIndexes = indexFormula;
                 raster.functionArguments = args;
             } else {
+
                 var raster = new RasterFunction();
-                raster.functionName = "ExtractBand";
                 var args = {};
-                args.BandIDs = [registry.byId("band1Mask").get("value") - 1];
+                if (method === "custom") {
+                    raster.functionName = "BandArithmetic";
+                    raster.outputPixelType = "F32";
+                    args.Method = 0;
+                    args.BandIndexes = this.config.customFormula;
+                } else {
+                    raster.functionName = "ExtractBand";
+                    args.BandIDs = [registry.byId("band1Mask").get("value") - 1];
+                }
                 raster.functionArguments = args;
             }
             if (this.polygons) {
@@ -1138,14 +1175,14 @@ define([
             this.scale = Math.pow((1 / Math.cos(latitude)), 2);
         },
         turningOffSelector: function () {
-            domStyle.set("selectorDivMask", "display", "none");
-            domStyle.set("maskSelector", "display", "none");
 
             html.set(document.getElementById("errorDivMask"), this.i18n.zoom);
-            if (this.primaryLayer && this.defaultMosaicRule) {
-                this.primaryLayer.setMosaicRule(this.defaultMosaicRule);
-            }
-            this.hideSelector = true;
+
+            if (registry.byId("imageSelectorMask").checked)
+                registry.byId("imageSelectorMask").set("checked", false);
+            else
+                this.setFilter();
+            registry.byId("imageSelectorMask").set("disabled", true);
         },
         clearResultLayer: function (value) {
             var layer = this.map.getLayer("resultLayer");

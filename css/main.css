@@ -367,6 +367,12 @@ body {
 .claro .dijitTooltipAbove {
     padding-bottom: 4px;
 }
+#updateMaskLayer,#updateChangeLayer {
+    color: #ee0000;
+    display: none;
+    padding: 5px;
+    text-align: justify;
+}
 .claro .dijitTooltipAbove .dijitTooltipConnector {
     background-image: none;
     width: auto;
@@ -737,7 +743,32 @@ body {
 #addBtn:hover,#addBookmark:hover,#changeClear:hover,#changeApply:hover,#maskClear:hover,#maskApply:hover,#dropDownImageList:hover,#dropDownImageListLeft:hover,#dropDownImageListRight:hover,#submitAgolBtn:hover,#exportBtn:hover,#colorButton:hover,#refreshImageSliderBtnChange:hover,#refreshImageSliderBtnMask:hover{
     background: #ddd;
 }
-
+.previewContainer {
+    width: 96%;
+    padding: 2%;
+    background-color: #f8f8f8;
+    float: left;
+    display: none;
+}
+.h3Title {
+    margin: 0;
+    padding-left: 5px;
+    font-size: inherit;
+    font-weight: bold;
+    color: #4c4c4c;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.anchorBtns {
+        text-decoration: none;
+    color: black;
+    padding: 5px;
+    font-size: inherit;
+}
+.anchorBtns:hover {
+    text-decoration: underline;
+}
 .toolContainers{
     display: block;
     width: 80px;

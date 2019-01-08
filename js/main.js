@@ -20,7 +20,7 @@ define([
     "dojo/_base/lang",
     "dojo/_base/kernel",
     "dojo/on",
-    "dojo/query", "dijit/focus","dojo/dom-attr",
+    "dojo/query", "dijit/focus", "dojo/dom-attr",
     "dojo/Deferred",
     "esri/dijit/Scalebar",
     "esri/dijit/Search", "esri/tasks/locator", "application/SearchSources",
@@ -31,20 +31,20 @@ define([
     "dijit/Dialog", "dojo/parser",
     "dijit/registry",
     "dojo/text!application/templates/Export.html", "dojo/text!application/templates/Bookmark.html",
-    "dojo/text!application/templates/ImageMask.html","dojo/text!application/templates/ChangeDetection.html","dojo/text!application/templates/Mask.html",
+    "dojo/text!application/templates/ImageMask.html", "dojo/text!application/templates/ChangeDetection.html", "dojo/text!application/templates/Mask.html",
     "dijit/Tooltip",
     "esri/arcgis/utils",
     "application/MapUrlParams",
-    "application/Bookmark", "application/Editor", "application/Basemap","application/About", "application/OperationalLayers", "application/Export", "application/Measurement", "application/ImageDate", "application/ImageMask",
+    "application/Bookmark", "application/Editor", "application/Basemap", "application/About", "application/OperationalLayers", "application/Export", "application/Measurement", "application/ImageDate", "application/ImageMask",
     "dojo/domReady!"
 ], function (
         declare, lang, kernel,
-        on, query, focus,domAttr,
+        on, query, focus, domAttr,
         Deferred, Scalebar, Search, Locator, SearchSources,
         dom, ArcGISImageServiceLayer, domConstruct, domStyle, html, domClass, Dialog, parser,
-        registry, exportHtml, bookmarkHtml, imageMaskHtml,changeHTML,maskHTML, Tooltip,
+        registry, exportHtml, bookmarkHtml, imageMaskHtml, changeHTML, maskHTML, Tooltip,
         arcgisUtils,
-        MapUrlParams, Bookmark, Editor, Basemap,About, OperationalLayers, Export, Measurement, ImageDate, ImageMask
+        MapUrlParams, Bookmark, Editor, Basemap, About, OperationalLayers, Export, Measurement, ImageDate, ImageMask
         ) {
     return declare(null, {
         config: {},
@@ -69,10 +69,10 @@ define([
                 document.getElementById("dockContainer").style.backgroundColor = this.config.background;
                 document.getElementById("titleText").style.color = this.config.color;
                 document.getElementById("primaryDate").style.color = this.config.color;
-                
+
                 this.createCSSRules();
-                if(this.config.imageMaskTitle)
-                  this.config.i18n.imageMask.title = this.config.imageMaskTitle;  
+
+                this.config.i18n.imageMask.title = this.config.imageMaskTitle || this.config.i18n.imageMask.title;
                 var toolContainers = document.getElementsByClassName("toolContainers");
                 for (var a = 0; a < toolContainers.length; a++) {
                     toolContainers[a].style.borderBottomColor = this.config.background;
@@ -200,13 +200,13 @@ define([
 
                 this.dockToolsActive = 0;
                 if (this.config.basemapFlag) {
-                     this.dockToolsActive++;
+                    this.dockToolsActive++;
                     domStyle.set("dockContainer", "display", "block");
                     this.setupBasemap();
                 } else
                     domStyle.set("basemapContainer", "display", "none");
                 var layers = this.config.itemInfo.itemData.operationalLayers;
-                var layersFlag= false;
+                var layersFlag = false;
                 for (var a = layers.length - 1; a >= 0; a--) {
                     var title = layers[a].title || layers[a].layerObject.name || layers[a].id;
                     if ((layers[a].layerType && layers[a].layerType !== "ArcGISTiledImageServiceLayer") && (title && (title.charAt(title.length - 1)) !== "_") && (title && (title.substr(title.length - 2)) !== "__") && ((layers[a].layerObject && layers[a].layerObject.serviceDataType && layers[a].layerObject.serviceDataType.substr(0, 16) !== "esriImageService") || (layers[a].layerType && layers[a].layerType !== "ArcGISImageServiceLayer"))) {
@@ -214,7 +214,7 @@ define([
                         break;
                     }
                 }
-                
+
                 if (this.config.operationalLayersFlag && layersFlag) {
                     this.dockToolsActive++;
                     domStyle.set("dockContainer", "display", "block");
@@ -554,7 +554,7 @@ define([
                 id: "aboutDialog",
                 draggable: false
             });
-            domAttr.remove(aboutDialog.closeButtonNode,"tabIndex");
+            domAttr.remove(aboutDialog.closeButtonNode, "tabIndex");
             new Tooltip({
                 connectId: ["aboutContainer"],
                 label: this.config.i18n.about.title,
@@ -601,33 +601,33 @@ define([
             var layer = [];
             if (this.config.imageDateLayer) {
                 this.config.imageDateLayer = JSON.parse(this.config.imageDateLayer);
-            
+
                 for (var a = 0; a < layers.length; a++) {
                     for (var b = 0; b < this.config.imageDateLayer.length; b++) {
                         if (this.config.imageDateLayer[b].id === layers[a].id) {
-                            if(this.config.imageDateLayer[b].fields.length > 0){
+                            if (this.config.imageDateLayer[b].fields.length > 0) {
                                 var field = this.config.imageDateLayer[b].fields[0];
-                            }else {
+                            } else {
                                 var field = this.findField(layers[a].layerObject.fields, "esriFieldTypeDate", new RegExp(/acq[a-z]*[_]?Date/i));
-                                if(!field){
-                                    for(var v in layers[a].layerObject.fields){
-                                        if(layers[a].layerObject.fields[v].type === "esriFieldTypeDate"){
+                                if (!field) {
+                                    for (var v in layers[a].layerObject.fields) {
+                                        if (layers[a].layerObject.fields[v].type === "esriFieldTypeDate") {
                                             field = layers[a].layerObject.fields[v].name;
                                             break;
                                         }
                                     }
-                                    
+
                                 }
                             }
-                            if(field){
-                            var tempLayer = {
-                                dateField: field,
-                                title: layers[a].title || layers[a].layerObject.name || layers[a].id
-                            };
-                            layer[layers[a].id] = tempLayer;
+                            if (field) {
+                                var tempLayer = {
+                                    dateField: field,
+                                    title: layers[a].title || layers[a].layerObject.name || layers[a].id
+                                };
+                                layer[layers[a].id] = tempLayer;
                             }
                             break;
-                        
+
                         }
                     }
                 }
@@ -712,56 +712,56 @@ define([
 
             this.addClickEvent("exportContainer", this.exportFunction, "exportNode");
             if (window.document.dir === "rtl") {
-                    var list = document.getElementsByClassName("listExpandBtn");
-                    console.log(list.length);
-                    for(var a=0;a<list.length;a++){
-                    list[a].style.float = "left";    
-                    }
+                var list = document.getElementsByClassName("listExpandBtn");
+                console.log(list.length);
+                for (var a = 0; a < list.length; a++) {
+                    list[a].style.float = "left";
+                }
 //                    if(list.length === 1)
 //                    list[0].style.float = "left";
 //                if(list.length === 2)    
 //                list[1].style.float = "left";
 //                if(list.length === 3)    
 //                list[2].style.float = "left";
-                }
+            }
         },
         setupImageMask: function () {
             this.setupToolContent("imageMaskContainer", 1, imageMaskHtml, this.config.i18n.imageMask.title, "imageMaskNode", "imageMask");
-            if(this.config.maskToolOptions === "mask"){
+            if (this.config.maskToolOptions === "mask") {
                 maskHTML = this.findAndReplaceStrings(maskHTML, "imageMask");
-            var node = document.getElementById("maskNode");
-            node.innerHTML = maskHTML;
-            parser.parse(node);
-            
-            }else if(this.config.maskToolOptions === "change"){
+                var node = document.getElementById("maskNode");
+                node.innerHTML = maskHTML;
+                parser.parse(node);
+
+            } else if (this.config.maskToolOptions === "change") {
                 changeHTML = this.findAndReplaceStrings(changeHTML, "imageMask");
-            var node = document.getElementById("changeNode");
-            node.innerHTML = changeHTML;
-            parser.parse(node);
-                
-            }else{
+                var node = document.getElementById("changeNode");
+                node.innerHTML = changeHTML;
+                parser.parse(node);
+
+            } else {
                 maskHTML = this.findAndReplaceStrings(maskHTML, "imageMask");
-            var node = document.getElementById("maskNode");
-            node.innerHTML = maskHTML;
-            parser.parse(node);
+                var node = document.getElementById("maskNode");
+                node.innerHTML = maskHTML;
+                parser.parse(node);
                 changeHTML = this.findAndReplaceStrings(changeHTML, "imageMask");
-            var node = document.getElementById("changeNode");
-            node.innerHTML = changeHTML;
-            parser.parse(node);
-                
+                var node = document.getElementById("changeNode");
+                node.innerHTML = changeHTML;
+                parser.parse(node);
+
             }
             var layers = this.config.itemInfo.itemData.operationalLayers;
             if (this.config.imageSelectorLayer)
                 this.config.imageSelectorLayer = JSON.parse(this.config.imageSelectorLayer);
             else
                 this.config.imageSelectorLayer = [];
-            if(!this.config.primaryLayer.id && this.config.imageSelectorLayer.length < 1){
-                for(var z = 0;z<=layers.length - 1;z++){
+            if (!this.config.primaryLayer.id && this.config.imageSelectorLayer.length < 1) {
+                for (var z = 0; z <= layers.length - 1; z++) {
                     if ((layers[z].type && layers[z].type === 'ArcGISTiledImageServiceLayer') || (layers[z].type && layers[z].type === 'ArcGISImageServiceLayer') || (this.map.getLayer(layers[z].id).serviceDataType && this.map.getLayer(layers[z].id).serviceDataType.indexOf("esriImageService") !== -1)) {
                         this.config.primaryLayer.id = layers[z].id;
                         this.config.imageSelectorLayer.push({
                             id: layers[z].id,
-                            fields:[]
+                            fields: []
                         });
                         break;
                     }
@@ -775,26 +775,28 @@ define([
                 zoomLevel: this.config.zoomLevel,
                 searchExtent: this.config.searchScreenExtent,
                 autoRefresh: this.config.enableAutoRefresh,
-                changeMethods: {difference: this.config.difference, veg: this.config.veg, savi: this.config.savi, water: this.config.water, burn: this.config.burn}
+                changeMethods: {difference: this.config.difference, veg: this.config.veg, savi: this.config.savi, water: this.config.water, burn: this.config.burn, custom: this.config.customIndex},
+                customIndexLabel: this.config.customIndexLabel || this.config.i18n.imageMask.method9,
+                customFormula: this.config.customFormula
             };
-            
+
             var addLayer = true;
             for (var a = 0; a < layers.length; a++) {
                 if ((layers[a].type && layers[a].type === 'ArcGISTiledImageServiceLayer') || (layers[a].type && layers[a].type === 'ArcGISImageServiceLayer') || (this.map.getLayer(layers[a].id).serviceDataType && this.map.getLayer(layers[a].id).serviceDataType.indexOf("esriImageService") !== -1)) {
                     for (var b = 0; b < this.config.imageSelectorLayer.length; b++) {
                         if (this.config.imageSelectorLayer[b].id === layers[a].id /*&& this.config.imageSelectorLayer[b].fields.length > 0*/ && layers[a].layerObject) {
-                            if(this.config.imageSelectorLayer[b].fields.length > 0){
+                            if (this.config.imageSelectorLayer[b].fields.length > 0) {
                                 var field = this.config.imageSelectorLayer[b].fields[0];
-                            }else {
+                            } else {
                                 var field = this.findField(layers[a].layerObject.fields, "esriFieldTypeDate", new RegExp(/acq[a-z]*[_]?Date/i));
-                                if(!field){
-                                    for(var v in layers[a].layerObject.fields){
-                                        if(layers[a].layerObject.fields[v].type === "esriFieldTypeDate"){
+                                if (!field) {
+                                    for (var v in layers[a].layerObject.fields) {
+                                        if (layers[a].layerObject.fields[v].type === "esriFieldTypeDate") {
                                             field = layers[a].layerObject.fields[v].name;
                                             break;
                                         }
                                     }
-                                    if(!field)
+                                    if (!field)
                                         field = layers[a].layerObject.fields[0].name;
                                 }
                             }
@@ -826,13 +828,13 @@ define([
             this.imageMaskFunction = new ImageMask({map: this.map, config: temp, layers: layer, i18n: this.config.i18n.imageMask, main: this});
             this.addClickEvent("imageMaskContainer", this.imageMaskFunction, "imageMaskNode");
             if (window.document.dir === "rtl") {
-                    var list = document.getElementsByClassName("listExpandBtn");
-                    console.log(list.length);
-                    for(var a=0;a<list.length;a++){
-                    list[a].style.float = "left";    
-                    }
-                
+                var list = document.getElementsByClassName("listExpandBtn");
+                console.log(list.length);
+                for (var a = 0; a < list.length; a++) {
+                    list[a].style.float = "left";
                 }
+
+            }
         },
         findField: function (fields, dataType, regExpr) {
             var initialVal = "";

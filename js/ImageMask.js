@@ -93,14 +93,16 @@ define([
                 this.map.on("update-end", lang.hitch(this, this.hideLoading));
                 this.map.on("layer-add", lang.hitch(this, function (response) {
                     if (response.layer.id === "resultLayer") {
-                        if(this.imageMaskTool === "mask")
-                        registry.byId("aoiExtentMask").set("checked", false);
+                        if (this.imageMaskTool === "mask")
+                            registry.byId("aoiExtentMask").set("checked", false);
                         domStyle.set("transparencySlider", "display", "block");
                         registry.byId("resultOpacity").set("value", 1 - response.layer.opacity);
                         if (this.imageMaskTool === "change") {
-                        registry.byId("aoiExtentChange").set("checked", false);
+                            registry.byId("aoiExtentChange").set("checked", false);
+                            var method = registry.byId("methodChange").get("value");
+
                             var mode = registry.byId("changeModeList").get("value");
-                            if (mode === "image") {
+                            if (mode === "image" || method === "difference") {
                                 registry.byId("resultOpacity").set("value", 1 - 0.8);
                                 domStyle.set("changeSettingsDiv", "display", "none");
                             } else if (mode === "mask") {
@@ -112,7 +114,7 @@ define([
                                 domStyle.set("maskRangeSpinners", "display", "none");
                                 domStyle.set("thresholdRangeSpinners", "display", "block");
                             }
-                             var element =document.getElementById("imageMaskNode").children[1];
+                            var element = document.getElementById("imageMaskNode").children[1];
                             element.scrollTop = element.scrollHeight;
                         }
                     }
@@ -131,27 +133,27 @@ define([
 
             if (value === "mask") {
                 if (this.changeFunction && this.changeFunction.secondaryLayer) {
-                this.changeFunction.secondaryLayer.suspend();
-                this.map.removeLayer(this.changeFunction.secondaryLayer);
-                this.changeFunction.secondaryLayer = null;
-                registry.byId("swipeHandler").set("checked", false);
-            }
-                if(this.imageMaskTool === "change" && (!this.maskFunction.primaryLayer || (this.maskFunction.primaryLayer && registry.byId("layerSelector").get("value") !==  this.maskFunction.primaryLayer.id)))
-                this.maskFunction.selectLayer(registry.byId("layerSelector").get("value"));
+                    this.changeFunction.secondaryLayer.suspend();
+                    this.map.removeLayer(this.changeFunction.secondaryLayer);
+                    this.changeFunction.secondaryLayer = null;
+                    registry.byId("swipeHandler").set("checked", false);
+                }
+                if (this.imageMaskTool === "change" && (!this.maskFunction.primaryLayer || (this.maskFunction.primaryLayer && registry.byId("layerSelector").get("value") !== this.maskFunction.primaryLayer.id)))
+                    this.maskFunction.selectLayer(registry.byId("layerSelector").get("value"));
                 domStyle.set("changeNode", "display", "none");
                 domStyle.set("maskNode", "display", "block");
             } else {
                 domStyle.set("maskNode", "display", "none");
                 domStyle.set("changeNode", "display", "block");
-            
-                if(this.imageMaskTool === "mask" && (!this.changeFunction.primaryLayer || (this.changeFunction.primaryLayer && registry.byId("layerSelector").get("value") !==  this.changeFunction.primaryLayer.id)))
+
+                if (this.imageMaskTool === "mask" && (!this.changeFunction.primaryLayer || (this.changeFunction.primaryLayer && registry.byId("layerSelector").get("value") !== this.changeFunction.primaryLayer.id)))
                     this.changeFunction.selectLayer(registry.byId("layerSelector").get("value"));
                 else {
-                if (registry.byId("imageSelectorChange").checked)
-                    this.changeFunction.setFilter(true);
-                else
-                    registry.byId("imageSelectorChange").set("checked", true);
-                    }
+                    if (registry.byId("imageSelectorChange").checked)
+                        this.changeFunction.setFilter(true);
+                    else
+                        registry.byId("imageSelectorChange").set("checked", true);
+                }
             }
             this.imageMaskTool = value;
         },

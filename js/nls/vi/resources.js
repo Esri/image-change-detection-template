@@ -16,7 +16,11 @@
  */
 define({
   "map": {
-    "error": "Không thể tạo bản đồ"
+    "error": "Không thể tạo bản đồ",
+    "licenseError": {
+      "message": "Tài khoản của bạn không được cấp phép để sử dụng ứng dụng có thể cấu hình mà không được công khai. Vui lòng yêu cầu quản trị viên của tổ chức bạn gán cho bạn loại người dùng nào có bao gồm các ứng dụng thiết yếu hoặc có giấy phép sử dụng các ứng dụng thiết yếu bổ trợ.",
+      "title": "Không được cấp phép"
+    }
   },
   "nav": {
     "close": "Đóng"
@@ -25,69 +29,84 @@ define({
     "title": "Bộ sưu tập bản đồ nền"
   },
   "operationalLayers": {
-    "title": "Các lớp hoạt động",
-    "error": "Không có lớp hoạt động nào trong bản đồ."
+    "title": "Các lớp chuyên đề",
+    "error": "Không có lớp chuyên đề nào trong bản đồ."
   },
-  "layerSelector": {
-    "active": "Lớp hoạt động",
-    "comparison": "Lớp so sánh",
-    "other": "Khác",
-    "result": "Kết quả",
-    "title": "Trình lựa chọn lớp",
-    "resultSave": "Thêm lớp Kết quả trong danh sách lớp so sánh",
-    "copy": "Sao chép lớp hoạt động vào lớp so sánh.",
-    "swap": "Hoán đổi lớp hoạt động và lớp so sánh."
-  },
-  "renderer": {
-    "title": "Trình kết xuất",
-    "stretch": "Các thông số kéo giãn",
-    "stretchType": "Loại Kéo giãn",
-    "dra": "DRA",
-    "draText": "Chức năng Điều chỉnh Phạm vi Động được cải tiến dựa trên trình xem hiện tại",
-    "gamma": "Gamma",
-    "apply": "Áp dụng",
-    "top": "Loại trừ đỉnh",
-    "bottom": "Loại trừ đáy",
-    "topText": " Loại trừ tỷ lệ phần trăm đỉnh x của biểu đồ tần số",
-    "bottomText": " Loại trừ tỷ lệ phần trăm đáy x của biểu đồ tần số",
-    "stdDev": "# của độ lệch chuẩn",
-    "layer": "Lớp hiện tại",
-    "error": "Không có Lớp Hình ảnh hiển thị nào trong bản đồ."
-  },
-  "imageSelector": {
-    "title": "Trình lựa chọn hình ảnh",
-    "enable": "Bật Trình lựa chọn Hình ảnh",
-    "secondary": "Thiết lập lớp hoạt động thành Lớp So sánh.",
-    "dropDown": "Hiển thị hình ảnh trong danh sách xổ xuống.",
-    "refresh": "Làm mới lại câu truy vấn dựa trên phạm vi hiện tại.",
-    "show": "Hiển thị",
-    "age": "Tuổi",
+  "imageMask": {
+    "title": "Image Mask",
+    "toolText": "Công cụ",
+    "tool1": "Mặt nạ",
+    "tool2": "Phát hiện Thay đổi",
+    "layer": "Lớp",
+    "layerText": "Chọn hình ảnh của bạn.",
+    "maskImageSelector": "Chọn hình ảnh cụ thể",
+    "imageSelectorText": "Chọn hai hình ảnh khác nhau để so sánh.",
+    "changeText": "Cấu hình phát hiện thay đổi.",
+    "maskText": "Cấu hình mặt nạ.",
     "zoom": "Phóng to để chọn hình ảnh.",
-    "error": "Không có Lớp Hình ảnh hiển thị nào trong bản đồ.",
+    "primary": "Hình ảnh chính",
+    "comparison": "Hình ảnh so sánh",
+    "mode": "Trực quan hóa các thay đổi dưới dạng",
+    "method": "Phương pháp",
+    "changeMethodText": "Tính toán các thay đổi theo",
+    "positive": "Tích cực",
+    "negative": "Tiêu cực",
+    "threshold": "Ngưỡng",
+    "difference": "Chênh lệch",
+    "apply": "Áp dụng",
+    "clear": "Xóa",
+    "nir": "Dải sóng hồng ngoại",
+    "red": "Dải sóng Red",
+    "green": "Dải sóng Green",
+    "swir": "Dải sóng hồng ngoại sóng ngắn",
+    "band1": "Dải sóng A",
+    "band2": "Dải sóng B",
+    "mode1": "Sai phân ảnh",
+    "mode2": "Sai phân mặt nạ",
+    "mode3": "Ngưỡng mặt nạ",
+    "method1": "Độ sáng của hình ảnh",
+    "method2": "Chỉ số Thảm thực vật",
+    "method3": "Thảm thực vật được điều chỉnh đất Chỉ số",
+    "method4": "Chỉ số Nước",
+    "method5": "Chỉ số Đốt cháy",
+    "method6": "Thấp hơn ngưỡng của tôi",
+    "method7": "Cao hơn ngưỡng của tôi",
+    "method8": "Dải sóng đơn",
+    "method9": "Chỉ mục Tùy chỉnh",
+    "dropDown": "Hiển thị hình ảnh trong danh sách xổ xuống.",
+    "transparency": "Độ trong suốt (kết quả)",
+    "slider": "Hiển thị hình ảnh trên thanh trượt.",
     "error1": "Trường không được chỉ định.",
     "error2": "Không có trường OBJECTID.",
     "error3": "Không có trường Thể loại.",
     "error4": "Không thể thực hiện hoạt động cho lớp dữ liệu.",
     "error5": "Các dịch vụ trước phiên bản 10.2.1 sẽ không được hỗ trợ.",
     "error6": "Không có scene nào trong phạm vi hiện tại.",
-    "error7": "Số điểm được chọn vượt quá 20 điểm. Chỉ 20 điểm đầu tiên mới được hiển thị. Nhấn OK để không bị cảnh bảo lại.",
-    "slider": "Hiển thị hình ảnh trên thanh trượt."
-  },
-  "changeDetection": {
-    "title": "Phát hiện Thay đổi",
-    "mode": "Chế độ",
-    "method": "Phương pháp",
-    "positive": "Chênh lệch dương",
-    "negative": "Chênh lệch âm",
-    "threshold": "Ngưỡng",
-    "difference": "Chênh lệch",
-    "apply": "Áp dụng",
-    "error": "Chức năng Phát hiện Thay đổi hoạt động với hai hình ảnh từ các ngày khác nhau từ cùng một dịch vụ.<br />Trước tiên sử dụng Trình lựa chọn Hình ảnh để xác định ra một hình ảnh,<br />sau đó nhấp vào nút <img src='images/down.png' height='14'/> và chọn hình ảnh thứ hai.<br />Trở lại bảng điều khiển này để tiếp tục với việc phát hiện thay đổi."
+    "error7": "Vui lòng chọn hai hình ảnh khác nhau.",
+    "indexText": "Tùy chọn chỉ số nâng cao",
+    "date": "Ngày",
+    "areaText": "Tăng / Giảm Khu vực",
+    "areaText2": "Khu vực tái sinh Bị cháy / Sau cháy",
+    "areaText3": "Khu vực được bao phủ",
+    "unit": "km",
+    "swipe": "Trượt nhanh",
+    "imageLabel": "hình ảnh",
+    "extent": "Vẽ vùng để xác định phạm vi",
+    "colorPicker": "Trình chọn màu",
+    "refresh": "Nút Làm mới",
+    "refreshTooltip": "Làm mới danh sách hình ảnh dựa trên phạm vi hiện tại.",
+    "colorpickerText": "Chọn màu sắc cho mặt nạ của bạn",
+    "sliderText": "Đặt ngưỡng của bạn",
+    "maskModeText": "Tôi nên che những giá trị nào?",
+    "positiveSliderText": "Thiết lập mức tăng tối thiểu phải có giữa các hình ảnh khi khu vực được hiển thị màu xanh lục.",
+    "negativeSliderText": "Thiết lập mức tăng tối thiểu phải có giữa các hình ảnh khi khu vực được hiển thị bằng màu đỏ tươi.",
+    "updateResult": "Hình ảnh của bạn đã được thay đổi; bấm vào Apply (Áp dụng) để cập nhật phân tích."
   },
   "editor": {
     "title": "Trình biên tập",
-    "error": "Không có Lớp Chỉnh sửa nào được chọn.",
-    "error1": "Truy cập bị từ chối. Không thể chỉnh sửa các lớp."
+    "error": "Không tìm thấy Lớp Chỉnh sửa nào.",
+    "error1": "Truy cập bị từ chối. Không thể chỉnh sửa lớp.",
+    "text": "Chọn một biểu tượng và bấm vào bản đồ."
   },
   "measurement": {
     "title": "Đo lường Hình ảnh",
@@ -95,25 +114,50 @@ define({
   },
   "export": {
     "title": "Xuất",
-    "mode": "Chế độ",
-    "titleText": "Tiêu đề",
+    "mode": "Lưu vị trí",
+    "titleText": "Tiêu đề (bắt buộc)",
     "description": "Mô tả",
-    "tags": "Thẻ",
-    "submit": "Gửi",
+    "tags": "Thẻ (bắt buộc)",
+    "preview": "Xem trước",
+    "submit": "Lưu",
+    "cancel": "Hủy",
     "pixel": "Kích thước Pixel",
     "outsr": "Tham chiếu Không gian Đầu ra",
-    "renderer": "Trình kết xuất Hiện tại",
-    "extent": "Xác định Phạm vi",
-    "text": "Nếu Trình kết xuất Hiện tại được đánh dấu chọn, việc kết xuất<br /> sẽ được xuất, nếu không giá trị dữ liệu ban đầu<br/> sẽ được xuất ra.",
-    "error": "Không có lớp hình ảnh hiển thị nào trên bản đồ.",
+    "renderer": "Tùy chọn tải về TIFF",
+    "formatText1": "Như hiển thị",
+    "formatText2": "Dữ liệu thô (tất cả các dải sóng)",
+    "extent": "Vẽ đa giác để xác định phạm vi",
+    "drawText": "(bấm vào hình ảnh để bắt đầu)",
+    "text": "Không thể hiển thị dữ liệu thô bằng chương trình xem ảnh thông thường. Vui lòng mở bằng ArcGIS Pro.",
+    "error": "Không có lớp hình ảnh nào hiển thị trên bản đồ.",
     "error1": "Cần có tiêu đề.",
-    "error2": "Cần có (các) Thẻ."
+    "error2": "Cần có (các) Thẻ.",
+    "error3": "Kích thước pixel của nội dung xuất ra được giới hạn đến",
+    "error4": "cho phạm vi này.",
+    "error5": "Vui lòng nhập giá trị số hợp lệ.",
+    "error6": "Không thể xuất hình ảnh của bạn lúc này.",
+    "thumbnailError": "Không có hình thu nhỏ",
+    "advance": "Tùy chọn lưu nâng cao",
+    "modeOption1": "Lưu vào cổng thông tin",
+    "modeOption2": "Lưu vào ổ đĩa",
+    "default": "Mặc định",
+    "utm": "Khu vực UTM WGS84",
+    "layer": "Lớp",
+    "mercator": "WebMercatorAS",
+    "folder": "Chọn thư mục"
   },
-  "compare": {
-    "title": "So sánh",
-    "slider": "Thanh trượt Trong suốt",
-    "hSwipe": "Trượt Ngang",
-    "vSwipe": "Trượt dọc",
-    "error": "Không có Lớp Hình ảnh hiển thị nào có sẵn để so sánh."
+  "imageDate": {
+    "label": "Ngày chụp hình ảnh"
+  },
+  "about": {
+    "title": "Về"
+  },
+  "bookmark": {
+    "title": "Đánh dấu",
+    "default": "Mặc định",
+    "selectBookmark": "Chọn đánh dấu",
+    "add": "Thêm đánh dấu",
+    "addTitle": "Nhập tiêu đề",
+    "addBtn": "Thêm tạm thời"
   }
 });

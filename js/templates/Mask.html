@@ -26,9 +26,9 @@
     <div style="display: inline-block;">${config.i18n.imageMask.method}: </div><select autofocus="autofocus"  id="methodMask" data-dojo-type="dijit/form/Select">
     </select>
     <button id="advanceIndexBtnMask" class="titleHeader" role="button">
-            <span class="titleLabel">${config.i18n.imageMask.indexText}</span>
-            <span class="launchpad-icon-arrow-right listExpandBtn"></span>
-        </button>
+        <span class="titleLabel">${config.i18n.imageMask.indexText}</span>
+        <span class="launchpad-icon-arrow-right listExpandBtn"></span>
+    </button>
     <div id="bandInputsMask" style="display: none;">
         <table style="border: 0 solid transparent;"><tr><td><div id="bandName1Mask" style="display: inline-block;"></div></td>
                 <td><select  data-dojo-type="dijit/form/Select" id="band1Mask">
@@ -54,6 +54,7 @@
         <button  data-dojo-type="dijit/form/Button" type="button" id="maskApply">${config.i18n.imageMask.apply}</button>
         <button  data-dojo-type="dijit/form/Button" type="button" id="maskClear">${config.i18n.imageMask.clear}</button>
     </div>
+    <div id="updateMaskLayer">${config.i18n.imageMask.updateResult}</div>
     <div id="maskSettingsDiv" style="display: none;margin-bottom: 1.5em;">
         <div style="margin-top:5px;">${config.i18n.imageMask.sliderText}: <span id="sliderCurrentValue" style="color:#008299;font-weight: bold;"></span></div>
         <div id="maskSlider"></div>

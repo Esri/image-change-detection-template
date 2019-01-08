@@ -16,7 +16,11 @@
  */
 define({
   "map": {
-    "error": "Nevar izveidot karti"
+    "error": "Nevar izveidot karti",
+    "licenseError": {
+      "message": "Jūsu kontam nav licences, lai izmantotu konfigurējamās lietotnes, kas nav publiskas. Pieprasiet savas organizācijas administratoram piešķirt jums lietotāja veidu, kurā iekļauts lietotņu komplekts Essential Apps vai papildinājumlietotņu Essential Apps licence.",
+      "title": "Nav licences"
+    }
   },
   "nav": {
     "close": "Aizvērt"
@@ -25,69 +29,84 @@ define({
     "title": "Pamatkaršu galerija"
   },
   "operationalLayers": {
-    "title": "Operāciju slāņi",
-    "error": "Kartē nav darbības slāņu."
+    "title": "Darbību slāņi",
+    "error": "Kartē nav darbību slāņu."
   },
-  "layerSelector": {
-    "active": "Aktīvais slānis",
-    "comparison": "Salīdzināšanas slānis",
-    "other": "Citi",
-    "result": "Rezultāts",
-    "title": "Slāņu izvēle",
-    "resultSave": "Pievienojiet rezultāta slāni salīdzināšanas slāņa sarakstam",
-    "copy": "Kopējiet aktīvo slāni salīdzināšanas slānī.",
-    "swap": "Samainiet aktīvo slāni un salīdzināšanas slāni."
-  },
-  "renderer": {
-    "title": "Renderētājs",
-    "stretch": "Izstiepšanas parametri",
-    "stretchType": "Izstiepšanas tips",
-    "dra": "DRA",
-    "draText": "Dinamisko diapazona regulējumu atjaunojumi ir uzlaboti, pamatojoties uz pašreizējo skatu",
-    "gamma": "Gamma",
-    "apply": "Lietot",
-    "top": "Izslēgt pirmos",
-    "bottom": "Izslēgt pēdējos",
-    "topText": " Izslēgt pirmos x % no histogrammas",
-    "bottomText": " Izslēgt pēdējos x % no histogrammas",
-    "stdDev": "# stand. nov.",
-    "layer": "Pašreizējais slānis",
-    "error": "Kartē nav redzamu attēlu slāņu."
-  },
-  "imageSelector": {
-    "title": "Attēlu izvēle",
-    "enable": "Iespējot attēlu izvēli",
-    "secondary": "Iestatiet aktīvo slāni kā salīdzināšanas slāni.",
-    "dropDown": "Rādiet attēlus izvelkamajā sarakstā.",
-    "refresh": "Atjaunojiet vaicājumu atkarībā no pašreizējā pārklājuma.",
-    "show": "Parādīt",
-    "age": "Vecums",
+  "imageMask": {
+    "title": "Attēla maska",
+    "toolText": "Rīks",
+    "tool1": "Maska",
+    "tool2": "Mainīt noteikšanu",
+    "layer": "Slānis",
+    "layerText": "Izvēlieties savu attēlu.",
+    "maskImageSelector": "Izvēlieties noteiktu(s) attēlu(s)",
+    "imageSelectorText": "Izvēlieties divus dažādus attēlus salīdzinājumam.",
+    "changeText": "Konfigurēt izmaiņu noteikšanu.",
+    "maskText": "Konfigurēt masku.",
     "zoom": "Pietuviniet, lai izvēlētos attēlus.",
-    "error": "Kartē nav redzamu attēlu slāņu.",
+    "primary": "Primārais attēls",
+    "comparison": "Salīdzināšanas attēls",
+    "mode": "Vizualizēt izmaiņas kā",
+    "method": "Metode",
+    "changeMethodText": "Aprēķināt izmaiņas",
+    "positive": "Pozitīvs",
+    "negative": "Negatīvs",
+    "threshold": "Slieksnis",
+    "difference": "Atšķirība",
+    "apply": "Lietot",
+    "clear": "Notīrīt",
+    "nir": "Infrasarkanais kanāls",
+    "red": "Sarkanā josla",
+    "green": "Zaļā josla",
+    "swir": "Īsviļņu infrasarkanā kanāls",
+    "band1": "Kanāls A",
+    "band2": "Kanāls B",
+    "mode1": "Atšķirības attēls",
+    "mode2": "Atšķirības maska",
+    "mode3": "Sliekšņa maska",
+    "method1": "Attēla spilgtums",
+    "method2": "Veģetācijas indekss",
+    "method3": "Augsnes regulētā veg. Indekss",
+    "method4": "Ūdens indekss",
+    "method5": "Ierakstīšanas indekss",
+    "method6": "Mazāks nekā mans noteiktais slieksnis",
+    "method7": "Lielāks nekā mans noteiktais slieksnis",
+    "method8": "Viena josla",
+    "method9": "Pielāgots rādītājs",
+    "dropDown": "Rādiet attēlus izvelkamajā sarakstā.",
+    "transparency": "Caurspīdīgums (rezultāts)",
+    "slider": "Rādīt attēlus slīdnī.",
     "error1": "Lauks nav norādīts.",
     "error2": "Trūkst OBJECTID lauka.",
     "error3": "Trūkst kategorijas lauka.",
     "error4": "Nevar veikt darbību slānim.",
-    "error5": "Pakalpojumi versijām pirms 10.2.1 netiek atbalstīti.",
+    "error5": "Pakalpojumi versijām pirms 10.2.1 netiek atbalstīti.",
     "error6": "Pašreizējā pārklājumā nav scēnu.",
-    "error7": "Izvēlēto nospiedumu skaits pārsniedz 20. Tiks parādīti tikai pirmie 20 nospiedumi. Lai vēlreiz netiktu rādīts šis brīdinājums, nospiediet Labi.",
-    "slider": "Rādīt attēlus slīdnī."
-  },
-  "changeDetection": {
-    "title": "Mainīt noteikšanu",
-    "mode": "Veids",
-    "method": "Metode",
-    "positive": "Pozitīva atšķirība",
-    "negative": "Negatīva atšķirība",
-    "threshold": "Slieksnis",
-    "difference": "Atšķirība",
-    "apply": "Lietot",
-    "error": "Funkcija Mainīt noteikšanu darbojas ar diviem attēliem no dažādiem datumiem un viena un tā paša servisa.<br />Vispirms izmantojiet attēlu izvēli, lai definētu vienu attēlu,<br />pēc tam noklikšķiniet uz <img src='images/down.png' height='14'/> pogas un izvēlieties otro attēlu.<br />Lai turpinātu mainīt noteikšanu, atgriezieties pie šīs vadīklas."
+    "error7": "Atlasiet divus dažādus attēlus.",
+    "indexText": "Uzlabotās indeksēšanas opcijas",
+    "date": "Datums",
+    "areaText": "Platības samazinājums/palielinājums",
+    "areaText2": "Izdegusi / pēc ugunsgrēka ataudzēta platība",
+    "areaText3": "Aptvertā platība",
+    "unit": "km",
+    "swipe": "Pārvilkšana",
+    "imageLabel": "attēls(i)",
+    "extent": "Zīmēt daudzstūri(us), lai noteiktu pārklājumu",
+    "colorPicker": "Krāsu atlasītājs",
+    "refresh": "Poga Atjaunot",
+    "refreshTooltip": "Atjaunojiet attēlu sarakstu, pamatojoties uz pašreizējo pārklājumu.",
+    "colorpickerText": "Izvēlieties kontūras krāsu maskai",
+    "sliderText": "Nosakiet slieksni",
+    "maskModeText": "Kuras vērtības būtu jāiekļauj kā maskas?",
+    "positiveSliderText": "Iestatiet minimālo palielinājumu, kāds ir nepieciešams attēliem, pirms zona tiek rādīta zaļā krāsā.",
+    "negativeSliderText": "Iestatiet minimālo palielinājumu, kāds ir nepieciešams attēliem, pirms zona tiek rādīta fuksīna krāsā.",
+    "updateResult": "Jūsu attēls ir mainīts; noklikšķiniet uz Lietot, lai atjauninātu analīzi."
   },
   "editor": {
     "title": "Redaktors",
-    "error": "Nav izvēlēts neviens labošanas slānis.",
-    "error1": "Piekļuve liegta. Slāņus nevar labot."
+    "error": "Nav atrasts neviens labošanas slānis.",
+    "error1": "Piekļuve liegta. Slāņus nevar rediģēt.",
+    "text": "Izvēlieties simbolu un uzklikšķiniet uz kartes"
   },
   "measurement": {
     "title": "Attēla mērījums",
@@ -95,25 +114,50 @@ define({
   },
   "export": {
     "title": "Eksportēt",
-    "mode": "Veids",
-    "titleText": "Nosaukums",
+    "mode": "Saglabāt novietojumu",
+    "titleText": "Virsraksts (obligāti)",
     "description": "Apraksts",
-    "tags": "Atslēgas vārdi",
-    "submit": "Iesniegt",
+    "tags": "Atslēgas vārdi (obligāti)",
+    "preview": "Priekšskatījums",
+    "submit": "Saglabāt",
+    "cancel": "Atcelt",
     "pixel": "Pikseļu izmērs",
     "outsr": "Izvades telpiskā atskaite",
-    "renderer": "Pašreizējais renderētājs",
-    "extent": "Definēt pārklājumu",
-    "text": "Ja ir atzīmēts pašreizējais renderētājs, renderēšana<br /> tiek eksportēta; pretējā gadījumā tiek eksportētas sākotnējās datu vērtības<br/>.",
+    "renderer": "TIFF lejupielādes opcijas",
+    "formatText1": "Kā attēlots",
+    "formatText2": "Neapstrādāti dati (visi kanāli)",
+    "extent": "Zīmēt daudzstūri, lai noteiktu pārklājumu",
+    "drawText": "(noklikšķiniet uz attēla, lai sāktu)",
+    "text": "Neapstrādātus datus var parādīt ar standarta fotoattēlu skatītājiem. Atvērt ar ArcGIS Pro",
     "error": "Kartē nav redzamu attēlu slāņu.",
     "error1": "Nosaukums jānorāda obligāti.",
-    "error2": "Atslēgas vārds(-i) jānorāda obligāti."
+    "error2": "Atslēgas vārds(-i) jānorāda obligāti.",
+    "error3": "Eksporta PixelSize ir ierobežots",
+    "error4": "šajā apjomā.",
+    "error5": "Ievadiet derīgu skaitlisku vērtību.",
+    "error6": "Jūsu attēlu šoreiz nevar eksportēt.",
+    "thumbnailError": "Nav pieejams neviens sīktēls",
+    "advance": "Uzlabotās saglabāšanas opcijas",
+    "modeOption1": "Saglabāt portālā",
+    "modeOption2": "Saglabāt diskā",
+    "default": "Noklusējums",
+    "utm": "WGS84 UTM zona",
+    "layer": "Slānis",
+    "mercator": "WebMercatorAS",
+    "folder": "Izvēlēties mapi"
   },
-  "compare": {
-    "title": "Salīdzināt",
-    "slider": "Caurspīdīguma slīdnis",
-    "hSwipe": "Horizontālā pārvilkšana",
-    "vSwipe": "Vertikālā pārvilkšana",
-    "error": "Neviens redzams attēlu slānis nav pieejams salīdzināšanai."
+  "imageDate": {
+    "label": "Attēla datums"
+  },
+  "about": {
+    "title": "Par"
+  },
+  "bookmark": {
+    "title": "Grāmatzīmes",
+    "default": "Noklusējums",
+    "selectBookmark": "Izvēlēties grāmatzīmes",
+    "add": "Pievienot grāmatzīmes",
+    "addTitle": "Ievadīt virsrakstu",
+    "addBtn": "Pievienot pagaidu"
   }
 });

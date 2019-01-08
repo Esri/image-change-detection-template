@@ -16,104 +16,148 @@
  */
 define({
   "map": {
-    "error": "Kaarti ei saa luua"
+    "error": "Kaarti ei saa luua",
+    "licenseError": {
+      "message": "Teie kontol puudub litsents konfigureeritavate rakenduste kasutamiseks, mis ei ole avalikud. Paluge oma organisatsiooni administraatoril määrata teile kasutajatüüp, mis sisaldab olulisi rakendusi või oluliste rakenduse lisalitsentsi.",
+      "title": "Litsents puudub"
+    }
   },
   "nav": {
-    "close": "Sule"
+    "close": "Sulge"
   },
   "basemap": {
-    "title": "Aluskaardi galerii"
+    "title": "Aluskaartide galerii"
   },
   "operationalLayers": {
     "title": "Töökihid",
     "error": "Kaardil ei ole töökihte."
   },
-  "layerSelector": {
-    "active": "Aktiivne kiht",
-    "comparison": "Võrdluskiht",
-    "other": "Muud",
-    "result": "Tulemus",
-    "title": "Kihi valija",
-    "resultSave": "Lisa tulemuste kiht võrdluskihi loendisse",
-    "copy": "Saate aktiivse kihi kopeerida võrdluskihti.",
-    "swap": "Vahetage aktiivne ja võrdluskiht."
-  },
-  "renderer": {
-    "title": "Renderdaja",
-    "stretch": "Venitamise parameetrid",
-    "stretchType": "Venitamise tüüp",
-    "dra": "DRA",
-    "draText": "Dünaamilise diapasooni seadistamise uuenduste täiustamine praeguse vaate põhjal",
-    "gamma": "Gamma",
-    "apply": "Rakenda",
-    "top": "Välista ülemine",
-    "bottom": "Välista alumine",
-    "topText": " Välista ülemine × histogrammi protsent",
-    "bottomText": " Välista alumine × histogrammi protsent",
-    "stdDev": "Standardhälbe nr.",
-    "layer": "Praegune kiht",
-    "error": "Kaardil ei ole nähtavaid pildikihte."
-  },
-  "imageSelector": {
-    "title": "Pildikihi valija",
-    "enable": "Luba pildikihi valija",
-    "secondary": "Määra aktiivne võrdluskihiks.",
-    "dropDown": "Pilte saate kuvada ripploendis.",
-    "refresh": "Päringut saate värskendada praeguse ulatuse põhjal.",
-    "show": "Kuva",
-    "age": "Vanus",
+  "imageMask": {
+    "title": "Pildi mask",
+    "toolText": "Tööriist",
+    "tool1": "Mask",
+    "tool2": "Muudatuse tuvastamine",
+    "layer": "Kiht",
+    "layerText": "Valige pildid.",
+    "maskImageSelector": "Valige konkreetsed pildid",
+    "imageSelectorText": "Valige võrdlemiseks kaks erinevat pilti.",
+    "changeText": "Konfigureerige muutuste tuvastamine.",
+    "maskText": "Konfigureerige mask.",
     "zoom": "Piltide valimiseks suurendage.",
-    "error": "Kaardil ei ole nähtavaid pildikihte.",
-    "error1": "Välja pole määratud.",
-    "error2": "Välja OBJECTID pole.",
-    "error3": "Välja Kategooria pole.",
-    "error4": "Kihiga ei sa toimingut teha.",
-    "error5": "ArcGIS 10.2.1 versioonist varasemaid teenuseid ei toetata.",
-    "error6": "Praeguses ulatuses pole ühtegi stseeni.",
-    "error7": "Valitud jalajälgede arv on suurem kui 20. Kuvatakse ainult esimesed 20 jalajälge. Hoiatuse mitte kordamiseks vajutage OK.",
-    "slider": "Kuva pildid liuguril."
-  },
-  "changeDetection": {
-    "title": "Muudatuse tuvastamine",
-    "mode": "Režiim",
+    "primary": "Põhipilt",
+    "comparison": "Võrdluspilt",
+    "mode": "Visualiseeri muudatused kui",
     "method": "Meetod",
-    "positive": "Positiivne vahe",
-    "negative": "Negatiivne vahe",
+    "changeMethodText": "Arvuta muudatused:",
+    "positive": "Positiivne",
+    "negative": "Negatiivne",
     "threshold": "Lävend",
     "difference": "Erinevus",
     "apply": "Rakenda",
-    "error": "Muudatuste tuvastamine toimib teenuse kahe erineva kuupäevaga pildi korral.<br />Ühe pildi määratlemiseks kasutage esmalt pildivalitsat ,<br />, seejärel klõpsake nuppu <img src='images/down.png' height='14'/> ja valige teine pilt.<br />Muudatuste tuvastamisega jätkamiseks naaske selle juhtelemendi juurde."
+    "clear": "Tühjenda",
+    "nir": "Infrapuna spektraalriba",
+    "red": "Punane spektraalriba",
+    "green": "Roheline spektraalriba",
+    "swir": "Lühilaine infrapuna spektraalriba",
+    "band1": "Spektraalriba A",
+    "band2": "Spektraalriba B",
+    "mode1": "Erinevuse pilt",
+    "mode2": "Erinevuse mask",
+    "mode3": "Lävendi mask",
+    "method1": "Pildi heledus",
+    "method2": "Vegetatsiooniindeks",
+    "method3": "Pinnast arvesse võttev veg indeks",
+    "method4": "Vee indeks",
+    "method5": "Põlenud ala indeks",
+    "method6": "Minu lävest väiksem",
+    "method7": "Minu lävest suurem",
+    "method8": "Üks spektraalriba",
+    "method9": "Kohandatud indeks",
+    "dropDown": "Pilte saate kuvada ripploendis.",
+    "transparency": "Läbipaistvus (tulemused)",
+    "slider": "Kuva pildid liuguril.",
+    "error1": "Välja pole määratud.",
+    "error2": "Välja OBJECTID pole.",
+    "error3": "Välja kategooria pole.",
+    "error4": "Kihiga ei sa toimingut teha.",
+    "error5": "ArcGIS 10.2.1 versioonist varasemaid teenuseid ei toetata.",
+    "error6": "Praeguses ulatuses pole ühtegi stseeni.",
+    "error7": "Valige kaks erinevat pilti.",
+    "indexText": "Täpsemad indekseerimisvalikud",
+    "date": "Kuupäev",
+    "areaText": "Ala vähenemine / suurenemine",
+    "areaText2": "Põlenud / tulekahjujärgse taastumise ala",
+    "areaText3": "Hõlmatud ala",
+    "unit": "km",
+    "swipe": "Võrdlus",
+    "imageLabel": "pilti",
+    "extent": "Ulatuse määratlemiseks joonistage hulknurgad",
+    "colorPicker": "Värvivalija",
+    "refresh": "Värskendusnupp",
+    "refreshTooltip": "Värskendage pildiloendit praeguse ulatuse põhjal.",
+    "colorpickerText": "Valige maski jaoks värv",
+    "sliderText": "Määrake lävi",
+    "maskModeText": "Millised väärtused tuleks maskida?",
+    "positiveSliderText": "Määrake minimaalne kahe pildi vaheline suurenemine, mis on nõutav, enne kui ala kuvatakse rohelisena.",
+    "negativeSliderText": "Määrake minimaalne kahe pildi vaheline vähenemine, mis on nõutav, enne kui ala kuvatakse magentana.",
+    "updateResult": "Teie pilt on muudetud. Klõpsake analüüsi värskendamiseks nuppu Rakenda."
   },
   "editor": {
     "title": "Redaktor",
-    "error": "Kihi muutmist pole valitud.",
-    "error1": "Juurdepääs on keelatud. Kihte ei saa muuta."
+    "error": "Muutmiskihti ei leitud.",
+    "error1": "Juurdepääs on keelatud. Kihte ei saa muuta.",
+    "text": "Valige sümbol ja klõpsake kaarti."
   },
   "measurement": {
     "title": "Pildi mõõtmine",
-    "error": "Mõõtmise funktsioon ei ole toetatud."
+    "error": "Mõõtmise funktsioon ei ole toetatud."
   },
   "export": {
     "title": "Ekspordi",
-    "mode": "Mood",
-    "titleText": "Pealkiri",
+    "mode": "Salvestuskoht",
+    "titleText": "Pealkiri (nõutav)",
     "description": "Kirjeldus",
-    "tags": "Märksõnad",
-    "submit": "Esita",
+    "tags": "Märksõnad (nõutavad)",
+    "preview": "Eelvaade",
+    "submit": "Salvesta",
+    "cancel": "Loobu",
     "pixel": "Piksli suurus",
     "outsr": "Väljundi koordinaatsüsteem",
-    "renderer": "Praegune renderdaja",
-    "extent": "Määratle ulatus",
-    "text": "Kui praegune renderdaja on märgitud, eksporditakse <br /> renderdamine. Muul juhul eksporditakse originaalväärtused.<br/>",
+    "renderer": "TIFF-faili allalaadimise valikud",
+    "formatText1": "Kuvatud kujul",
+    "formatText2": "Toorandmed (kõik spektraalribad)",
+    "extent": "Ulatuse määratlemiseks joonistage hulknurk",
+    "drawText": "(alustamiseks klõpsake pilti)",
+    "text": "Toorandmeid ei saa standardsetes fotovaaturites kuvada. Avage rakenduses ArcGIS Pro.",
     "error": "Kaardil ei ole nähtavaid pildikihte.",
     "error1": "Pealkiri on vajalik.",
-    "error2": "Märksõnad on vajalikud."
+    "error2": "Märksõnad on vajalikud.",
+    "error3": "Ekspordi pikslisuurus on piiratud",
+    "error4": "selle ulatuse korral.",
+    "error5": "Sisestage sobiv arvväärtus.",
+    "error6": "Teie pilti ei saa praegu eksportida.",
+    "thumbnailError": "Pisipilt pole saadaval",
+    "advance": "Täpsemad salvestusvalikud",
+    "modeOption1": "Salvesta portaali",
+    "modeOption2": "Salvesta kettale",
+    "default": "Vaikimisi",
+    "utm": "WGS84 UTM-tsoon",
+    "layer": "Kiht",
+    "mercator": "WebMercatorAS",
+    "folder": "Vali kaust"
   },
-  "compare": {
-    "title": "Võrdlemine",
-    "slider": "Läbipaistvuse liugur",
-    "hSwipe": "Horisontaalne rullimine",
-    "vSwipe": "Vertikaalne rullimine",
-    "error": "Kaardil pole võrdlemiseks nähtavaid pildikihte."
+  "imageDate": {
+    "label": "Pildi kuupäev"
+  },
+  "about": {
+    "title": "Info"
+  },
+  "bookmark": {
+    "title": "Järjehoidjad",
+    "default": "Vaikimisi",
+    "selectBookmark": "Vali järjehoidjad",
+    "add": "Lisa järjehoidjad",
+    "addTitle": "Sisesta filter",
+    "addBtn": "Lisa ajutine"
   }
 });
