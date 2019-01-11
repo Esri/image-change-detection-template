@@ -3,7 +3,7 @@ With the Image Mask configurable template, create an app to visualize change bet
 
 Check out two example applications built with the Image Mask template: [one](https://www.arcgis.com/apps/ImageMask/index.html?appid=face7c19404342479fe2a61cb757046b) using the Change Detection tool, the [other](https://www.arcgis.com/apps/ImageMask/index.html?appid=f2ac27ff11204e9a9d3c8e34351d37f9) using the Mask tool. 
 
-![App](https://github.com/ArcGIS/image-change-detection-template/blob/master/Image%20Change%20Detection%20-%20Difference%20Image.png)
+![App](https://github.com/ArcGIS/image-change-detection-template/blob/master/Image%20Mask%20screenshot.png)
 ![App](https://github.com/ArcGIS/image-change-detection-template/blob/master/Image%20Change%20Detection%20-%20Difference%20Mask.png)
 
 >There are three configurable app templates designed for imagery: [Imagery Viewer](https://github.com/Esri/imagery-viewer-template), [Image Mask](https://github.com/Esri/image-change-detection-template), and [Image Visit](https://github.com/Esri/image-visit-template/). Explore [example applications](http://arcgis.maps.arcgis.com/apps/MinimalGallery/index.html?appid=7207e9505d3e4cd4bf33e81c57190d1d) built with these templates.
