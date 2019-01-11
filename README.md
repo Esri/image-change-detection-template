@@ -21,7 +21,7 @@ Image Mask users can do the following:
 * Export an imagery layer to the user's local machine, or as a layer in the user’s ArcGIS account
 ### Change detection tool options
 For each imagery layer, create an app that gives users one or more of the following change detection options:
-* **Difference** (calculates the change in overall brightness)
+* **Image Brightness** (calculates the change in overall brightness)
 * **Vegetation Index** (NDVI) (requires red and infrared bands)
 * **Soil-Adjusted Vegetation Index** (SAVI) (requires red and infrared bands)
 * **Water Index** (requires green and short-wave infrared bands)
