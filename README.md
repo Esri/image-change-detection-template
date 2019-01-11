@@ -6,6 +6,8 @@ Check out two example applications built with the Image Mask template: [one](htt
 ![App](https://github.com/ArcGIS/image-change-detection-template/blob/master/Image%20Change%20Detection%20-%20Difference%20Image.png)
 ![App](https://github.com/ArcGIS/image-change-detection-template/blob/master/Image%20Change%20Detection%20-%20Difference%20Mask.png)
 
+>There are three configurable app templates designed for imagery: [Imagery Viewer](https://github.com/Esri/imagery-viewer-template), [Image Mask](https://github.com/Esri/image-change-detection-template), and [Image Visit](https://github.com/Esri/image-visit-template/). Explore [example applications](http://arcgis.maps.arcgis.com/apps/MinimalGallery/index.html?appid=7207e9505d3e4cd4bf33e81c57190d1d) built with these templates.
+
 ## Description
 Image Mask is a configurable app template for identifying areas of an image that have changed over time or that meet user-set thresholds for calculated spectral indexes. The template also includes tools for measurement, recording locations, and more.
 App users can zoom to bookmarked areas of interest (or search for their own), select any of the imagery layers from the associated web map to analyze, use a time slider or dropdown menu to select images, then choose between the Change Detection or Mask tools to produce results. 
