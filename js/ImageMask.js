@@ -126,38 +126,42 @@ define([
                 this.selectLayer(registry.byId("layerSelector").get("value"));
         },
         setTool: function (value) {
-            if (this.maskFunction)
-                this.maskFunction.clearResultLayer();
-            if (this.changeFunction)
-                this.changeFunction.clearResultLayer();
+           if(registry.byId("layerSelector").get("value")!="none")
+            {
+                if (this.maskFunction)
+                    this.maskFunction.clearResultLayer();
+                if (this.changeFunction)
+                    this.changeFunction.clearResultLayer();
+            
+                if (value === "mask") {
+                    if (this.changeFunction && this.changeFunction.secondaryLayer) {
+                        this.changeFunction.secondaryLayer.suspend();
+                        this.map.removeLayer(this.changeFunction.secondaryLayer);
+                        this.changeFunction.secondaryLayer = null;
+                        registry.byId("swipeHandler").set("checked", false);
+                    }
+                    if (this.imageMaskTool === "change" && (!this.maskFunction.primaryLayer || (this.maskFunction.primaryLayer && registry.byId("layerSelector").get("value") !== this.maskFunction.primaryLayer.id)))
+                        this.maskFunction.selectLayer(registry.byId("layerSelector").get("value"));
+                    domStyle.set("changeNode", "display", "none");
+                    domStyle.set("maskNode", "display", "block");
+                } else {
+                    domStyle.set("maskNode", "display", "none");
+                    domStyle.set("changeNode", "display", "block");
 
-            if (value === "mask") {
-                if (this.changeFunction && this.changeFunction.secondaryLayer) {
-                    this.changeFunction.secondaryLayer.suspend();
-                    this.map.removeLayer(this.changeFunction.secondaryLayer);
-                    this.changeFunction.secondaryLayer = null;
-                    registry.byId("swipeHandler").set("checked", false);
-                }
-                if (this.imageMaskTool === "change" && (!this.maskFunction.primaryLayer || (this.maskFunction.primaryLayer && registry.byId("layerSelector").get("value") !== this.maskFunction.primaryLayer.id)))
-                    this.maskFunction.selectLayer(registry.byId("layerSelector").get("value"));
-                domStyle.set("changeNode", "display", "none");
-                domStyle.set("maskNode", "display", "block");
-            } else {
-                domStyle.set("maskNode", "display", "none");
-                domStyle.set("changeNode", "display", "block");
-
-                if (this.imageMaskTool === "mask" && (!this.changeFunction.primaryLayer || (this.changeFunction.primaryLayer && registry.byId("layerSelector").get("value") !== this.changeFunction.primaryLayer.id)))
-                    this.changeFunction.selectLayer(registry.byId("layerSelector").get("value"));
-                else {
-                    if (registry.byId("imageSelectorChange").checked)
-                        this.changeFunction.setFilter(true);
-                    else
-                        registry.byId("imageSelectorChange").set("checked", true);
+                    if (this.imageMaskTool === "mask" && (!this.changeFunction.primaryLayer || (this.changeFunction.primaryLayer && registry.byId("layerSelector").get("value") !== this.changeFunction.primaryLayer.id)))
+                        this.changeFunction.selectLayer(registry.byId("layerSelector").get("value"));
+                    else {
+                        if (registry.byId("imageSelectorChange").checked)
+                            this.changeFunction.setFilter(true);
+                        else
+                            registry.byId("imageSelectorChange").set("checked", true);
+                    }
                 }
             }
-            this.imageMaskTool = value;
+            this.imageMaskTool = value;      
         },
         fillLayerSelector: function () {
+            registry.byId("layerSelector").addOption({ label: this.i18n.basemap , value: "none" });
             var layer;
             for (var a in this.layerInfos) {
                 layer = this.map.getLayer(a);
@@ -173,10 +177,43 @@ define([
                 this.changeFunction.onOpen();
         },
         selectLayer: function (value) {
+            
+            if (this.primaryLayer)
+                this.primaryLayer.hide();
+            if (value === "none") {
+                domStyle.set("maskNode", "display", "none");
+                domStyle.set("changeNode", "display", "none");
+                if(document.getElementById("swipewidget")) {
+                    domStyle.set("swipewidget", "display", "none");
+                }
+                this.primaryLayer = null;
+                this.map.primaryLayer = null;
+                this.secondaryLayer = null;
+                this.map.secondaryLayer = null;
+                if (this.maskFunction)
+                    this.maskFunction.clearResultLayer();
+                if (this.changeFunction)
+                    this.changeFunction.clearResultLayer();   
             if (this.imageMaskTool === "mask")
                 this.maskFunction.selectLayer(value);
             else if (this.imageMaskTool === "change")
                 this.changeFunction.selectLayer(value);
+                
+                
+            } else {
+
+            this.primaryLayer = this.map.getLayer(value);
+            this.map.primaryLayer = value;
+            this.primaryLayer.show();
+            if (this.imageMaskTool === "mask")
+                this.maskFunction.selectLayer(value);
+            else if (this.imageMaskTool === "change")
+                this.changeFunction.selectLayer(value);
+            this.setTool(registry.byId("maskTool").get("value"));
+
+        }
+
+
         },
         mapExtentChange: function (evt) {
             if (this.imageMaskTool === "mask")

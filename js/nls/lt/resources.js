@@ -18,7 +18,7 @@ define({
   "map": {
     "error": "Žemėlapio sukurti nepavyko",
     "licenseError": {
-      "message": "Jūsų paskyra nelicencijuota naudoti ne viešas konfigūruojamas aplikacijas. Kreipkitės į organizacijos administratorių, kad paskirtų jums vartotojo tipą, kuris turi svarbiausias aplikacijas, arba suteiktų jums papildomą svarbiausių aplikacijų licenciją.",
+      "message": "Jūsų paskyra nelicencijuota naudoti ne viešas konfigūruojamas aplikacijas. Kreipkitės į organizacijos administratorių, kad paskirtų jums naudotojo tipą, kuris turi svarbiausias aplikacijas, arba suteiktų jums papildomą svarbiausių aplikacijų licenciją.",
       "title": "Nelicencijuota"
     }
   },
@@ -39,6 +39,7 @@ define({
     "tool2": "Keisti kryptį",
     "layer": "Sluoksnis",
     "layerText": "Pasirinkite savo atvaizdus.",
+    "basemap": "Pagrindo žemėlapis",
     "maskImageSelector": "Pasirinkite konkretų vaizdą (vaizdus)",
     "imageSelectorText": "Pasirinkite palyginti du skirtingus vaizdus.",
     "changeText": "Konfigūruokite pokyčio aptikimą.",
@@ -83,6 +84,7 @@ define({
     "error5": "Paslaugos, kurių versija ankstesnė negu 10.2.1, nepalaikomos.",
     "error6": "Esamoje aprėptyje scenų nėra.",
     "error7": "Pasirinkite du skirtingus vaizdus.",
+    "error8": "Netinkamas duomenų diapazonas: pradžios data turi būti ankstesnė nei pabaigos data.",
     "indexText": "Išplėstinės indeksavimo parinktys",
     "date": "Data",
     "areaText": "Ploto sumažėjimas / padidėjimas",
@@ -159,5 +161,33 @@ define({
     "add": "Pridėkite žymų",
     "addTitle": "Įveskite pavadinimą",
     "addBtn": "Pridėkite laikiną"
+  },
+  "coordinate": {
+    "_widgetLabel": "Koordinatės",
+    "hintMessage": "Spustelėkite žemėlapį, kad gautumėte koordinates",
+    "defaultLabel": "Numatytas",
+    "realtimeLabel": "Norėdami gauti koordinates, perstumkite pelę",
+    "computing": "Skaičiuojama...",
+    "latitudeLabel": "Platuma",
+    "longitudeLabel": "Ilguma",
+    "loading": "įkeliama...",
+    "enableClick": "Paspauskite, kad įjungtumėte žemėlapio paspaudimą koordinatėms gauti",
+    "disableClick": "Paspauskite, kad išjungtumėte žemėlapio paspaudimą koordinatėms gauti",
+    "Default": "Numatytas",
+    "Inches": "Coliai",
+    "Foot": "Pėdos",
+    "Foot_US": "Pėdos_JAV",
+    "Yards": "Jardai",
+    "Miles": "Mylios",
+    "Nautical_Miles": "Jūrmylės",
+    "Millimeters": "Milimetrai",
+    "Centimeters": "Centimetrai",
+    "Meter": "Metrai",
+    "Kilometers": "Kilometrai",
+    "Decimeters": "Decimetrai",
+    "Decimal_Degrees": "Laipsniai",
+    "Degree_Minutes_Seconds": "Laipsniai minutės sekundės",
+    "MGRS": "MGRS:",
+    "USNG": "USNG"
   }
 });

@@ -13,8 +13,8 @@
         <meta name="apple-mobile-web-app-status-bar-style" content="default">
         <!-- End Responsive -->
         <!-- Use protocol relative urls that way if the browser is viewing the page via HTTPS the js/css file will be requested using the HTTPS protocol -->
-        <link rel="stylesheet" href="https://jsdev.arcgis.com/3.27/dijit/themes/claro/claro.css">
-        <link rel="stylesheet" href="https://jsdev.arcgis.com/3.27/esri/css/esri.css">
+        <link rel="stylesheet" href="https://js.arcgis.com/3.31/dijit/themes/claro/claro.css">
+        <link rel="stylesheet" href="https://js.arcgis.com/3.31/esri/css/esri.css">
         <link rel="shortcut icon" href="https://www.arcgis.com/favicon.ico">
         <!-- Load any application specific styles -->
         <link rel="stylesheet" href="css/main.css">
@@ -44,6 +44,7 @@
         <div data-dojo-type="dijit/Dialog" data-dojo-props="resize: function(){}, focus: function(){}" id="toolsContentContainer" class="toolsContentContainer"></div>
         <div id="mapDiv" dir="ltr"></div>
         <div role="button" tabindex="0" aria-label="About" id="aboutContainer"><div id="aboutIconNode" class="aboutIcon"><img alt="" src='images/about.png' height="20" width='20' style='margin: 5px;'/></div></div>
+        <div id = "coordinateContainer" class=" jimu-widget-coordinate"></div>o
         <script type="text/javascript">
             var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
             var dojoConfig = {
@@ -66,7 +67,7 @@
           }
 
         </script>
-        <script type="text/javascript" src="https://jsdev.arcgis.com/3.27"></script>
+        <script type="text/javascript" src="https://js.arcgis.com/3.31/"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
         <script type="text/javascript">
             require([
