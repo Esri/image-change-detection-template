@@ -546,6 +546,14 @@ define([
                 if (this.layerInfos[this.primaryLayer.id].defaultMosaicRule && this.layerInfos[this.primaryLayer.id].defaultMosaicRule.where)
                     var layerFilter = this.layerInfos[this.primaryLayer.id].defaultMosaicRule.where;
                 query.where = layerFilter ? this.categoryField + " = 1 AND " + layerFilter : this.categoryField + " = 1";
+
+                if(this.config.imageDateRangeFlag && this.imageFieldType === "esriFieldTypeDate") {
+                    var startDate = (locale.format(new Date(this.config.startDate), {selector: "date", datePattern: "yyyy-MM-dd"}));
+                    var endDate = (locale.format(new Date(this.config.endDate), {selector: "date", datePattern: "yyyy-MM-dd"}));
+                    var imageFieldFilter = this.imageField+" BETWEEN DATE '"+ startDate +"' AND DATE '"+ endDate+"'";
+                    query.where = "("+query.where + ") AND ("+imageFieldFilter+")";
+                }
+                
                 query.orderByFields = [this.imageField];
                 query.returnGeometry = true;
                 this.showLoading();
@@ -674,6 +682,9 @@ define([
                         }
                     } else {
                         html.set(document.getElementById("errorDivChange"), this.i18n.error6);
+                        if(this.config.imageDateRangeFlag && (new Date(this.config.endDate) < new Date(this.config.startDate))) {
+                            html.set(document.getElementById("errorDivChange"), this.i18n.error8);  
+                        }
                         domStyle.set("selectorDivChange", "display", "none");
                         html.set(document.getElementById("imageRangeLeft"), "");
                         html.set(document.getElementById("imageRangeRight"), "");
@@ -1034,6 +1045,9 @@ define([
             }
         },
         getMinMaxCheck: function () {
+            if (this.map.updating === true) {
+                return;
+            }
             this.showLoading();
             this.clearResultLayer(true);
             domStyle.set("updateChangeLayer", "display", "none");

@@ -114,6 +114,56 @@
                 "fieldName":"basemapFlag"
         },
         {
+        "type": "conditional",
+                "condition": false,
+                "fieldName": "coordinateFlag",
+                "label": "Add the Coordinate tool to display map coordinates",
+                "items": [
+                {
+                        "type": "radio",
+                                "fieldName":"defaultwkid",
+                                "tooltip": "Set default coordinate system",
+                                "label": "Default coordinate system: ",
+                                "items": [
+                                {
+                                "label": "WGS_1984_Web_Mercator_Auxiliary_Sphere",
+                                        "value":"3857",
+                                        "checked": true
+                                },
+                                {
+                                "label": "GCS_WGS_1984",
+                                        "value":"4326"
+                                }
+                                ]
+                },
+                { 
+                        "type": "number",
+                        "fieldName": "decimalPlaces",
+                        "label": "Decimal places to round coordinates to:",
+                        "tooltip": "Decimal places to round coordinates to:",
+                        "constraints" :{"min":0,"max":10,"places":0}
+                },
+                {
+                        "type": "radio",
+                                "fieldName":"displayOrderLonLat",
+                                "tooltip": "Set the display order for the coordinates",
+                                "label": "Coordinate display order: ",
+                                "items": [
+                                {
+                                "label": "Longitude / Latitude(X, Y)",
+                                        "value":"lonlat",
+                                        "checked": true
+                                },
+                                {
+                                "label": "Latitude / Longitude(Y, X)",
+                                        "value":"latlon"
+                                }
+                                ]
+                }        
+
+                ]
+        },
+        {
         "type":"conditional",
                 "condition":false,
                 "fieldName":"scalebarFlag",
@@ -290,45 +340,7 @@
                         }
                         ]
                 },
-                {
-                "type": "conditional",
-                        "condition": false,
-                        "fieldName": "advanceOptions",
-                        "label": "Add advanced image search options to the image masking tool",
-                        "items": [
-                        {
-                        "type":"Number",
-                                "fieldName":"zoomLevel",
-                                "label":"Minimum Zoom Level",
-                                "tooltip":"A higher number requires users to zoom in more before they can search for images.",
-                                "constraints":{
-                                "min":0,
-                                        "max":23,
-                                        "places":0
-                                }
-                        },
-                        {
-                        "type":"paragraph",
-                                "value":"<p style='text-align: justify;font-family: verdana;margin:20px 0px -10px; 0px;'><u>Note</u>:  Use Minimum Zoom Level to limit requests to the server for images, and to focus users on the appropriate scale for your app.</p>"
-                        },
-                        {
-                        "type":"Number",
-                                "fieldName":"searchScreenExtent",
-                                "label":"Search Screen Extent (%)",
-                                "tooltip":"A lower % will only search for images at the center of the screen extent.",
-                                "constraints":{
-                                "min":1,
-                                        "max":100,
-                                        "places":0
-                                }
-                        },
-                        {
-                        "type":"boolean",
-                                "fieldName":"enableAutoRefresh",
-                                "label":"Automatically refresh search results if the user pans or zooms"
-                        }
-                        ]
-                },
+                
                 {
                 "type":"paragraph",
                         "value":"<p style='text-align: justify;font-family: verdana;margin-bottom:0px;'>Select which pre-calculated indexes users can analyze:</p>"
@@ -416,8 +428,70 @@
                                 "esriFieldTypeXML"
                         ]
                         }
-                }
-
+                },
+                {
+                        "type": "conditional",
+                                "condition": false,
+                                "fieldName": "advanceOptions",
+                                "label": "Add advanced image search options to the image masking tool",
+                                "items": [
+                                        {
+                                                "type":"conditional",
+                                                        "condition": false,
+                                                        "fieldName": "imageDateRangeFlag",
+                                                        "label": "Define a date range for fetching images (only applicable if a date field was chosen to search for specific images)",
+                                                        "items": [
+                                                        {
+                                                                "type": "date",
+                                                                "fieldName": "startDate",
+                                                                "label": "Start Date (Compulsory): "
+                                                        },
+                                                        {
+                                                                "type": "date",
+                                                                "fieldName": "endDate",
+                                                                "label": "End Date (Optional): "
+                                                        }
+                                                        
+                                                ]
+                                        },
+                                        {
+                                                "type":"paragraph",
+                                                        "value":"<p style='text-align: justify;font-family: verdana;margin:20px 0px -10px; 0px;'><u>Note</u>:  This will be applied to all imagery layers for which a date field was chosen to search for specific images.</p>"
+                                                },
+                                {
+                                "type":"Number",
+                                        "fieldName":"zoomLevel",
+                                        "label":"Minimum Zoom Level",
+                                        "tooltip":"A higher number requires users to zoom in more before they can search for images.",
+                                        "constraints":{
+                                        "min":0,
+                                                "max":23,
+                                                "places":0
+                                        }
+                                },
+                                {
+                                "type":"paragraph",
+                                        "value":"<p style='text-align: justify;font-family: verdana;margin:20px 0px -10px; 0px;'><u>Note</u>:  Use Minimum Zoom Level to limit requests to the server for images, and to focus users on the appropriate scale for your app.</p>"
+                                },
+                                {
+                                "type":"Number",
+                                        "fieldName":"searchScreenExtent",
+                                        "label":"Search Screen Extent (%)",
+                                        "tooltip":"A lower % will only search for images at the center of the screen extent.",
+                                        "constraints":{
+                                        "min":1,
+                                                "max":100,
+                                                "places":0
+                                        }
+                                },
+                                {
+                                "type":"boolean",
+                                        "fieldName":"enableAutoRefresh",
+                                        "label":"Automatically refresh search results if the user pans or zooms"
+                                }
+                                ]
+                        }
+                
                 ]
         },
         {
@@ -714,6 +788,8 @@
                 "featureLayers":"[]",
                 "featureLayersHeightField":"",
                 "search":false,
-                "units":"english"
+                "units":"english",
+                "coordinateFlag": false,
+                "imageDateRangeFlag": false
         }
 }

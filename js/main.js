@@ -32,24 +32,26 @@ define([
     "dijit/registry",
     "dojo/text!application/templates/Export.html", "dojo/text!application/templates/Bookmark.html",
     "dojo/text!application/templates/ImageMask.html", "dojo/text!application/templates/ChangeDetection.html", "dojo/text!application/templates/Mask.html",
+    "dojo/text!application/templates/Coordinate.html",
     "dijit/Tooltip",
     "esri/arcgis/utils",
     "application/MapUrlParams",
-    "application/Bookmark", "application/Editor", "application/Basemap", "application/About", "application/OperationalLayers", "application/Export", "application/Measurement", "application/ImageDate", "application/ImageMask",
+    "application/Bookmark", "application/Editor", "application/Basemap", "application/About", "application/OperationalLayers", "application/Export", "application/Measurement", "application/ImageDate",    "application/Coordinate", "application/ImageMask",
     "dojo/domReady!"
 ], function (
         declare, lang, kernel,
         on, query, focus, domAttr,
         Deferred, Scalebar, Search, Locator, SearchSources,
         dom, ArcGISImageServiceLayer, domConstruct, domStyle, html, domClass, Dialog, parser,
-        registry, exportHtml, bookmarkHtml, imageMaskHtml, changeHTML, maskHTML, Tooltip,
+        registry, exportHtml, bookmarkHtml, imageMaskHtml, changeHTML, maskHTML, coordinateHtml, Tooltip,
         arcgisUtils,
-        MapUrlParams, Bookmark, Editor, Basemap, About, OperationalLayers, Export, Measurement, ImageDate, ImageMask
+        MapUrlParams, Bookmark, Editor, Basemap, About, OperationalLayers, Export, Measurement, ImageDate, Coordinate, ImageMask
         ) {
     return declare(null, {
         config: {},
         containers: [],
         regExp: /\$([^}]+)\}/g,
+        worldImagery:"https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer",
         startup: function (config) {
             // Set lang attribute to current locale
             document.documentElement.lang = kernel.locale;
@@ -271,6 +273,15 @@ define([
                     this.setupAbout();
                 } else
                     domStyle.set("aboutContainer", "display", "none");
+
+                    if(this.config.coordinateFlag) {
+                        domStyle.set("coordinateContainer", "display", "block");
+                        
+                        this.setupCoordinate();
+                        }
+                        else{
+                            domStyle.set("coordinateContainer", "display", "none");
+                        }
 
                 this.setVisibilityEventOnImageryLayer();
                 this._setupAppTools();
@@ -546,6 +557,13 @@ define([
                 domClass.add(document.body, "nosearch");
             }
         },
+        setupCoordinate: function() {
+            dom.byId("coordinateContainer").innerHTML = coordinateHtml;
+            var coordinateTool = new Coordinate({ map: this.map, config: this.config, i18n: this.config.i18n.coordinate});
+            coordinateTool.postCreate();
+           // x.startup();
+            coordinateTool.onOpen();
+        },
         setupAbout: function () {
             var aboutDialog = new Dialog({
                 title: this.config.i18n.about.title,
@@ -603,6 +621,12 @@ define([
                 this.config.imageDateLayer = JSON.parse(this.config.imageDateLayer);
 
                 for (var a = 0; a < layers.length; a++) {
+                    if (layers[a].url.toLowerCase() === this.worldImagery.toLowerCase()) {
+                        layer[layers[a].id] = {
+                            dateField: "SRC_DATE2",
+                            title: layers[a].title || layers[a].layerObject.name || layers[a].id
+                        };
+                    } else {
                     for (var b = 0; b < this.config.imageDateLayer.length; b++) {
                         if (this.config.imageDateLayer[b].id === layers[a].id) {
                             if (this.config.imageDateLayer[b].fields.length > 0) {
@@ -630,6 +654,7 @@ define([
 
                         }
                     }
+                }
                 }
             }
 
@@ -777,12 +802,25 @@ define([
                 autoRefresh: this.config.enableAutoRefresh,
                 changeMethods: {difference: this.config.difference, veg: this.config.veg, savi: this.config.savi, water: this.config.water, burn: this.config.burn, custom: this.config.customIndex},
                 customIndexLabel: this.config.customIndexLabel || this.config.i18n.imageMask.method9,
-                customFormula: this.config.customFormula
+                customFormula: this.config.customFormula,
+                startDate: this.config.startDate,
+                endDate: this.config.endDate,
+                imageDateRangeFlag: this.config.imageDateRangeFlag
             };
+
+            if(temp.imageDateRangeFlag&&!temp.endDate){
+                temp.endDate = new Date();
+            }
 
             var addLayer = true;
             for (var a = 0; a < layers.length; a++) {
-                if ((layers[a].type && layers[a].type === 'ArcGISTiledImageServiceLayer') || (layers[a].type && layers[a].type === 'ArcGISImageServiceLayer') || (this.map.getLayer(layers[a].id).serviceDataType && this.map.getLayer(layers[a].id).serviceDataType.indexOf("esriImageService") !== -1)) {
+                if (layers[a].url.toLowerCase() === this.worldImagery.toLowerCase()) {
+                    layer[layers[a].id] = {
+                        imageSelector: false,
+                        title: layers[a].title || layers[a].layerObject.name || layers[a].id
+                    };
+                }
+                else if ((layers[a].type && layers[a].type === 'ArcGISTiledImageServiceLayer') || (layers[a].type && layers[a].type === 'ArcGISImageServiceLayer') || (this.map.getLayer(layers[a].id) && this.map.getLayer(layers[a].id).serviceDataType && this.map.getLayer(layers[a].id).serviceDataType.indexOf("esriImageService") !== -1)) {
                     for (var b = 0; b < this.config.imageSelectorLayer.length; b++) {
                         if (this.config.imageSelectorLayer[b].id === layers[a].id /*&& this.config.imageSelectorLayer[b].fields.length > 0*/ && layers[a].layerObject) {
                             if (this.config.imageSelectorLayer[b].fields.length > 0) {

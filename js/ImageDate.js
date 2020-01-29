@@ -19,14 +19,14 @@ define([
     'dojo/_base/lang',
     "dojo/date/locale",
     "dojo/html",
-    "esri/request","dojo/dom-class"
+    "esri/request","dojo/dom-class","dijit/registry"
 ],
         function (
                 declare, Evented,
                 lang,
                 locale,
                 html,
-                esriRequest,domClass) {
+                esriRequest,domClass, registry) {
             return declare("application.ImageDate", [Evented], {
                 constructor: function (parameters) {
                     var defaults = {
@@ -42,9 +42,8 @@ define([
                 postCreate: function () {
                     this.layerInfos = this.layers;
                     if (this.map.layerIds) {
-                        this.setPrimaryLayer();
-                        
-                        this.map.on("update", lang.hitch(this, this.changeDateRange));
+                        this.setPrimaryLayer();                      
+                        this.map.on("update-end", lang.hitch(this, this.changeDateRange));                     
                     }
                     this.prefix = this.prefix ? this.prefix : this.i18n.label;
                 },
@@ -55,11 +54,13 @@ define([
                         if (document.getElementById("swipewidget")) {
                             if (this.map.secondaryLayer && this.map.getLayer(this.map.secondaryLayer).visible && this.map.getLayer(this.map.secondaryLayer).serviceDataType && this.map.getLayer(this.map.secondaryLayer).serviceDataType.substr(0, 16) === "esriImageService") {
                                 this.secondaryLayer = this.map.getLayer(this.map.secondaryLayer);
-                            } else
+                            } else {
                                 this.secondaryLayer = null;
-                        } else
+                            }
+                        } else {
                             this.secondaryLayer = null;
-                    } else if (this.map.secondaryLayer && this.map.getLayer(this.map.secondaryLayer).visible && this.map.getLayer(this.map.secondaryLayer).serviceDataType && this.map.getLayer(this.map.secondaryLayer).serviceDataType.substr(0, 16) === "esriImageService") {
+                        }
+                    } else if (this.map.secondaryLayer &&  this.map.getLayer(this.map.secondaryLayer) && this.map.getLayer(this.map.secondaryLayer).visible && this.map.getLayer(this.map.secondaryLayer).serviceDataType && this.map.getLayer(this.map.secondaryLayer).serviceDataType.substr(0, 16) === "esriImageService") {
                         this.secondaryLayer = this.map.getLayer(this.map.secondaryLayer);
                         this.primaryLayer = null;
                     } else {
@@ -69,8 +70,9 @@ define([
                             if (layerObject && layerObject.visible && layerObject.serviceDataType && layerObject.serviceDataType.substr(0, 16) === "esriImageService" && layerObject.id !== "resultLayer" &&  layerObject.id !== this.map.resultLayer && (!title || ((title).substr(title.length - 2)) !== "__")) {
                                 this.primaryLayer = layerObject;
                                 break;
-                            } else
+                            } else {
                                 this.primaryLayer = null;
+                            }
                         }
                         if (document.getElementById("swipewidget") && this.primaryLayer) {
                             for (var a = this.map.layerIds.length - 1; a >= 0; a--) {
@@ -79,11 +81,13 @@ define([
                                 if (layerObject && layerObject.id !== this.primaryLayer.id && layerObject.visible && layerObject.serviceDataType && layerObject.serviceDataType.substr(0, 16) === "esriImageService" && layerObject.id !== "resultLayer" && layerObject.id !== "scatterResultLayer" && layerObject.id !== this.map.resultLayer && (!title || ((title).substr(title.length - 2)) !== "__")) {
                                     this.secondaryLayer = layerObject;
                                     break;
-                                } else
+                                } else {
                                     this.secondaryLayer = null;
+                                }
                             }
-                        } else
+                        } else {
                             this.secondaryLayer = null;
+                        }
                     }
 
                 },
@@ -118,10 +122,12 @@ define([
                             callbackParamName: "callback"
                         });
                         request.then(lang.hitch(this, function (result) {
-                            if (result.samples && result.samples.length > 0)
+                            if (result.samples && result.samples.length > 0) {
                                 this.map.primaryDate = result.samples[0].attributes[this.dateField];
-                            else
+                            }
+                            else {
                                 this.map.primaryDate = null;
+                            }
                             this.displayDate(this.map.primaryDate, this.map.secondaryDate);
                         }), lang.hitch(this, function (error) {
                             this.map.primaryDate = null;
@@ -172,6 +178,9 @@ define([
                 },
                 changeDateRange: function () {
                     this.setPrimaryLayer();
+                    if(this.map.secondaryLayer) {
+                        this.secondaryLayer = this.map.getLayer(this.map.secondaryLayer);
+                    }
                     if (this.primaryLayer && this.primaryLayer.visible) {
                         var label = this.primaryLayer.id;
                         if (this.layerInfos[label]) {
@@ -205,10 +214,13 @@ define([
                             html.set("primaryDate", this.prefix + ": " + locale.format(new Date(primary), {selector: "date", formatLength: "long"}));
                         else
                             html.set("primaryDate", this.prefix + ": ");
-                        if (secondary)
+                        if (secondary && (primary!=secondary))
                             html.set("primaryDate", document.getElementById("primaryDate").innerHTML + " vs " + locale.format(new Date(secondary), {selector: "date", formatLength: "long"}));
                     } else
                         html.set("primaryDate", '');
+                        if(registry.byId("layerSelector").get("value")=="none") {
+                            html.set("primaryDate", '');
+                        }
                 }
 
             });

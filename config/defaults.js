@@ -50,16 +50,16 @@ define({
     "imageMaskFlag": true,
     "maskToolOptions":"mask",
     "imageMaskTitle": "",
-    "primaryLayer": {"id": null},
+    "primaryLayer": {"id": "null"},
     "displayOptions": "both",
     "advanceOptions":false,
     "zoomLevel": 8,
     "searchScreenExtent": 15,
     "enableAutoRefresh": true,
-    "imageSelectorLayer": "[]",
+    "imageSelectorLayer": '[]',
     "imageDateFlag": false,
     "imageDateLabel": "",
-    "imageDateLayer": "[]",
+    "imageDateLayer": '[]',
     "difference": true,
     "veg": false,
     "savi": false,
@@ -105,5 +105,42 @@ define({
                 "url": null
             }]
     },
-    "customstyle": null
+    "customstyle": null,
+    "startDate": "",
+    "endDate": "",
+    "imageDateRangeFlag": false,
+    "coordinateFlag": false,
+    "decimalPlaces":3,
+    "digitSeparator":'.',
+    "displayOrderLonLat":"lonlat",
+    "defaultwkid":"3857",
+    "spatialReferences":[{
+        label: "WGS_1984_Web_Mercator_Auxiliary_Sphere",
+        //isDefault:true,
+        options: {
+            defaultUnit: "METER",
+            isGeographicCS: false,
+            isGeographicUnit: true,
+            isProjectUnit: false,
+            isProjectedCS: true,
+            sameSRWithMap: true,
+            unitRate:1
+        },
+        outputUnit: "DECIMAL_DEGREES",
+        wkid: 3857
+        },
+        {
+        label: "GCS_WGS_1984",
+        options: {
+            defaultUnit: "METER",
+            isGeographicCS: false,
+            isGeographicUnit: true,
+            isProjectUnit: false,
+            isProjectedCS: true,
+            sameSRWithMap: true,
+            unitRate: 1
+        },
+        outputUnit: "DECIMAL_DEGREES",
+        wkid: 4326
+        }]
 });
